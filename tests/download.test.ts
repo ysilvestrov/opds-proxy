@@ -1,9 +1,153 @@
-import {it,expect} from 'vitest';import {Downloads} from '../src/api/download.js';import type {Book} from '../src/domain/book.js';
-const book:Book={sourceName:'searchfloor',id:'1',title:'Тест "\r\n',authors:[],complete:true,sourceUrl:'https://searchfloor.org/b/1',downloadPath:'/book/1',observedAt:new Date().toISOString()};
-const zip=Uint8Array.from([80,75,3,4,1,2,3]);
-const setup=(response:()=>Promise<Response>,options={})=>new Downloads({catalog:{book:async()=>book},client:{openDownload:response}},options);
-it('streams byte-for-byte ZIP with safe headers and rejects HTML or missing book',async()=>{const d=setup(async()=>new Response(zip,{headers:{'content-type':'application/zip'}}));const r=await d.streamBook('1',new AbortController().signal);expect(r.headers.get('content-disposition')).toContain('filename*=UTF-8');expect(r.headers.get('content-disposition')).not.toMatch(/[\r\n]/);expect(new Uint8Array(await r.arrayBuffer())).toEqual(zip);const bad=setup(async()=>new Response('<html>challenge</html>',{headers:{'content-type':'text/html'}}));await expect(bad.streamBook('1',new AbortController().signal)).rejects.toMatchObject({status:502});const unknown=new Downloads({catalog:{book:async()=>null},client:{openDownload:async()=>{throw Error('must not fetch')}}});await expect(unknown.streamBook('1',new AbortController().signal)).rejects.toMatchObject({status:404});});
-it('releases the single slot and cancels upstream on reader cancellation',async()=>{let cancelled=false;const body=()=>new ReadableStream<Uint8Array>({start(c){c.enqueue(zip)},cancel(){cancelled=true}});const d=setup(async()=>new Response(body(),{headers:{'content-type':'application/zip'}}));const signal=new AbortController();const r=await d.streamBook('1',signal.signal);await expect(d.streamBook('1',new AbortController().signal)).rejects.toMatchObject({status:429});await r.body!.cancel();expect(cancelled).toBe(true);const again=await d.streamBook('1',new AbortController().signal);await again.body!.cancel();});
-it('enforces known and unknown size limits',async()=>{const d=setup(async()=>new Response(zip,{headers:{'content-type':'application/zip','content-length':'100'}}),{maxBytes:6});await expect(d.streamBook('1',new AbortController().signal)).rejects.toMatchObject({status:502});const late=setup(async()=>new Response(new ReadableStream({start(c){c.enqueue(zip.slice(0,4));c.enqueue(new Uint8Array(8));c.close()}}),{headers:{'content-type':'application/zip'}}),{maxBytes:10});const r=await late.streamBook('1',new AbortController().signal);await expect(r.arrayBuffer()).rejects.toThrow();});
-it('aborts stalled prefix and releases slot at total deadline',async()=>{let cancelled=false;const d=setup(async()=>new Response(new ReadableStream({cancel(){cancelled=true}}),{headers:{'content-type':'application/zip'}}),{deadlineMs:15});await expect(d.streamBook('1',new AbortController().signal)).rejects.toThrow();expect(cancelled).toBe(true);expect(d.active).toBe(0);});
-it('handles split signature and idle disconnected client',async()=>{const d=setup(async()=>new Response(new ReadableStream({start(c){for(const byte of zip)c.enqueue(Uint8Array.of(byte));c.close()}}),{headers:{'content-type':'application/octet-stream'}}));const r=await d.streamBook('1',new AbortController().signal);expect(new Uint8Array(await r.arrayBuffer())).toEqual(zip);const idle=setup(async()=>new Response(new ReadableStream({start(c){c.enqueue(zip)}}),{headers:{'content-type':'application/zip'}}));const abort=new AbortController();await idle.streamBook('1',abort.signal);abort.abort();expect(idle.active).toBe(0);});
+import { it, expect } from "vitest";
+import { Downloads } from "../src/api/download.js";
+import type { Book } from "../src/domain/book.js";
+const book: Book = {
+  sourceName: "searchfloor",
+  id: "1",
+  title: 'Тест "\r\n',
+  authors: [],
+  complete: true,
+  sourceUrl: "https://searchfloor.org/b/1",
+  downloadPath: "/book/1",
+  observedAt: new Date().toISOString(),
+};
+const zip = Uint8Array.from([80, 75, 3, 4, 1, 2, 3]);
+const setup = (response: () => Promise<Response>, options = {}) =>
+  new Downloads(
+    { catalog: { book: async () => book }, client: { openDownload: response } },
+    options,
+  );
+it("streams byte-for-byte ZIP with safe headers and rejects HTML or missing book", async () => {
+  const d = setup(
+    async () =>
+      new Response(zip, { headers: { "content-type": "application/zip" } }),
+  );
+  const r = await d.streamBook("1", new AbortController().signal);
+  expect(r.headers.get("content-disposition")).toContain("filename*=UTF-8");
+  expect(r.headers.get("content-disposition")).not.toMatch(/[\r\n]/);
+  expect(new Uint8Array(await r.arrayBuffer())).toEqual(zip);
+  const bad = setup(
+    async () =>
+      new Response("<html>challenge</html>", {
+        headers: { "content-type": "text/html" },
+      }),
+  );
+  await expect(
+    bad.streamBook("1", new AbortController().signal),
+  ).rejects.toMatchObject({ status: 502 });
+  const unknown = new Downloads({
+    catalog: { book: async () => null },
+    client: {
+      openDownload: async () => {
+        throw Error("must not fetch");
+      },
+    },
+  });
+  await expect(
+    unknown.streamBook("1", new AbortController().signal),
+  ).rejects.toMatchObject({ status: 404 });
+});
+it("releases the single slot and cancels upstream on reader cancellation", async () => {
+  let cancelled = false;
+  const body = () =>
+    new ReadableStream<Uint8Array>({
+      start(c) {
+        c.enqueue(zip);
+      },
+      cancel() {
+        cancelled = true;
+      },
+    });
+  const d = setup(
+    async () =>
+      new Response(body(), { headers: { "content-type": "application/zip" } }),
+  );
+  const signal = new AbortController();
+  const r = await d.streamBook("1", signal.signal);
+  await expect(
+    d.streamBook("1", new AbortController().signal),
+  ).rejects.toMatchObject({ status: 429 });
+  await r.body!.cancel();
+  expect(cancelled).toBe(true);
+  const again = await d.streamBook("1", new AbortController().signal);
+  await again.body!.cancel();
+});
+it("enforces known and unknown size limits", async () => {
+  const d = setup(
+    async () =>
+      new Response(zip, {
+        headers: { "content-type": "application/zip", "content-length": "100" },
+      }),
+    { maxBytes: 6 },
+  );
+  await expect(
+    d.streamBook("1", new AbortController().signal),
+  ).rejects.toMatchObject({ status: 502 });
+  const late = setup(
+    async () =>
+      new Response(
+        new ReadableStream({
+          start(c) {
+            c.enqueue(zip.slice(0, 4));
+            c.enqueue(new Uint8Array(8));
+            c.close();
+          },
+        }),
+        { headers: { "content-type": "application/zip" } },
+      ),
+    { maxBytes: 10 },
+  );
+  const r = await late.streamBook("1", new AbortController().signal);
+  await expect(r.arrayBuffer()).rejects.toThrow();
+});
+it("aborts stalled prefix and releases slot at total deadline", async () => {
+  let cancelled = false;
+  const d = setup(
+    async () =>
+      new Response(
+        new ReadableStream({
+          cancel() {
+            cancelled = true;
+          },
+        }),
+        { headers: { "content-type": "application/zip" } },
+      ),
+    { deadlineMs: 15 },
+  );
+  await expect(
+    d.streamBook("1", new AbortController().signal),
+  ).rejects.toThrow();
+  expect(cancelled).toBe(true);
+  expect(d.active).toBe(0);
+});
+it("handles split signature and idle disconnected client", async () => {
+  const d = setup(
+    async () =>
+      new Response(
+        new ReadableStream({
+          start(c) {
+            for (const byte of zip) c.enqueue(Uint8Array.of(byte));
+            c.close();
+          },
+        }),
+        { headers: { "content-type": "application/octet-stream" } },
+      ),
+  );
+  const r = await d.streamBook("1", new AbortController().signal);
+  expect(new Uint8Array(await r.arrayBuffer())).toEqual(zip);
+  const idle = setup(
+    async () =>
+      new Response(
+        new ReadableStream({
+          start(c) {
+            c.enqueue(zip);
+          },
+        }),
+        { headers: { "content-type": "application/zip" } },
+      ),
+  );
+  const abort = new AbortController();
+  await idle.streamBook("1", abort.signal);
+  abort.abort();
+  expect(idle.active).toBe(0);
+});

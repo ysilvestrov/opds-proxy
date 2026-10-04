@@ -1,0 +1,56 @@
+name: OPDS CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: opds-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "24.19.0", cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: python3 -m unittest discover -s tests -p '*_test.py'
+      - run: bash -n deploy/bootstrap.sh && bash -n deploy/restart-helper.sh
+      - run: systemd-analyze verify deploy/*.service deploy/*.timer
+  typecheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "24.19.0", cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "24.19.0", cache: npm }
+      - run: npm ci
+      - run: npm run build
+  package:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test, typecheck, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "24.19.0", cache: npm }
+      - run: npm ci && npm run build
+      - run: node scripts/package-release.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opds-release-${{ github.sha }}
+          path: |
+            releases/release.tgz
+            releases/release.tgz.sha256
+          retention-days: 14
+          if-no-files-found: error

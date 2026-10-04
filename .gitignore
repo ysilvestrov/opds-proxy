@@ -153,3 +153,5 @@ vite.config.ts.timestamp-*
 .superpowers/
 *.sqlite*
 releases/
+__pycache__/
+*.pyc

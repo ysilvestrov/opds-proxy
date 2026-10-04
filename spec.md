@@ -2,7 +2,7 @@
 
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; deployment ще немає.
-**Версія:** 0.2.0. **Дата:** 2026-10-04.
+**Версія:** 0.3.0. **Дата:** 2026-10-04.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -328,6 +328,11 @@ Artifact/run origin і checksum SHALL перевірятися; checksum сам 
 не замінює перевірку довіреного GitHub workflow/run.
 
 Production SHALL розпаковувати staging artifact без npm ci/build.
+Installed deployer використовує Node 24 і Python >= 3.12 stdlib для безпечної
+перевірки/розпакування ZIP-wrapper і tar; runtime Python не потребує.
+Початковий CI target — Ubuntu 24.04 x64/glibc, Node 24.19.0. Host MUST
+збігатися за CPU/Node ABI та мати glibc не старішу за artifact; невідповідність
+блокує activation і потребує зміни CI target, не build на сервері.
 Archive traversal/небезпечні links SHALL відхилятися. Перед activation
 candidate SHA SHALL ще збігатися з main. Windows native build не придатний.
 
@@ -347,6 +352,8 @@ Rollback SHALL restart тільки OPDS; несумісний кеш очища
 не позначається здоровим. Fetch errors мають bounded backoff;
 runtime-failed SHA не повторюється без explicit rearm або нового SHA.
 PAUSED зупиняє нові ticks, але не перериває незавершену recovery.
+Невдалий rollback SHALL залишати phase=rollback для наступної recovery;
+повернення до settled state потребує health/static XML перевірки baseline.
 
 #### Scenario: Candidate fails after current switch
 - **WHEN** candidate не проходить startup/health window

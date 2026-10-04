@@ -1,2 +1,28 @@
-import {it,expect} from 'vitest';import {Hono} from 'hono';import {privateAuth} from '../src/api/auth.js';
-it('protects routes with challenge and accepts only exact UTF-8 credentials',async()=>{const app=new Hono();app.use('*',privateAuth('читач','p:a:ss'));app.get('*',c=>c.text('private'));for(const auth of ['', 'Bearer x','Basic !!!','Basic '+Buffer.from('читач:wrong').toString('base64')]){const res=await app.request('/',{headers:{authorization:auth}});expect(res.status).toBe(401);expect(res.headers.get('www-authenticate')).toContain('Basic');}expect((await app.request('/',{headers:{authorization:'Basic '+Buffer.from('читач:p:a:ss').toString('base64')}})).status).toBe(200);});
+import { it, expect } from "vitest";
+import { Hono } from "hono";
+import { privateAuth } from "../src/api/auth.js";
+it("protects routes with challenge and accepts only exact UTF-8 credentials", async () => {
+  const app = new Hono();
+  app.use("*", privateAuth("читач", "p:a:ss"));
+  app.get("*", (c) => c.text("private"));
+  for (const auth of [
+    "",
+    "Bearer x",
+    "Basic !!!",
+    "Basic " + Buffer.from("читач:wrong").toString("base64"),
+  ]) {
+    const res = await app.request("/", { headers: { authorization: auth } });
+    expect(res.status).toBe(401);
+    expect(res.headers.get("www-authenticate")).toContain("Basic");
+  }
+  expect(
+    (
+      await app.request("/", {
+        headers: {
+          authorization:
+            "Basic " + Buffer.from("читач:p:a:ss").toString("base64"),
+        },
+      })
+    ).status,
+  ).toBe(200);
+});
