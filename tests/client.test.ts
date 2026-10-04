@@ -145,3 +145,15 @@ it("maps changed HTML structure to 502", async () => {
   await expect(client.list(null, 1)).rejects.toMatchObject({ status: 502 });
   client.close();
 });
+it("rejects a 404 containing only excluded cards without explicit empty marker", async () => {
+  const client = new SearchfloorClient({
+    spacingMs: 0,
+    fetch: async () =>
+      new Response(
+        '<div id="book1"><p class="fw-medium">Book</p><span data-bs-title="Статус книги">в процессе</span></div>',
+        { status: 404 },
+      ),
+  });
+  await expect(client.list("q", 1)).rejects.toMatchObject({ status: 502 });
+  client.close();
+});

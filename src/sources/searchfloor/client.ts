@@ -1,7 +1,7 @@
 import PQueue from "p-queue";
 import { setTimeout as delay } from "node:timers/promises";
 import type { Book, SourcePage } from "../../domain/book.js";
-import { parsePage, ParseError } from "./parse.js";
+import { parsePage, ParseError, hasEmptyResult } from "./parse.js";
 export class SourceError extends Error {
   constructor(
     message: string,
@@ -210,7 +210,7 @@ export class SearchfloorClient {
         await readLimited(r, this.options.htmlLimit ?? 2 * 1024 * 1024, s),
       );
       const parsed = parsePage(html, page, new Date(this.now()).toISOString());
-      if (r.status === 404 && parsed.books.length)
+      if (r.status === 404 && (!hasEmptyResult(html) || parsed.books.length))
         throw new SourceError("Unexpected source 404", 502);
       return parsed;
     }, signal);

@@ -49,8 +49,9 @@ Do not execute a Windows-built native artifact on Linux. Deployer validates
 workflow/run origin, exact SHA, required jobs, wrapper members, external checksum,
 archive paths/types/expanded size, CPU/glibc/ABI/schema and native SQLite load.
 It checks main again before activation, persists recovery state, atomically
-switches current, restarts only OPDS and observes local health/static XML plus
-NRestarts for 60 seconds. A changed main defers activation. No source request
+switches current, restarts only OPDS, allows up to 15 seconds to become ready,
+then observes local health/static XML plus NRestarts continuously for 60 seconds.
+A changed main defers activation. No source request
 is involved in readiness.
 
 ## Pause, recovery and rollback
@@ -71,6 +72,8 @@ previous settled code. Cache is disposable; no backup restore. It verifies
 baseline health too; unsuccessful rollback keeps recovery phase for next tick.
 Failed first release is stopped and current removed; no false healthy baseline.
 Current and previous settled releases are retained, staging is cleaned.
+Failed releases are pruned after persisted recovery; idle unpaused ticks also
+remove orphaned releases/staging under the lock, preserving settled/previous.
 
 For deliberate operator rollback: pause timer, take the deploy lock, inspect
 state/current/previousSHA, use the fixed stop and reset-cache helper, atomically

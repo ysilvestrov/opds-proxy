@@ -267,6 +267,19 @@ Proposed route `opds.ysilvestrov-ai.uk` → `http://127.0.0.1:8787`; existence n
 
 ## Execution handoff
 
+### Implementation evidence, 2026-10-04
+
+Tasks 0–5 are implemented locally on `feat/opds-v1`; Task 6 remains pending
+actual owner FBReader platform/version and HTTPS client acceptance. Tasks 7–8
+have reviewable code/infrastructure files, not installed infrastructure.
+Final fresh review found startup-readiness and failed-release cleanup issues;
+regressions were tested RED→GREEN. Source 404 handling now explicitly requires
+the empty marker even when filtering has removed all cards.
+Startup grace is 15s, followed by continuous 60s health/static XML observation;
+failed/orphaned releases are pruned only after safe recovery or on idle ticks.
+Remaining Linux CI/native artifact, installed permissions, actual deploy/rollback
+and capacity evidence must not be inferred from Windows fixture/mock tests.
+
 Recommended: native execution in this chat via superpowers:executing-plans.
 Tasks depend on the same adapter/catalog/HTTP interfaces; for a single-user
 service this avoids repeated agent context. Subagent execution is optional

@@ -39,7 +39,7 @@ directory /var/lib/searchfloor-opds-deploy 0750 searchfloor-deploy
 directory /var/lib/searchfloor-opds-deploy/state 0700 searchfloor-deploy
 directory /etc/searchfloor-opds 0700 root
 directory /usr/local/lib/searchfloor-opds 0755 root
-for name in autodeploy.mjs artifact.mjs run-deploy.mjs safe-extract.py; do
+for name in autodeploy.mjs artifact.mjs observe.mjs run-deploy.mjs safe-extract.py; do
   [[ ! -L "/usr/local/lib/searchfloor-opds/$name" ]] || exit 1
   /usr/bin/install -m 0644 -o root -g root "$base/scripts/$name" "/usr/local/lib/searchfloor-opds/$name"
 done

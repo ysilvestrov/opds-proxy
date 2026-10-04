@@ -27,7 +27,7 @@ const deps = () => {
     stop: vi.fn(async () => {}),
     resetCache: vi.fn(async () => {}),
     observe: async (_candidate: string) => true,
-    prune: async () => {},
+    prune: async (_keep: string[]) => {},
     readCurrent: async () => old,
   };
 };
@@ -92,4 +92,26 @@ it("stops a failed first release without healthy baseline", async () => {
   expect(await deployCandidate(d)).toBe("rolled-back");
   expect(d.switchCurrent).toHaveBeenLastCalledWith(null);
   expect((await d.readState()).settledSHA).toBeNull();
+});
+it("prunes failed/orphaned releases, preserving settled and previous", async () => {
+  const d = deps();
+  const previous = "c".repeat(40);
+  await d.saveState({ ...baseline(), previousSHA: previous });
+  const kept: string[][] = [];
+  d.prune = async (values: string[]) => {
+    kept.push(values);
+  };
+  d.observe = async (candidate) => candidate === old;
+  expect(await deployCandidate(d)).toBe("rolled-back");
+  expect(kept.at(-1)).toEqual([old, previous]);
+});
+it("reconciles orphan releases on an otherwise no-op tick", async () => {
+  const d = deps();
+  d.main = async () => old;
+  let calls = 0;
+  d.prune = async () => {
+    calls++;
+  };
+  expect(await deployCandidate(d)).toBe("noop");
+  expect(calls).toBe(1);
 });

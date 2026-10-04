@@ -344,7 +344,10 @@ candidate SHA SHALL ще збігатися з main. Windows native build не �
 
 Deployer SHALL мати незалежні lock/state/PAUSED, immutable releases і atomic
 current switch. Після restart він SHALL перевіряти health/static root XML
-і спостерігати 60 s до settled SHA. Зберігаються current і previous settled
+із початковим startup grace до 15 s, а потім спостерігати безперервні 60 s
+успішних перевірок до settled SHA. Початковий connection refusal не означає
+негайну невдачу; outage чи NRestarts change під час healthy window — невдача.
+Зберігаються current і previous settled
 release; невдалий кандидат не стає settled. Crash між switch/state update
 SHALL бути reconciled наступним tick, без припущення про успішний реліз.
 Rollback SHALL restart тільки OPDS; несумісний кеш очищається лише після
@@ -354,6 +357,9 @@ runtime-failed SHA не повторюється без explicit rearm або н
 PAUSED зупиняє нові ticks, але не перериває незавершену recovery.
 Невдалий rollback SHALL залишати phase=rollback для наступної recovery;
 повернення до settled state потребує health/static XML перевірки baseline.
+Deployer SHALL прибирати failed/orphaned releases після persisted rollback
+і на idle ticks (під тим самим lock), зберігаючи settled/previous та не
+видаляючи candidate під час pending activation/recovery.
 
 #### Scenario: Candidate fails after current switch
 - **WHEN** candidate не проходить startup/health window

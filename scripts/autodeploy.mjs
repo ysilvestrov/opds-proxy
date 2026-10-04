@@ -20,11 +20,13 @@ export async function deployCandidate(d) {
       delete s.candidateSHA;
       delete s.baselineSHA;
       await d.saveState(s);
+      await d.prune([s.settledSHA, s.previousSHA].filter(Boolean));
       return "rolled-back";
     };
     if (s.phase === "activating" || s.phase === "rollback")
       return await rollback();
     if (await d.paused()) return "noop";
+    await d.prune([s.settledSHA, s.previousSHA].filter(Boolean));
     const sha = await d.main();
     if (sha === s.settledSHA) return "noop";
     if (sha === s.failedSHA) return "held";

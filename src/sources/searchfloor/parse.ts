@@ -1,6 +1,11 @@
 import type { SourcePage } from "../../domain/book.js";
-import { load } from "cheerio";
+import { load, type CheerioAPI } from "cheerio";
 export class ParseError extends Error {}
+const emptyMarker = ($: CheerioAPI) =>
+  $("p")
+    .toArray()
+    .some((e) => $(e).text().trim().startsWith("Ничего не найдено"));
+export const hasEmptyResult = (html: string) => emptyMarker(load(html));
 export function parsePage(
   html: string,
   page: number,
@@ -10,9 +15,7 @@ export function parsePage(
   const cards = $("div[id]").filter((_, e) =>
     /^book\d+$/.test($(e).attr("id") ?? ""),
   );
-  const empty = $("p")
-    .toArray()
-    .some((e) => $(e).text().trim().startsWith("Ничего не найдено"));
+  const empty = emptyMarker($);
   if (!cards.length && !empty) throw new ParseError("Unrecognized source page");
   const books: SourcePage["books"] = [];
   const seen = new Set<string>();

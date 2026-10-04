@@ -20,6 +20,7 @@ import { promisify } from "node:util";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { deployCandidate } from "./autodeploy.mjs";
+import { observeReadiness } from "./observe.mjs";
 import { trustedRun, compatibleManifest, validSHA, REPO } from "./artifact.mjs";
 const exec = promisify(execFile),
   here = dirname(fileURLToPath(import.meta.url));
@@ -279,30 +280,29 @@ async function observe(sha) {
     );
     return result.stdout.trim();
   };
-  const initial = await count();
-  const deadline = Date.now() + 60000;
-  do {
-    const health = await fetch("http://127.0.0.1:8787/health", {
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!health.ok) return false;
-    const body = await health.json();
-    if (!body.ready || body.sha !== sha) return false;
-    const rootResponse = await fetch("http://127.0.0.1:8787/opds", {
-      signal: AbortSignal.timeout(5000),
-      headers: { Authorization: "Basic " + credentials },
-    });
-    if (
-      !rootResponse.ok ||
-      !(await rootResponse.text()).includes(
-        '<feed xmlns="http://www.w3.org/2005/Atom"',
+  return observeReadiness({
+    restarts: count,
+    probe: async () => {
+      const health = await fetch("http://127.0.0.1:8787/health", {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!health.ok) return false;
+      const body = await health.json();
+      if (!body.ready || body.sha !== sha) return false;
+      const rootResponse = await fetch("http://127.0.0.1:8787/opds", {
+        signal: AbortSignal.timeout(5000),
+        headers: { Authorization: "Basic " + credentials },
+      });
+      if (
+        !rootResponse.ok ||
+        !(await rootResponse.text()).includes(
+          '<feed xmlns="http://www.w3.org/2005/Atom"',
+        )
       )
-    )
-      return false;
-    if ((await count()) !== initial) return false;
-    await new Promise((r) => setTimeout(r, 2000));
-  } while (Date.now() < deadline);
-  return true;
+        return false;
+      return true;
+    },
+  });
 }
 const deps = {
   lock: async () => true,
@@ -356,6 +356,7 @@ const deps = {
   resetCache: () => helper("reset-cache"),
   observe,
   prune: async (keep) => {
+    await rm(join(staging, "candidate"), { recursive: true, force: true });
     for (const entry of await readdir(releases)) {
       if (validSHA(entry) && !keep.includes(entry)) {
         const path = releasePath(entry);
