@@ -18,15 +18,15 @@ export async function readLimited(response:Response,limit:number,signal:AbortSig
  const bytes=new Uint8Array(size);let offset=0;for(const part of parts){bytes.set(part,offset);offset+=part.length}return bytes;
 }
 export class SearchfloorClient {
- private queue=new PQueue({concurrency:1});private stopped=new AbortController();private cooldown=0;private lastStart=-Infinity;
+ private queue=new PQueue({concurrency:1});private stopped=new AbortController();private activeStopped=new AbortController();private cooldown=0;private lastStart=-Infinity;
  private transport:Transport;private now:()=>number;
  constructor(private options:Options={}){this.transport=options.fetch??fetch;this.now=options.now??Date.now}
- private async run<T>(action:(signal:AbortSignal)=>Promise<T>,signal?:AbortSignal):Promise<T>{
+ private async run<T>(action:(signal:AbortSignal)=>Promise<T>,signal?:AbortSignal,timeoutMs=this.options.timeoutMs??15000):Promise<T>{
   if(this.queue.size>=20)throw new SourceError('Source queue full');
   const waiting=new AbortController();const joined=AbortSignal.any([waiting.signal,this.stopped.signal,...(signal?[signal]:[])]);
   const timer=setTimeout(()=>waiting.abort(new SourceError('Source queue timeout')),this.options.queueWaitMs??30000);
   try {const result=await this.queue.add(async()=>{
-    clearTimeout(timer);const timed=AbortSignal.any([joined,AbortSignal.timeout(this.options.timeoutMs??15000)]);
+    clearTimeout(timer);const timed=AbortSignal.any([this.activeStopped.signal,...(signal?[signal]:[]),AbortSignal.timeout(timeoutMs)]);
     return await abortable(action(timed),timed);
    },{signal:joined});return result as T;
   }catch(e){if(e instanceof SourceError)throw e;if(e instanceof ParseError)throw new SourceError('Invalid source HTML',502);throw new SourceError('Source request failed')}
@@ -72,7 +72,8 @@ export class SearchfloorClient {
  }
  async openDownload(book:Book,signal:AbortSignal):Promise<Response>{
   if(book.sourceName!=='searchfloor'||!book.complete||!/^\d+$/.test(book.id)||book.downloadPath!==`/book/${book.id}`)throw new SourceError('Invalid download',404);
-  return this.run(s=>this.request(book.downloadPath,s),signal);
+  return this.run(s=>this.request(book.downloadPath,s),signal,60000);
  }
- close(){this.stopped.abort(new SourceError('Source client closed'));this.queue.clear()}
+ cancelQueued(){this.stopped.abort(new SourceError('Source client closed'));}
+ close(){this.cancelQueued();this.activeStopped.abort(new SourceError('Source client closed'));this.queue.clear()}
 }
