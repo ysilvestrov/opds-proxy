@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Local investigation / execution workspace
+*.reference.*
+.superpowers/
+*.sqlite*
+releases/
