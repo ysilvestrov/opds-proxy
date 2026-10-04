@@ -8,6 +8,7 @@ if [[ "$mode" == --dry-run ]]; then
   printf '%s\n' \
     'Create independent nologin accounts: searchfloor-opds, searchfloor-deploy.' \
     'Runtime writable: /var/lib/searchfloor-opds/cache.' \
+    'Prototype only: /opt/searchfloor-opds/prototype, /var/lib/searchfloor-opds/prototype-cache, /etc/searchfloor-opds/prototype.env.' \
     'Deploy writable: /opt/searchfloor-opds/{staging,releases,current}, /var/lib/searchfloor-opds-deploy/{state,lock}.' \
     'Root-owned: /etc/searchfloor-opds, /usr/local/lib/searchfloor-opds,' \
     ' /usr/local/sbin/searchfloor-opds-control, /etc/sudoers.d/searchfloor-opds,' \
@@ -33,8 +34,10 @@ directory() { [[ ! -L "$1" ]] || exit 1; /usr/bin/install -d -m "$2" -o "$3" -g 
 directory /opt/searchfloor-opds 0755 searchfloor-deploy
 directory /opt/searchfloor-opds/staging 0700 searchfloor-deploy
 directory /opt/searchfloor-opds/releases 0755 searchfloor-deploy
+directory /opt/searchfloor-opds/prototype 0755 searchfloor-deploy
 directory /var/lib/searchfloor-opds 0755 root
 directory /var/lib/searchfloor-opds/cache 0700 searchfloor-opds
+directory /var/lib/searchfloor-opds/prototype-cache 0700 searchfloor-opds
 directory /var/lib/searchfloor-opds-deploy 0750 searchfloor-deploy
 directory /var/lib/searchfloor-opds-deploy/state 0700 searchfloor-deploy
 directory /etc/searchfloor-opds 0700 root
@@ -48,11 +51,11 @@ done
 /usr/sbin/visudo -cf "$base/deploy/sudoers"
 [[ ! -L /etc/sudoers.d/searchfloor-opds ]] || exit 1
 /usr/bin/install -m 0440 -o root -g root "$base/deploy/sudoers" /etc/sudoers.d/searchfloor-opds
-for unit in searchfloor-opds.service searchfloor-opds-deploy.service searchfloor-opds-deploy.timer; do
+for unit in searchfloor-opds.service searchfloor-opds-prototype.service searchfloor-opds-deploy.service searchfloor-opds-deploy.timer; do
   [[ ! -L "/etc/systemd/system/$unit" ]] || exit 1
   /usr/bin/install -m 0644 -o root -g root "$base/deploy/$unit" "/etc/systemd/system/$unit"
 done
-for envfile in runtime.env deploy.env; do
+for envfile in runtime.env prototype.env deploy.env; do
   path="/etc/searchfloor-opds/$envfile"
   [[ ! -L "$path" ]] || exit 1
   if [[ ! -e "$path" ]]; then

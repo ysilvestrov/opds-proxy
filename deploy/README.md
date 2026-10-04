@@ -4,6 +4,11 @@ Prepared files, **not installed**. Follow `../spec.md` (DEPLOY-001/002,
 OPS-001/002, ACCEPT-001). Current Hetzner host only; server migration is excluded.
 Do not touch bot paths/secrets/units/tunnel route. Actual FBReader acceptance
 is a production activation gate; arrange a controlled HTTPS prototype first.
+Use `../docs/codex-cli-prototype.md` for that stage. Feature-branch CI creates
+`opds-prototype-<sha>`; only main produces `opds-release-<sha>` accepted by the
+production deployer. The manual prototype has separate code/cache/config and
+unit `searchfloor-opds-prototype.service`; do not enable its boot startup or the
+production timer during acceptance.
 
 ## Before installation
 
@@ -17,8 +22,10 @@ Pin the numeric workflow ID returned for this repository's
 `.github/workflows/ci.yml`; verify its `test/typecheck/build/package` jobs.
 Create separate fine-grained repository token with Actions/Contents read only.
 Do not use bot credentials. Artifacts are ready Node production dependencies;
-the host never runs npm ci or build. Linux archive is produced only after main
-push and all three required check jobs pass. PR CI does not deploy.
+the host never runs npm ci or build. A production archive is produced after main
+push and all three required check jobs pass. The approved feature branch also
+produces a separately named prototype archive after those checks. PR CI does
+not deploy or publish a production archive.
 
 ## One-time operator actions
 

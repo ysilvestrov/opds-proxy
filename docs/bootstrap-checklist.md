@@ -3,6 +3,8 @@
 Work in `https://github.com/ysilvestrov/opds-proxy`, reviewed implementation
 branch; read root `spec.md`, AGENTS.md, `deploy/README.md` and server-audit.md.
 Production source: **https://searchfloor.org/**. No second source in v1.
+For the next reader-prototype stage, follow `docs/codex-cli-prototype.md` first:
+feature-branch artifact, manual prototype unit, separate cache/config, timer off.
 
 This is an installation brief after operator approval, not authorization to
 change the server from the desktop coding session. Server migration belongs
@@ -23,7 +25,9 @@ First perform read-only checks and report blockers:
 Before writing, present exact `bootstrap.sh --dry-run` and operator steps from
 deploy/README.md. After explicit installation authorization, apply only these
 files/accounts/paths. Bootstrap enables/starts nothing. Configure independent
-env files, new route, initial release and private client acceptance as specified.
+env files and the new route. Obtain private prototype/client acceptance before
+production initial release/activation; infrastructure preparation itself starts
+and enables no unit.
 
 Keep polling disabled until successful/failed isolated deploy/rollback evidence
 and capacity measurements are recorded. Verify bot health/NRestarts unchanged

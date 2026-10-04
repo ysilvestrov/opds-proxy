@@ -23,7 +23,8 @@ it("requires pinned workflow, exact SHA, main push and every required job", () =
     { ...run, workflow_id: 8 },
     { ...run, head_sha: "b".repeat(40) },
     { ...run, status: "pending" },
-    { ...run, event: "pull_request" },
+      { ...run, event: "pull_request" },
+      { ...run, head_branch: "feat/opds-v1" },
   ])
     expect(trustedRun(variant, jobs, sha, 7)).toBe(false);
   expect(trustedRun(run, jobs.slice(1), sha, 7)).toBe(false);

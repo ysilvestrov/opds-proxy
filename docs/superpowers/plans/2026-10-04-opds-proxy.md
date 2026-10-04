@@ -215,6 +215,13 @@ only the validated Book supplies upstream path.
 
 ## Task 6: FBReader acceptance prototype
 
+Prototype preparation uses the approved feature branch's green-CI
+`opds-prototype-{sha}` artifact and manual `searchfloor-opds-prototype.service`,
+with independent prototype code/cache/config. Follow docs/codex-cli-prototype.md.
+Production current/state/timer stay untouched. CI/deployer main-origin checks
+continue to reject the non-main prototype artifact. This resolves the need to
+obtain device evidence before production activation without a server-side build.
+
 **Files:** `docs/fbreader-acceptance.md`, `docs/source-contract.md`.
 
 **Interfaces:** Produces tested reader OS/version, successful acquisition MIME,

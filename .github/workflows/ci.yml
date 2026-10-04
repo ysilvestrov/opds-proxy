@@ -1,7 +1,7 @@
 name: OPDS CI
 on:
   push:
-    branches: [main]
+    branches: [main, feat/opds-v1]
   pull_request:
 permissions:
   contents: read
@@ -37,7 +37,7 @@ jobs:
       - run: npm ci
       - run: npm run build
   package:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push'
     needs: [test, typecheck, build]
     runs-on: ubuntu-24.04
     steps:
@@ -48,7 +48,7 @@ jobs:
       - run: node scripts/package-release.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: opds-release-${{ github.sha }}
+          name: ${{ github.ref_name == 'main' && 'opds-release' || 'opds-prototype' }}-${{ github.sha }}
           path: |
             releases/release.tgz
             releases/release.tgz.sha256

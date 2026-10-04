@@ -2,7 +2,7 @@
 
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; deployment ще немає.
-**Версія:** 0.3.0. **Дата:** 2026-10-04.
+**Версія:** 0.4.0. **Дата:** 2026-10-04.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -327,6 +327,12 @@ Checksum archive SHALL бути поза archive (без самопосилал�
 Artifact/run origin і checksum SHALL перевірятися; checksum сам по собі
 не замінює перевірку довіреного GitHub workflow/run.
 
+Для ACCEPT-001 CI SHALL також робити artifact `opds-prototype-{sha}` після
+усіх checks на push у погоджену робочу гілку `feat/opds-v1`. Production artifact
+має ім'я `opds-release-{sha}` лише на main; production-deployer MUST NOT приймати
+prototype artifact або non-main run. Prototype запускає оператор вручну з
+перевіреного exact-SHA Linux artifact, без build/npm ci на сервері.
+
 Production SHALL розпаковувати staging artifact без npm ci/build.
 Installed deployer використовує Node 24 і Python >= 3.12 stdlib для безпечної
 перевірки/розпакування ZIP-wrapper і tar; runtime Python не потребує.
@@ -393,6 +399,17 @@ CPUQuota=100%, concurrency 1. Це проектні defaults, не вимір п
 ## 8. Приймання та фактичний стан
 
 ### Requirement: ACCEPT-001 — Evidence before completion
+
+Початковий private HTTPS prototype SHALL передувати production activation.
+Інфраструктуру для цього контрольованого тесту можна підготувати до успішного
+FBReader acceptance: `searchfloor-opds-prototype.service`, read-only код у
+`/opt/searchfloor-opds/prototype/{sha,current}`, writable
+`/var/lib/searchfloor-opds/prototype-cache`, окремий root-only
+`/etc/searchfloor-opds/prototype.env`. Prototype SHALL мати ті самі runtime
+budgets/Basic/loopback-only поведінку, без timer/boot enablement, production
+current/state та доступу до ресурсів бота. Port 8787 не SHALL використовуватися
+двома OPDS units одночасно; оператор перевіряє їхній стан перед запуском.
+Production timer MUST залишатися вимкненим до приймання та deployment evidence.
 
 Release SHALL пройти test/typecheck/build, fixture/mock contract tests,
 Linux native-module load check та клієнтський FBReader acceptance.

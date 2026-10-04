@@ -3,8 +3,9 @@
 Automated tests prove XML/HTTP/streaming behavior, not reader compatibility.
 Target supplied by owner on 2026-10-04: **FBReader for Android, version 3.8.31**.
 Actual Basic forwarding, ZIP opening and navigation have not been tested.
-Production bootstrap is **NO-GO until this gate passes**; code and deployment
-files can be prepared independently.
+Production activation is **NO-GO until this gate passes**. One-time infrastructure
+preparation and manual private prototype startup are allowed to obtain this
+evidence; neither enables production or its deployment timer.
 
 Use the separately configured HTTPS test endpoint `/opds` and its dedicated
 Basic credentials, never credentials embedded in URLs. Listener is loopback;
