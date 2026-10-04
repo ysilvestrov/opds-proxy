@@ -10,6 +10,17 @@ Branch: **feat/opds-v1**. Source: **https://searchfloor.org/**.
 Read `AGENTS.md`, `spec.md` (ACCEPT-001, AUTH-001, OPS-002, DEPLOY-001),
 `deploy/README.md`, `docs/server-audit.md`, `docs/fbreader-acceptance.md`.
 
+## Verified candidate for this handoff
+
+Use application SHA **16cc521448bbb792aa74594cf7c1c1def5ae16f9** and successful
+push run **37238876789**, workflow ID **374905819**, artifact ID **11316800751**.
+Name: `opds-prototype-16cc521448bbb792aa74594cf7c1c1def5ae16f9`.
+Read `docs/linux-ci-evidence.md` for both checksums and manifest values.
+This candidate has passed Linux CI/native loading and local safe extraction.
+The later documentation-only commit does not change this pinned candidate.
+Recheck identity/expiry/host compatibility; do not silently choose latest HEAD
+or another artifact. If it is no longer usable, report and re-pin fresh evidence.
+
 ## 1. Read-only preflight
 
 Record Ubuntu/CPU/glibc, `/usr/bin/node` version/ABI, Python >=3.12, RAM/disk/inodes,
@@ -19,7 +30,8 @@ print cloudflared token-bearing command lines, change beer-api or use bot paths.
 Refuse startup if any production OPDS instance is already running or autodeploy
 is enabled; coordinate explicitly instead of stopping an existing service.
 
-Fetch the branch and pin its exact SHA. Verify this repository's **OPDS CI**
+Fetch the branch for the latest reviewed instructions and use the explicitly
+pinned artifact/application SHA above. Verify this repository's **OPDS CI**
 workflow `.github/workflows/ci.yml`, completed successful **push** run for that
 exact branch/SHA, and jobs `test`, `typecheck`, `build`, `package`. Do not accept
 an arbitrary green check, PR merge SHA, expired artifact or unrelated repository.

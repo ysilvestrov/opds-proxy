@@ -2,7 +2,10 @@
 
 Branch `feat/opds-v1`; base `cc65a78301452510d7c8f355d9fb6fa636d81b3c`.
 Implementation: Tasks 0–5 locally; Tasks 7–8 prepared. No server mutation,
-push, merge, deployed service or successful FBReader test is claimed.
+merge, deployed service or successful FBReader test is claimed.
+Subsequently the branch was published as draft PR #1; Linux CI/native package
+evidence and the isolated prototype handoff are in linux-ci-evidence.md and
+codex-cli-prototype.md. The original review below precedes that preparation.
 
 Fresh Superpowers reviewer examined through commit `5449956`, read specification
 and plan, independently passed 45 Vitest tests/typecheck. No Critical findings.
@@ -40,8 +43,9 @@ was dispatched; fix verification is the reproduced regressions plus full suite.
 
 Actual FBReader Basic forwarding/ZIP opening/empty-page next requires device
 acceptance on the owner's FBReader for Android 3.8.31 (version supplied 2026-10-04).
-Linux installed sudo/systemd permissions, native artifact execution,
-GitHub artifact access and host crash recovery require CI/operator evidence.
+Linux CI/native package loading and desktop GitHub artifact access subsequently
+passed; installed sudo/systemd permissions, artifact execution/access on the
+target host and host crash recovery still require operator evidence.
 Production capacity and source variants beyond fixtures require measurements
 and bounded live probes. These are accepted limits of local evidence, not waived
 requirements; skipping them risks reader failure, failed deployment or poor

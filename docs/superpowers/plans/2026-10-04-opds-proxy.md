@@ -285,7 +285,8 @@ regressions were tested RED→GREEN. Source 404 handling now explicitly requires
 the empty marker even when filtering has removed all cards.
 Startup grace is 15s, followed by continuous 60s health/static XML observation;
 failed/orphaned releases are pruned only after safe recovery or on idle ticks.
-Remaining Linux CI/native artifact, installed permissions, actual deploy/rollback
+Linux CI/native packaging has now passed for the pinned prototype candidate;
+see docs/linux-ci-evidence.md. Remaining installed permissions, actual deploy/rollback
 and capacity evidence must not be inferred from Windows fixture/mock tests.
 
 Recommended: native execution in this chat via superpowers:executing-plans.

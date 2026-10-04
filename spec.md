@@ -443,7 +443,9 @@ HEAD одного Download — ZIP MIME. Аудит не змінював produc
 3. Ціль від власника: FBReader for Android 3.8.31 (2026-10-04).
    Basic forwarding, ZIP MIME/open та empty-page next ще не перевірені;
    результати приймання фіксуються в docs/fbreader-acceptance.md.
-4. Remote default/main branch, CI identity, artifact доступ із deploy-user.
+4. Main отримано з origin; CI workflow ID 374905819 і exact-SHA Linux prototype
+   artifact підтверджено в docs/linux-ci-evidence.md. Production-main artifact
+   та доступ із серверного deploy-user ще не перевірені.
 5. Права bootstrap/Cloudflare route, CPU/libc/Node ABI та вільний порт перед запуском.
 
 Ці перевірки не блокують огляд design, але блокують відповідні твердження
