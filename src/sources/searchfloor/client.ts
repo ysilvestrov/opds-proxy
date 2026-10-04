@@ -1,7 +1,7 @@
 import PQueue from 'p-queue';
 import {setTimeout as delay} from 'node:timers/promises';
 import type {Book,SourcePage} from '../../domain/book.js';
-import {parsePage} from './parse.js';
+import {parsePage,ParseError} from './parse.js';
 export class SourceError extends Error {constructor(message:string,public status=503){super(message)}}
 type Transport=(input:string|URL,init?:RequestInit)=>Promise<Response>;
 interface Options {fetch?:Transport;now?:()=>number;spacingMs?:number;timeoutMs?:number;queueWaitMs?:number;htmlLimit?:number;retryMs?:number}
@@ -29,7 +29,7 @@ export class SearchfloorClient {
     clearTimeout(timer);const timed=AbortSignal.any([joined,AbortSignal.timeout(this.options.timeoutMs??15000)]);
     return await abortable(action(timed),timed);
    },{signal:joined});return result as T;
-  }catch(e){if(e instanceof SourceError)throw e;throw new SourceError(e instanceof Error?e.message:'Source request failed')}
+  }catch(e){if(e instanceof SourceError)throw e;if(e instanceof ParseError)throw new SourceError('Invalid source HTML',502);throw new SourceError('Source request failed')}
   finally{clearTimeout(timer)}
  }
  private async request(path:string,signal:AbortSignal):Promise<Response>{

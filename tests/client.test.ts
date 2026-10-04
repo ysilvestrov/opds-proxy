@@ -28,3 +28,5 @@ it('caps source response and bounds queue waiting',async()=>{
 });
 it('times out a source fetch even when injected transport ignores signal',async()=>{const c=new SearchfloorClient({spacingMs:0,timeoutMs:10,fetch:async()=>new Promise(()=>{})});await expect(c.list(null,1)).rejects.toThrow();c.close();});
 it('validates card completion and refuses arbitrary IDs',async()=>{const book=readFileSync(new URL('fixtures/searchfloor/book.html',import.meta.url),'utf8');const c=new SearchfloorClient({spacingMs:0,fetch:async()=>new Response(book)});expect((await c.getBook('27047'))?.complete).toBe(true);expect(await c.getBook('../evil')).toBeNull();const incomplete=new SearchfloorClient({spacingMs:0,fetch:async()=>new Response(book.replace('весь текст','в процессе'))});expect(await incomplete.getBook('27047')).toBeNull();});
+
+it('maps changed HTML structure to 502',async()=>{const client=new SearchfloorClient({spacingMs:0,fetch:async()=>new Response('<html>changed</html>')});await expect(client.list(null,1)).rejects.toMatchObject({status:502});client.close();});
