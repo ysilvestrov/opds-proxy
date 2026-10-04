@@ -17,7 +17,8 @@ First perform read-only checks and report blockers:
 - Inspect pinned GitHub CI workflow ID, required jobs, main exact SHA and matching
   artifact; confirm separate read-token can retrieve it. Never print tokens.
 - Verify no actual FBReader failure is unresolved. Controlled HTTPS prototype
-  requires platform/version and private credentials outside URLs/logs.
+  targets FBReader for Android 3.8.31 (owner supplied 2026-10-04) and requires
+  private credentials outside URLs/logs. Version is known; client behavior is pending.
 
 Before writing, present exact `bootstrap.sh --dry-run` and operator steps from
 deploy/README.md. After explicit installation authorization, apply only these

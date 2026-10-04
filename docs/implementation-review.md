@@ -39,7 +39,8 @@ was dispatched; fix verification is the reproduced regressions plus full suite.
 ## Review boundaries and remaining gates
 
 Actual FBReader Basic forwarding/ZIP opening/empty-page next requires device
-acceptance. Linux installed sudo/systemd permissions, native artifact execution,
+acceptance on the owner's FBReader for Android 3.8.31 (version supplied 2026-10-04).
+Linux installed sudo/systemd permissions, native artifact execution,
 GitHub artifact access and host crash recovery require CI/operator evidence.
 Production capacity and source variants beyond fixtures require measurements
 and bounded live probes. These are accepted limits of local evidence, not waived

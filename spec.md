@@ -423,7 +423,9 @@ HEAD одного Download — ZIP MIME. Аудит не змінював produc
    один локальний GET ZIP/FB2 успішний, докази в docs/source-contract.md.
 2. При зміні DOM потрібно нове evidence; mixed-status search, fragment,
    empty marker і одна картка підтверджені fixtures 2026-10-04.
-3. Конкретна FBReader platform/version, Basic та ZIP MIME, empty-page next.
+3. Ціль від власника: FBReader for Android 3.8.31 (2026-10-04).
+   Basic forwarding, ZIP MIME/open та empty-page next ще не перевірені;
+   результати приймання фіксуються в docs/fbreader-acceptance.md.
 4. Remote default/main branch, CI identity, artifact доступ із deploy-user.
 5. Права bootstrap/Cloudflare route, CPU/libc/Node ABI та вільний порт перед запуском.
 
