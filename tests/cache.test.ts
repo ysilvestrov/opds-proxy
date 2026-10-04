@@ -1,0 +1,7 @@
+import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';import {tmpdir} from 'node:os';import {join} from 'node:path';
+import {it,expect} from 'vitest';import {Cache} from '../src/storage/cache.js';
+it('creates empty cache, expires records and provides explicit stale lookup',()=>{const c=new Cache(':memory:');expect(c.get('missing',0)).toBeNull();c.set('x',{a:1},100);expect(c.get('x',99)?.value).toEqual({a:1});expect(c.get('x',100)).toBeNull();expect(c.get('x',100,true)?.value).toEqual({a:1});c.close();});
+it('evicts least recently used records and respects value budget',()=>{const c=new Cache(':memory:',{maxKeys:2,maxBytes:20});c.set('a','one',100);c.set('b','two',100);c.get('a',1);c.set('c','three',100);expect(c.get('b',1)).toBeNull();expect(c.get('a',1)).not.toBeNull();c.set('large','x'.repeat(100),100);expect(c.get('large',1)).toBeNull();c.close();});
+it('rebuilds corrupt and incompatible caches, retaining only owned files',()=>{const dir=mkdtempSync(join(tmpdir(),'opds-cache-'));const path=join(dir,'cache.sqlite');try{writeFileSync(path,'corrupt');const c=new Cache(path);c.set('x',1,100);c.close();const newer=new Cache(path,{schema:2});expect(newer.get('x',1)).toBeNull();newer.close();const old=new Cache(path);expect(old.get('x',1)).toBeNull();old.close();}finally{rmSync(dir,{recursive:true,force:true})}});
+
+it('retains stale pages when storing metadata with a longer TTL',()=>{const c=new Cache(':memory:');c.set('page',{},15*60000);c.set('book',{},16*60000+24*3600000);expect(c.get('page',16*60000,true)).not.toBeNull();c.close();});
