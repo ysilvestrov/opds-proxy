@@ -18,9 +18,11 @@ for unit in searchfloor-opds.service searchfloor-opds-prototype.service searchfl
 done
 [[ $(systemctl show searchfloor-opds-deploy.timer -p UnitFileState --value) == disabled ]] || { echo 'STOP: production timer must be disabled.' >&2; exit 1; }
 [[ $(ss -ltn 'sport = :8787' | wc -l) == 1 ]] || { echo 'STOP: port8787 is occupied.' >&2; exit 1; }
-echo 'Use only the independent OPDS sub-user, never bot credentials.'
-echo 'Paste an absolute HTTP(S) proxy URL; percent-encode reserved credential characters.'
-echo 'Example format: http://USER:PASSWORD@HOST:PORT (input will be hidden).'
+if [[ "$mode" == --configure ]]; then
+  echo 'Use only the independent OPDS sub-user, never bot credentials.'
+  echo 'Paste an absolute HTTP(S) proxy URL; percent-encode reserved credential characters.'
+  echo 'Example format: http://USER:PASSWORD@HOST:PORT (input will be hidden).'
+fi
 sudo -v
 sudo /usr/bin/python3 - "$mode" <<'PY'
 import getpass

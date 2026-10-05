@@ -101,3 +101,17 @@ was not performed by the agent. Added terminal `--check`: validates protected
 config and proxy URL and compares all prior settings to the newest private backup;
 no writes/source requests/start.18 offline tests passed, including secret-free
 output and refusal when prior Basic config differs. Provider budget gate remains.
+
+## Private config operator verification — passed
+
+Owner supplied successful `configure-prototype-proxy.sh --check` output:
+valid=true, proxyPresent=true, configPreserved=true, backupCompared=true.
+The helper enforces root-owned0600 config, root group and validates the private
+proxy URL while comparing prior settings with its private backup. This is
+operator-reported evidence, not an independent agent read. Sanitized record:
+`proxy-prototype-private-config.json`. No credentials were transmitted.
+
+Dedicated source GET is not yet performed. Current provider scope/cycle/shared
+remaining budget and OPDS usage baseline were requested before continuing live
+traffic. Agent sudo still requires operator authentication; protected copying,
+source probe and activation will require the operator terminal.
