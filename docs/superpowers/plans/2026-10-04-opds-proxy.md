@@ -36,6 +36,9 @@ p-queue, zod, pino, Vitest; Linux packaging; systemd, Cloudflare Tunnel.
 - Один одночасний Download; потік без накопичення всієї книги в RAM чи на диску.
 - CI test/typecheck/build; не робити масові live-запити із CI.
 - Bootstrap, DNS і tunnel route — окремі операторські кроки після огляду файлів.
+- Cloudflare Free зберігається за COST-001: перед ймовірним збільшенням
+  місячного рахунку отримати окремий дозвіл із поясненням платежів; безкоштовні
+  погоджені операції не потребують нового billing approval.
 - Не підміняти відсутній CI check успіхом; deployment перевіряє конкретний required workflow.
 
 ## Review Focus

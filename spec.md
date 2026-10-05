@@ -2,7 +2,7 @@
 
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; deployment ще немає.
-**Версія:** 0.4.0. **Дата:** 2026-10-04.
+**Версія:** 0.4.1. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -397,6 +397,29 @@ CPUQuota=100%, concurrency 1. Це проектні defaults, не вимір п
 - **AND** встановлення не використовує широку sudo shell-команду чи секрети бота.
 
 ## 8. Приймання та фактичний стан
+
+### Requirement: COST-001 — Preserve Cloudflare Free and approve bill increases
+
+Проєкт SHALL зберігати поточний Cloudflare Free tier. Перед конфігурацією чи
+операцією, яка з великою ймовірністю збільшить місячний рахунок Cloudflare,
+виконавець MUST отримати окремий явний дозвіл власника та пояснити можливі
+платежі: subscription, usage rates і відповідні ліміти. Ціни/ліміти SHALL
+перевірятися за актуальними офіційними умовами конкретного сервісу.
+Операції без оплати за умовами сервісу або з очевидно малим обсягом
+трафіку/транзакцій у безкоштовному allowance можна виконувати в межах
+погодженої специфікації без додаткового billing approval. Малий обсяг не
+скасовує мінімальну плату за платну subscription. Безкоштовна операція не
+скасовує інших обмежень щодо доступу, безпеки та ресурсів бота.
+
+#### Scenario: Add the OPDS hostname to the existing free tunnel
+- **WHEN** актуальні умови підтверджують безкоштовний Tunnel/hostname route
+- **THEN** виконавець може налаштувати погоджений OPDS route без нового billing approval
+- **AND** не вмикає платні add-ons чи upgrade плану в рамках цього кроку.
+
+#### Scenario: A proposed Cloudflare change may increase the monthly bill
+- **WHEN** зміна ймовірно додає subscription або usage charges
+- **THEN** виконавець пояснює платежі та запитує окремий дозвіл до активації
+- **AND** відсутність відповіді не означає згоду.
 
 ### Requirement: ACCEPT-001 — Evidence before completion
 
