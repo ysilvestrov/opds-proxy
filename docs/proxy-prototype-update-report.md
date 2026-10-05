@@ -115,3 +115,21 @@ Dedicated source GET is not yet performed. Current provider scope/cycle/shared
 remaining budget and OPDS usage baseline were requested before continuing live
 traffic. Agent sudo still requires operator authentication; protected copying,
 source probe and activation will require the operator terminal.
+
+## Provider baseline clarified by owner
+
+Owner confirmed dashboard scope is main account:1.0GB limit, actual5.41MB;
+cycle24Sep–24Oct2026 at12:11 (timezone unspecified). OPDS sub-user not used yet.
+This reported actual headroom covers bounded metadata and one<=20MiB test ZIP;
+projected usage/remaining are recorded as projections, not billed actuals.
+Evidence: `proxy-prototype-provider-baseline.json`.
+
+Prepared `deploy/stage-proxy-prototype.sh` for operator sudo terminal: rechecks
+exact CI identity/expiry and root-owned baseline, rehashes protected artifact,
+extracts fresh immutable code, verifies native module as runtime user, then does
+exactly one dedicated source GET using the new source transport.20s process-group
+bound/15s request/2MiB cap; no fallback/retry/current switch/service start.
+Source failure restores protected pre-proxy config backup; candidate/evidence
+remain. Operator JSONL recorder persists sanitized rows at the printed path.
+This script has not executed on /opt or made source requests in the agent session.
+20 offline tests and shell/embedded-Python/embedded-Node syntax checks passed.
