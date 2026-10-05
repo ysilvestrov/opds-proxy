@@ -3,7 +3,7 @@
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; prototype
 встановлено й зупинено після upstream 403, production не активовано.
-**Версія:** 0.4.4. Proxy delta нижче — DRAFT / OWNER REVIEW. **Дата:** 2026-10-05.
+**Версія:** 0.4.5. Independent source proxy погоджено власником; implementation pending. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -140,14 +140,15 @@ proxy connection settings; інші секрети/дані бота не чит
 не дозвіл використовувати секрети бота у production OPDS. Production proxy
 transport потребує окремої конфігурації/перегляду spec та deployment.
 
-#### Proposed architecture delta — independent source proxy (owner review)
+#### Approved architecture — independent source proxy
 
 Evidence: server branch `codex/server-source-diagnostics`, commit `cffb346`;
 `docs/server-source-resolution.md` and server JSONL. Actual Node adapter direct
 отримав 403/challenge, через existing WebShare proxy — 200, 20 книг, next=2.
 Direct urllib теж отримав 200: blanket VPS-IP ban не доведений. Search і Download
-через нові OPDS credentials ще не перевірені. Нова модель нижче — пропозиція,
-не чинний config/API contract до owner review.
+через нові OPDS credentials ще не перевірені. Власник погодив цю модель
+та bandwidth policy відповіддю `ok` після review версії0.4.4. Це нормативний
+контракт подальшої реалізації, не твердження про вже встановлений transport.
 
 Власник створив окремий WebShare sub-user і має незалежні OPDS credentials.
 За повідомленням власника нижчий provider limit ніж 1 GB недоступний. Наданий
@@ -155,7 +156,7 @@ Direct urllib теж отримав 200: blanket VPS-IP ban не доведен�
 (main account чи sub-user) не встановлена. Ці значення — snapshot, не прогноз
 майбутніх OPDS downloads. Proxy secrets у spec/репозиторій не додаються.
 
-Після схвалення delta:
+Нормативні вимоги source-proxy реалізації (SHALL):
 - SOURCE-002 / CONFIG-001: optional `OPDS_SOURCE_PROXY_URL`, лише absolute
   HTTP(S) URL з path empty або `/`, без query/fragment; некоректне задане значення
   відхиляє startup без друку URL/userinfo. Unset зберігає direct для local/tests.
@@ -179,25 +180,25 @@ Direct urllib теж отримав 200: blanket VPS-IP ban не доведен�
   GET, потім private prototype search/pagination/one Download/resources/FBReader.
   Production/timer залишаються off до всіх чинних gates.
 
-Proposed scenarios for SOURCE-002 / CONFIG-001 / DOWNLOAD-002:
+Сценарії source-proxy контракту (SOURCE-002 / CONFIG-001 / DOWNLOAD-002):
 
-##### Scenario: Configured proxy is unavailable
+#### Scenario: Configured proxy is unavailable
 - **WHEN** configured proxy returns407 or connection fails
 - **THEN** the request returns availability503 or eligible stale catalog
 - **AND** no direct retry or dispatcher replacement occurs.
 
-##### Scenario: Invalid proxy configuration
+#### Scenario: Invalid proxy configuration
 - **WHEN** OPDS_SOURCE_PROXY_URL has unsupported scheme, path, query or fragment
 - **THEN** startup fails with the field name only
 - **AND** endpoint/userinfo/password never enter error output.
 
-##### Scenario: Download through private proxy
+#### Scenario: Download through private proxy
 - **WHEN** an authenticated reader starts a valid completed-book Download
 - **THEN** proxy streaming preserves <=4KiB sniff, <=20MiB/60s limits and backpressure
 - **AND** disconnect aborts upstream, releases the slot and sends no proxy credentials to FBReader.
 
-Implementation plan draft: `docs/superpowers/plans/2026-10-05-source-proxy.md`.
-This draft records the chosen candidate and review scope, not installed behavior.
+Implementation plan (pending owner plan review): `docs/superpowers/plans/2026-10-05-source-proxy.md`.
+Owner spec review completed; implementation/installed behavior remain pending.
 
 #### Scenario: Owner-approved comparison through the existing proxy
 - **WHEN** direct-запит серверного клієнта відхилений, а власник погодив proxy experiment
@@ -211,10 +212,10 @@ This draft records the chosen candidate and review scope, not installed behavior
 - **THEN** сервіс не робить повтор через 10 s
 - **AND** зберігає cooldown на 60 s і повертає доступний stale-кеш або 503.
 
-### Requirement: SOURCE-003 — Provider bandwidth policy (DRAFT / owner review)
+### Requirement: SOURCE-003 — Provider bandwidth policy
 
-Ця нова вимога належить до proposed proxy delta й не змінює чинний runtime
-до review/реалізації. Provider sub-user ceiling **1 GB** SHALL бути прийнятним
+Цю вимогу погодив власник 2026-10-05; реалізація ще не розгорнута.
+Provider sub-user ceiling **1 GB** SHALL бути прийнятним
 для v1. Це не окремий резерв bandwidth: WebShare враховує трафік у загальному
 plan budget. Сервіс SHALL NOT мати власний monthly hard cap/автоматичне
 поповнення/paid upgrade/provider management API key у v1.

@@ -376,8 +376,9 @@ information is not the next step. No source-admin message is authorized by this 
 - [x] Owner creates independent WebShare sub-user; separate credentials available.
 - [x] Revise proxy draft for accepted provider minimum1GB/shared plan accounting;
   no own monthly cap or provider billing integration in proposed v1.
-- [ ] Owner reviews root spec0.4.4 proxy delta, then revised implementation plan
-  docs/superpowers/plans/2026-10-05-source-proxy.md and execution method.
+- [x] Owner approved root spec proxy delta/bandwidth policy (`ok`, 2026-10-05).
+- [ ] Owner reviews finalized docs/superpowers/plans/2026-10-05-source-proxy.md;
+  preserve inline sequential execution/current-folder workflow.
 - [ ] Implement isolated source transport, verify dedicated credentials, build new
   Linux artifact and validate private prototype before reader/production gates.
 

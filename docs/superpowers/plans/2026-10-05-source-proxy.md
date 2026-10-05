@@ -1,172 +1,182 @@
-# Independent OPDS source proxy implementation plan
+# Independent OPDS Source Proxy Implementation Plan
 
-> **For agentic workers:** Execute sequentially in the main thread using
-> superpowers:executing-plans after owner spec and plan review. No delegation.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans
+> to implement sequentially in this session. Preserve the previously selected
+> current-folder/separate-branch workflow; no subagent implementation delegation.
+> Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Use the verified server-side proxy candidate with independent OPDS
-credentials, preserving source/privacy/streaming boundaries.
+**Goal:** Restore server-side Searchfloor access through an independent OPDS
+WebShare sub-user while preserving private OPDS, source limits and streamed ZIP.
 
-**Architecture:** One explicit undici ProxyAgent owned by the composition root;
-inject its fetch transport into the existing SearchfloorClient. Reuse it for HTML
-and downloads. Unset configuration retains direct transport; configured proxy
-failure never falls back to direct or rotates agents to escape denial.
+**Architecture:** Composition root owns an explicit source-only dispatcher;
+configured HTTP(S) proxy uses one reusable undici ProxyAgent injected into
+SearchfloorClient for both HTML and Download. No global proxy setting/direct
+fallback on failure; deployer/GitHub requests are independent.
 
-**Tech Stack:** Node 24, strict TypeScript, undici compatible with Node 24,
-existing Hono/SQLite/Vitest, local mock HTTP proxy and upstream for tests.
+**Tech Stack:** Node24/TypeScript strict, Node24-compatible pinned undici,
+existing Hono/SQLite/Vitest, local CONNECT proxy/upstream mocks, Python3.12+ verifier.
 
-**Spec:** root `spec.md` 0.4.4, proposed independent-source-proxy delta (SOURCE-002/003).
-**Status:** PENDING OWNER SPEC REVIEW, THEN PLAN REVIEW; no application changes
-or deployment performed. Diagnostics established completed-page parsing, not
-search/download/FBReader acceptance. Original installed SHA/config remain fixed.
+**Spec:** root `spec.md`0.4.5; SOURCE-002/003, ARCH-001, CONFIG-001,
+DOWNLOAD-001/002, AUTH-001, OPS-001/002, DEPLOY-001/002, ACCEPT-001, COST-001.
+**Status:** OWNER SPEC APPROVED 2026-10-05; PLAN READY FOR OWNER REVIEW.
+No source transport implementation or server activation performed by this plan.
 
-## Global constraints
+## Global Constraints
 
-- ARCH-001: pure server-side operation, dedicated OPDS resources and config.
-- SOURCE-002: HTML 2 MiB, 15 s, concurrency 1, >=1 s start gap; queue <=20,
-  wait <=30 s; max one retry on 429/5xx, <=10 s, longer cooldown respected;
-  HTTPS same-origin redirects <=3. No retry/rotation/challenge solving on 403.
-- DOWNLOAD-001/002: sniff <=4 KiB, ZIP validation, <=20 MiB, 60 s total,
-  one active transfer, backpressure and upstream abort on client disconnect.
-- AUTH-001: private Basic over HTTPS on every catalog/acquisition route.
-- OPS-002/ACCEPT-001: immutable exact-SHA Linux artifact; no server build,
-  installer --apply rerun or mutation of bot resources; timer stays disabled.
-- Do not copy bot proxy credentials into OPDS or read bot env at OPDS startup.
-- Owner has created an OPDS-only WebShare sub-user; credentials are available
-  privately. Provider minimum ceiling is 1 GB per owner evidence. This does not
-  reserve a separate GB from the shared plan. No own monthly hard cap/provider
-  management API/top-up in v1; dashboard usage is the billing authority.
-- No production proxy activation before spec/plan review and prototype gates.
+- Current Hetzner host beside the bot; migration is a separate project.
+- Runtime/credentials/cache/releases/units independent; no bot env on startup.
+- HTML cap2MiB/15s, concurrency1, start spacing>=1s, queue<=20/wait<=30s;
+  HTTPS same-origin redirects<=3, one429/5xx retry<=10s, longer Retry-After cooldown.
+- 403/challenge never causes retry/rotation; proxy407/connect failure503.
+- Download sniff<=4KiB, size<=20MiB, deadline60s, one active stream;
+  backpressure, disconnect abort and ZIP validation; no book stored/full buffer.
+- SIGTERM drains<=15s then aborts; whole shutdown fits TimeoutStopSec25s.
+- Basic HTTPS on OPDS/acquisition; proxy secrets never in URL/headers to reader,
+  argv/logs/errors/Git/artifact/cache. No provider management API credential.
+- Owner-created OPDS sub-user: provider ceiling1GB accepted. Shared-plan accounting,
+  dashboard authority, no app monthly hard cap/top-up/paid upgrade in v1.
+- No live source calls from tests/CI. Server runs ready exact-SHA Linux artifact,
+  never npm install/build. Cloudflare Free/tunnel/bot remain unchanged.
+- Installed prototype/current/config already exist; never rerun installer --apply.
+  Production/timer off until existing acceptance/rollback gates pass.
 
-## Review focus
+## Review Focus
 
-1. Configured proxy407/connect error must fail closed without a direct retry.
-2. Redirect validation applies to the source URL, never to an arbitrary client URL.
-3. Proxy backpressure/disconnect must release download slot and abort source.
-4. Provider idle/session expiry must not turn into hidden rotation-on-denial.
-5. Failed HTTP checks must persist earlier evidence without logging credentials.
+1. Proxy407/connect failure: no direct retry and503 (Task1).
+2. Secret-bearing bad config/network error: field-only/sanitized output (Task1/3).
+3. Slow/disconnected reader: bounded proxy stream, abort, freed slot (Task2).
+4. Active stream during shutdown: bounded drain/abort and closed dispatcher (Task1/2).
+5. Live503 during validation: earlier HTTP evidence survives; no reinstall (Task3).
 
-## Task 1: Explicit config and transport lifecycle
+## File map and interfaces
 
-**Files:** `src/config.ts`, new `src/sources/transport.ts`, `src/index.ts`,
-`package.json`, lockfile, `.env.example`, `tests/config.test.ts` (create if absent),
-new `tests/transport.test.ts`.
+- `src/sources/transport.ts`: source transport lifecycle only.
+  Export `SourceFetch = (input: string | URL, init?: RequestInit) => Promise<Response>`
+  and `createSourceTransport(proxyUrl?: string): { fetch: SourceFetch; close(): Promise<void> }`.
+  Only explicit source config controls routing; unset means direct, independent
+  of ambient proxy env. No mutation of process-global dispatcher.
+- `src/config.ts`: `Config.OPDS_SOURCE_PROXY_URL?: string`; absolute HTTP(S),
+  path empty or `/`, no query/fragment. Invalid nonempty config fails startup
+  with field name only. Absent preserves direct; empty string is invalid.
+- `src/index.ts`: creates/injects/closes transport, retains bounded shutdown.
+- `tests/helpers/connect-proxy.ts`: disposable loopback CONNECT/upstream fixture.
+  `createConnectProxyFixture(): Promise<{ proxyUrl: string; upstreamUrl: string;
+  proxyConnects: number; upstreamRequests: number; abortedUpstreams: number;
+  close(): Promise<void> }>`; live counters observed through this returned object.
+  Every test closes sockets/listeners. HTTP loopback fixtures are test-only;
+  production Searchfloor origin/HTTPS validation remain unchanged.
+- `scripts/verify-existing-prototype.py`: root-only OPDS config reader/HTTP verifier,
+  no service/start/install/config mutation; `--expect-sha SHA`, optional `--live`.
+  Writes sanitized JSONL to stdout for an unprivileged durable recorder.
+- `scripts/diagnostics/record-jsonl.py`: selected reviewed server recorder import;
+  `record(lines: Iterable[str], output: Path) -> None`, fresh0600 file, flush/fsync.
 
-**Interfaces:** `createSourceTransport(proxyUrl?: string): {fetch: typeof fetch;
-close(): Promise<void>}`. `Config.OPDS_SOURCE_PROXY_URL?: string`.
-Only HTTP(S) absolute URL, empty or / path, no query/fragment; credentials remain private config.
-Current direct behavior is unchanged when unset.
+## Task1: Explicit source transport, config and lifecycle
 
-- [ ] Add failing config tests: absent proxy accepted; http/https accepted;
-  socks/file/invalid URL rejected; validation/log output never includes URL/userinfo.
-- [ ] Add failing local-mock transport tests: configured requests use proxy;
-  proxy407/connect failure makes no direct request; no cookie or rotation logic;
-  two requests reuse one dispatcher; explicit close releases resources.
-- [ ] Run targeted tests and observe RED.
-- [ ] Pin a Node24-compatible undici version/lockfile on development/CI, not host.
-  Implement explicit ProxyAgent fetch injection without global dispatcher mutation.
-  Wire it once in composition root and close after active work drains on SIGTERM.
-  Redact proxy-related error details/URL as well as Authorization.
-- [ ] Run targeted tests GREEN, existing client tests and typecheck; commit owned files.
+**Modify:** src/config.ts, src/index.ts, package.json, package-lock.json,
+.env.example, tests/runtime.test.ts.
+**Create:** src/sources/transport.ts, tests/config.test.ts,
+tests/transport.test.ts, tests/helpers/connect-proxy.ts.
 
-## Task 2: Streaming and source limits through proxy
+- [ ] Write config tests: absent direct; HTTP(S) valid; empty/socks/file/path/query/
+  fragment invalid; failure contains OPDS_SOURCE_PROXY_URL but no userinfo/URL.
+- [ ] Write actual local CONNECT tests: configured request reaches proxy/upstream;
+  two requests reuse the same transport;407/connection failure has zero direct
+  upstream requests; diagnostics never contain fixture password/endpoint.
+- [ ] Write runtime fixture test: injected source dispatcher closes after abort/
+  drain and process exits within25s; global fetch/ambient proxy env not changed.
+- [ ] Run `node node_modules/vitest/vitest.mjs run tests/config.test.ts tests/transport.test.ts tests/runtime.test.ts`;
+  observe missing transport/config assertions fail before implementation.
+- [ ] Pin a compatible undici dependency/lockfile in development. Implement exact
+  interface above; adapt dispatcher init without weakening strict TypeScript.
+  Wire transport once into existing SearchfloorClient; close it after cancellation
+  within existing shutdown deadline. Sanitize errors rather than log causes/URLs.
+- [ ] Run the same targeted tests GREEN, then
+  `node node_modules/tsc/bin/tsc --noEmit`; commit Task1 owned files.
 
-**Files:** `tests/client.test.ts`, `tests/download.test.ts`, new local proxy fixture
-utility under `tests/helpers/`; implementation changes only if tests show a defect
-against the approved spec.
+## Task2: Proxy streaming and source limits
 
-**Interfaces:** existing `SearchfloorClient({fetch})`, `list`, `getBook`,
-`openDownload` and `Downloads.streamBook`. No new public OPDS API.
+**Modify:** tests/client.test.ts, tests/download.test.ts, helper from Task1;
+implementation only for defects against approved requirements.
+**Consumes:** Task1 SourceFetch and loopback CONNECT fixture;
+existing SearchfloorClient/list/getBook/openDownload and Downloads.streamBook.
 
-- [ ] Add failing proxy-backed tests for forbidden redirect, 403/challenge without
-  retry, 429 long Retry-After/cooldown, HTML cap and timeout, proxy407 -> availability.
-- [ ] Add failing stream tests: exact ZIP bytes, <=4 KiB sniff/replay,
-  20 MiB cap with known/unknown size, 60 s deadline, slow consumer backpressure,
-  downstream disconnect aborts proxy upstream and frees slot, no book file writes.
-- [ ] Run targeted tests RED; implement only necessary transport boundary fixes.
-- [ ] Run targeted tests GREEN and test/typecheck/build in CI with native load;
-  do not install/build packages on the live host. Commit test/implementation files.
+- [ ] Add proxy-backed tests: forbidden redirect rejected before another origin;
+ 403 has exactly one upstream request/no agent replacement; Retry-After60s
+ establishes full cooldown;2MiB cap/15s deadline remain enforced.
+- [ ] Add real proxy-stream tests: ZIP prefix replay byte-for-byte,20MiB cap,
+ slow consumer doesn't consume full upstream early, cancellation closes tunnel,
+ slot becomes available, shutdown aborts remaining transfer. Use synthetic ZIP
+ bytes and local mocks; tests can shorten injected clocks/timeouts appropriately.
+- [ ] Run `node node_modules/vitest/vitest.mjs run tests/transport.test.ts tests/client.test.ts tests/download.test.ts tests/runtime.test.ts`;
+ record actual new boundary results. Already-passing integration tests need no
+ implementation change. If a boundary fails, preserve that RED before fixing it.
+ Do not duplicate existing unit checks merely to increase count.
+- [ ] Fix only demonstrated transport/boundary defects; same targeted command GREEN.
+ Run test/typecheck/build and Linux native-load CI after changes; commit Task2.
 
-## Task 3: Independent operator config and reliable resume verification
+## Task3: Durable existing-installation verification and operator files
 
-**Files:** `deploy/prototype.env.example`, `deploy/runtime.env.example`,
-`deploy/README.md`, new `scripts/verify-existing-prototype.py`, verification tests.
-Keep prepared `deploy/start-prototype.sh` an installer, not a resume command.
+**Modify:** deploy/prototype.env.example, deploy/runtime.env.example, deploy/README.md.
+**Create:** scripts/verify-existing-prototype.py, tests/prototype_resume_test.py.
+**Selectively import/review from cffb346:** scripts/diagnostics/record-jsonl.py,
+its regression coverage, curl CONNECT diagnostic fix/coverage. Do not cherry-pick
+unreviewed installer/spec or copy its historical Basic/secret output into reports.
 
-**Interfaces:** resume verifier reads only root-only OPDS config, emits sanitized
-per-request JSONL consumed by `scripts/diagnostics/record-jsonl.py` (flush/fsync).
-It never installs, replaces current, regenerates credentials or enables timers.
+- [ ] Review selected changes against root spec; run their offline tests in WSL/Linux.
+ If installer safety tests run as root, do not count root-guard rejection as proof
+ of later collision guards. Keep installer separate; existing validation won't use it.
+- [ ] Add resume verifier tests: existing installed SHA/config accepted; wrong SHA,
+401/MIME/XML/live503 fails with earlier rows retained; fixture secrets/query text
+absent from stdout/argv; zero bootstrap, env writes, pointer switches or unit changes.
+- [ ] Run `python3 -m unittest discover -s tests -p '*resume_test.py'` RED;
+implement verify-existing-prototype.py and reviewed recorder pipeline. Credentials
+remain in OPDS root-only env, read in memory; normal-user recorder receives only
+sanitized rows. Live source checks require explicit --live; no book download here.
+- [ ] Add optional proxy entry to separate OPDS env examples with a clearly fake
+placeholder; document private operator input, unchanged Basic credentials,
+provider usage scope/cycle baseline and session limits for60s transfer.
+- [ ] Run resume/selected recorder/curl tests GREEN plus shell/Python syntax checks;
+commit reviewed Task3 changes. No new sudoers privilege or infrastructure auto-update.
 
-- [x] Owner created OPDS-only provider sub-user and has separate credentials;
-  confirmed minimum configurable user ceiling is 1 GB. No bot settings changed.
-- [ ] Operator installs credentials through protected private input into OPDS-only
-  root-only env; never receive/print them in chat/Git. Record provider usage scope,
-  shared/sub-user remaining budget and cycle dates (not usernames/secrets).
-  Check connection/session/idle limits allow the existing 60 s Download.
-  Do not require lowering the provider ceiling below the available minimum.
-- [ ] Validate one bounded actual GET with these dedicated credentials. Earlier
-  proxy success used the diagnostic bot setting, not this newly created user.
-- [ ] Add failing offline tests: existing installation accepted by resume verifier;
-  wrong health SHA/Basic/XML fails and retains earlier rows; credentials and
-  proxy URL absent from output/argv; no bootstrap/config changes in resume path.
-- [ ] Implement resume verifier and operator env instructions after tests RED.
-  Set OPDS_SOURCE_PROXY_URL only in its own root-only config; do not read bot env.
-- [ ] Run tests GREEN, inspect script/privilege diff, owner reviews concrete
-  config/current-switch procedure before any host action. Commit owned files.
+## Task4: Exact-SHA artifact and private prototype acceptance
 
-## Task 4: New artifact and controlled existing-installation acceptance
+**Modify/create operator evidence:** docs/prototype-report.md,
+docs/fbreader-acceptance.md, docs/runtime-measurements.md,
+docs/codex-cli-proxy-prototype-update.md (concrete operator procedure).
+**Consumes:** Task1/2 tested source transport, Task3 verifier/recorder,
+existing safe artifact extraction/manifest checks and manual prototype unit.
 
-**Files:** `docs/prototype-report.md`, `docs/fbreader-acceptance.md`,
-`docs/runtime-measurements.md`. This plan cannot authorize replacing the original
-pin by inference; record and review the new exact application SHA/run/artifact.
+- [ ] Push implementation; require successful test/typecheck/build/package on exact
+SHA. Record workflow/run/artifact/digests; package includes Linux native dependencies.
+- [ ] Prepare concrete operator procedure before host action: verify bot/units/port,
+new artifact/source identities; preserve old immutable code and pointer, use fresh
+immutable SHA directory, privately add OPDS proxy config without replacing Basic
+credentials. Document rollback pointer/config, stopping prototype on any failure.
+No installer --apply, production current/state, timer or bot resource changes.
+- [ ] Before activation, verify dedicated OPDS credentials with one bounded source
+GET; record sanitized status/parser counts, provider scope/cycle/remaining budget.
+Earlier bot-proxy diagnostic success is not proof for this new sub-user.
+- [ ] Operator reviews the prepared files and activates only manual prototype from
+new reviewed exact-SHA artifact. Run verifier with expected SHA and --live:
+health/local+HTTPS Basic/static XML, one completed/search page, <=one next page.
+- [ ] Test <=one completed Download: ZIP/FB2 validated in memory,20MiB/60s bounds,
+cancellation; record durable per-request status/bytes, never book contents.
+Measure runtime RSS/CPU/cache+WAL and provider before/after usage (billing authority).
+- [ ] Owner tests FBReader Android3.8.31 Basic acquisition/ZIP open/pagination and
+protected empty-page fixture under existing acceptance plan. Record real results.
+Stop manual prototype after testing; production/timer remain off for later gates.
 
-- [ ] Produce a fresh successful feature push artifact in CI, verify workflow/jobs,
-  digests/extractor/host manifest, then separately approve its prototype activation.
-- [ ] Recheck bot health/NRestarts, unit states and free port. Operator installs
-  only new immutable prototype code and changes its prototype pointer/config;
-  preserve original code and credentials, production state/current remain untouched.
-- [ ] Start only manual prototype and record health exact SHA, local/HTTPS Basic,
-  static XML, one completed page, one search page and at most one next page if present.
-- [ ] After transport/traffic review, perform at most one completed Download within
-  20 MiB/60 s, validate ZIP/FB2 in memory, never persist book contents. Failure stops
-  manual prototype; retain sanitized per-request status/bytes evidence.
-- [ ] Measure runtime RSS/CPU/cache+WAL and before/after bot state; owner runs
-  FBReader 3.8.31 including protected empty-page fixture, Basic acquisition/ZIP open.
-- [ ] Stop manual prototype after controlled tests. Production/timer remain off;
-  production enablement/rollback are later explicit stages.
+## Handoff and self-review
 
-## Decision and remaining prerequisites
+Spec approved; owner plan review is the remaining pre-code gate. Preserve inline
+sequential execution in current folder/feat branch. No new worktree or server move.
 
-The proxy Node adapter candidate is verified for completed-page parsing.
-Root spec delta and this plan require owner review before retained application
-code. An OPDS-only sub-user exists and its minimum provider ceiling is known from
-owner evidence. Actual dedicated-credential source access, quota scope/remaining
-budget, proxy download/session behavior and reader acceptance still need verification.
-No browser installation or source-admin contact is needed to proceed with this
-selected design. Prefer sequential implementation in the main thread.
+Coverage: Task1 implements ARCH-001/CONFIG-001 and bounded OPS-001 lifecycle;
+Task2 verifies SOURCE-002/DOWNLOAD-001/002; Task3 implements ACCEPT-001 durable
+operator evidence and OPS-002 config separation; Task4 establishes DEPLOY/ACCEPT
+and SOURCE-003 provider budget evidence. AUTH/OPDS public contract unchanged.
 
-## Desktop planning review — 2026-10-05
-
-The server evidence verifies Node proxy access for one completed page; direct
-urllib200 means an entire-IP/range ban is not established. Curl proxy status rows
-remain unreliable CONNECT metadata and are not upgraded to confirmed source200.
-No browser phase or new live probes are needed for this design review.
-
-Select isolated ProxyAgent injection rather than process-wide --use-env-proxy;
-GitHub/deployer traffic remains direct and no ambient proxy setting is inherited
-as application config. Preserve all source budgets and actual streaming semantics.
-A provider may assign exit addresses normally; no retry/agent replacement on403.
-
-Budget evidence: owner screenshot shows actual5.41 MB, projected14.69 MB of1GB.
-Do not treat it as an independent sub-user allocation or promised future usage.
-Planning example only: 500 HTML pages at0.15MB plus100 ZIPs at1MB is about175MB
-payload, excluding provider accounting/overhead. Observed completed HTML was
-~0.15MB; one historic ZIP was~0.32MB, not a maximum/average for all books.
-Provider billing stats, not this example or local counters, decide remaining quota.
-
-Before production, capture provider baseline/after-prototype usage in sanitized
-operator evidence and preserve the unchanged-plan decision. No new billing engine,
-persistent monthly counters, automatic quota reset or provider API credential in v1.
-
-Server helper/recorder/curl fixes remain on cffb346 for separate code review and
-Linux regression verification. Only evidence/spec/plan are imported at this stage;
-prepared helper code is not installed or accepted through this planning update.
+The plan adds no browser, provider API, monthly counter, new source or public route.
+No claim of installed proxy integration until Task4 evidence exists. Changes in
+server cffb346 not selected above remain preserved for separate review.
