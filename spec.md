@@ -3,7 +3,7 @@
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; prototype
 встановлено й зупинено після upstream 403, production не активовано.
-**Версія:** 0.4.6. Independent source proxy реалізовано в feature branch;
+**Версія:** 0.4.7. Independent source proxy реалізовано в feature branch;
 server/device acceptance pending. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
@@ -248,11 +248,21 @@ self/start і next, коли він існує. Entry ID SHALL бути
 Посилання SHALL бути абсолютними від PUBLIC_BASE_URL, не від Host header.
 Global start — `/opds`; source root доступний через collection/up navigation.
 
-Acquisition MIME у першому прототипі — `application/zip`; зміна за доказом
-FBReader потребує оновлення цієї вимоги. Feed content type:
+Acquisition link type SHALL бути `application/fb2+zip`, щоб FBReader розпізнавав
+повний FB2 ZIP як книгу. Download HTTP Content-Type лишається `application/zip`
+для raw ZIP payload; filename — `.fb2.zip`. Власник погодив цю зміну 2026-10-05
+після скріншотів відсутнього Download: первинний generic ZIP link type не
+визначає формат книги для FBReader. Докази: `docs/fbreader-download-diagnosis.md`.
+Feed content type:
 `application/atom+xml;profile=opds-catalog;kind=acquisition` або `kind=navigation`.
 OpenSearch MIME — `application/opensearchdescription+xml`. MIME MUST NOT
 стверджувати EPUB. Серія/номер — metadata; окремий browser серій не обов'язковий.
+
+#### Scenario: FBReader recognizes a completed book acquisition
+- **WHEN** FBReader відкриває entry завершеної книги
+- **THEN** acquisition link має type `application/fb2+zip` і пропонує Download;
+  acquisition надсилає private Basic auth, а завантажений ZIP відкривається як FB2.
+- **AND** device results записуються окремо від fixture/HTTP перевірок.
 
 #### Scenario: A book title contains XML characters
 - **WHEN** title містить кирилицю, `&`, `<` чи лапки
