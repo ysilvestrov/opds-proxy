@@ -1,6 +1,6 @@
 # Production rollout — operator continuation
 
-Status: **terminal script prepared; production not activated by agent**.
+Status: **operator production cutover passed; automatic timer acceptance pending**.
 Requirements: SPEC-001, SOURCE-003, DEPLOY-001/002, OPS-001/002, ACCEPT-001.
 Clean main checkout: `d66216c134a5a4c085de6f137359bea27abdc597`.
 Results branch: `codex/production-rollout`; no direct main push.
@@ -67,6 +67,56 @@ refused and retained for inspection/recovery.
 
 ## Failure and blocker
 
+### Actual operator cutover, 2026-10-05 22:24–22:33 UTC
+
+Receipt: `production-rollout-cutover.jsonl`, copied from the operator's sanitized
+JSONL directly. Provider actual figures/cycle confirmed in the terminal. All
+installed infrastructure/sudoers/unit bytes matched reviewed main; no installation
+changes. Narrow effective sudo policy passed. Independent token CI access and
+private production configuration passed; Basic/proxy preserved.
+
+Fixed systemd/flock deployer installed exact main d66216c after safe artifact/native
+validation and the actual 60-second observer; elapsed70.23s, deployer peak115810304B.
+State idle/settledSHA=d66216c, production PID2903006/NRestarts0. Local/public
+Basic401 and authenticated static feeds passed. One bounded completed feed:
+200/12410bytes/20books, FB2 acquisition MIME; zero book downloads. Same-main
+deployment was noop without runtime restart; actual fixed-unit lock contention
+prevented concurrent deployment. Isolated rollback/held/noop regression passed.
+Runtime cgroup peak59101184B; RSS105336kB; production code28859178B;
+SQLite28672B/WAL32992B/SHM32768B. Bot PID2320493/NRestarts0/health200 unchanged.
+
+The timer gate failed because `systemctl show LastTriggerUSecMonotonic` returns
+a formatted duration after a trigger (observed on host timers as `5month … s`),
+but the helper used `int()` on it. Zero before activation parsed successfully;
+the first formatted trigger raised ValueError. Recovery disabled/stopped timer
+and preserved healthy settled production. This was an operator verification bug,
+not evidence of application failure. Independent post-failure checks confirmed
+main readiness, production active/enabled with unchanged PID/NRestarts,
+prototype inactive and timer inactive/disabled; bot health ok.
+
+Fixed trigger detection compares changed nonzero duration strings, alongside a
+new journal noop and unchanged runtime identity. Regression failed with the same
+ValueError before the fix;38 offline tests now pass, including unchanged-trigger
+rejection and pending-state resume refusal. Shell syntax/help/diff checks passed.
+Original35 tests missed real systemd duration formatting. Targeted sequential
+author review; no independent sub-agent review or successful live timer claim.
+Requirements unchanged (DEPLOY-001/002, OPS-002, ACCEPT-001).
+
+Continue only the remaining gate:
+
+```bash
+bash /home/ysi/opds/production-rollout/deploy/finish-production-timer.sh
+```
+
+Uses prior receipt, verifies settled main/current, unchanged production/bot
+identity, installed main infrastructure, private config preservation, fresh CI
+and local/HTTPS static acceptance; then enables and observes one timer noop.
+No repeated cutover, direct deploy invocation, state writes, secret prompts,
+upstream completed probe or book download. Failure leaves timer disabled and
+preserves production. Allow up to6minutes; evidence is written under
+`/home/ysi/opds/production-timer-checks-*/checks.jsonl`.
+Do not rerun the original full rollout over this settled production.
+
 Failed controlled rollout gates leave timer stopped/disabled. Before cutover,
 prototype stays runnable. Pending activation/rollback is preserved, never
 hand-edited. Failed first activation with idle/no settled baseline stops
@@ -76,8 +126,9 @@ Prototype/private env are not changed; both services never intentionally overlap
 
 Outside-sandbox `sudo -n true` returned **a password is required**. Agent did not
 change root config/infrastructure, production state/current, units or timer.
-Root/env/effective privilege, actual production activation/60-second observation,
-no-op/lock/timer evidence remain **pending operator script output**.
+The earlier root-access blocker was resolved by the operator's terminal run above.
+Root/env/effective privilege, actual activation/60-second observation and
+no-op/lock evidence passed. **Automatic timer tick acceptance remains pending**.
 
 ## Script checks
 

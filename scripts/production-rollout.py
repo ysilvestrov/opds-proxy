@@ -313,14 +313,16 @@ def lock_check():
 
 
 def timer_tick(identity):
-    previous = int(show(TIMER, ('LastTriggerUSecMonotonic',)).get('LastTriggerUSecMonotonic','0') or '0')
+    # systemctl formats monotonic usec properties as durations, not integers.
+    previous = show(TIMER, ('LastTriggerUSecMonotonic',)).get('LastTriggerUSecMonotonic','0')
     started = time.time()
     control('enable', UNIT)
     run(['/usr/bin/systemctl', 'enable', '--now', TIMER])
     tick = False
     while time.time()-started < 350:
         current = show(TIMER, ('LastTriggerUSecMonotonic','NextElapseUSecMonotonic','ActiveState','UnitFileState'))
-        if int(current.get('LastTriggerUSecMonotonic','0')) > previous:
+        trigger = current.get('LastTriggerUSecMonotonic','0')
+        if trigger not in ['', '0', 'infinity', previous]:
             tick = True
         if tick and show(DEPLOY)['ActiveState'] == 'inactive' and journal_results(started):
             break
@@ -331,6 +333,71 @@ def timer_tick(identity):
     require(current['ActiveState'] == 'active' and current['UnitFileState'] == 'enabled' and show(UNIT)['UnitFileState'] == 'enabled')
     require(state().get('phase') == 'idle' and state().get('settledSHA') == MAIN)
     emit('timer-tick', valid=True, result='noop', timer=current, runtimeRestarted=False)
+
+
+def finish_timer(evidence_file):
+    """Continue only a successfully settled rollout whose last timer gate failed."""
+    global phase
+    require(os.geteuid() == 0)
+    phase = 'resume-timer-gates'
+    rows = [json.loads(line) for line in Path(evidence_file).read_text().splitlines()]
+    require(rows[-1].get('check') == 'production-summary' and rows[-1].get('valid') is False
+            and rows[-1].get('phase') == 'timer-tick')
+    for result in ['deployed', 'noop']:
+        require(any(row.get('check') == 'fixed-unit-deployment' and row.get('valid') is True
+                    and row.get('result') == result and row.get('state', {}).get('settledSHA') == MAIN for row in rows))
+    for check in ['fixed-unit-lock-contention', 'isolated-verifier', 'one-completed-feed']:
+        require(any(row.get('check') == check and row.get('valid') is True for row in rows))
+    require(show(TIMER)['ActiveState'] == 'inactive' and show(TIMER)['UnitFileState'] == 'disabled')
+    require(show(PROTO)['ActiveState'] == 'inactive' and show(DEPLOY)['ActiveState'] == 'inactive')
+    identity = show(UNIT)
+    require(identity['ActiveState'] == 'active' and identity['UnitFileState'] == 'enabled')
+    recorded_runtime = next(row['units'][UNIT] for row in rows
+                            if row.get('check') == 'resources' and row.get('label') == 'production')
+    require(identity['MainPID'] == recorded_runtime['MainPID'] and identity['NRestarts'] == recorded_runtime['NRestarts'])
+    peak = show(UNIT, ('MemoryPeak',)).get('MemoryPeak', '')
+    require(peak.isdigit() and int(peak) <= 384*1024*1024)
+    require(state().get('phase') == 'idle' and state().get('settledSHA') == MAIN)
+    require((ROOT/'current').is_symlink() and (ROOT/'current').resolve() == ROOT/'releases'/MAIN)
+    for name in ['autodeploy.mjs','artifact.mjs','observe.mjs','run-deploy.mjs','safe-extract.py']:
+        installed = Path('/usr/local/lib/searchfloor-opds')/name
+        safe_file(installed, mode=0o644)
+        require(installed.read_bytes() == (REPO/'scripts'/name).read_bytes())
+    for unit in [UNIT, DEPLOY, TIMER, PROTO]:
+        installed = Path('/etc/systemd/system')/unit
+        safe_file(installed, mode=0o644)
+        require(installed.read_bytes() == (REPO/'deploy'/unit).read_bytes())
+    for name in ['runtime.env','deploy.env','prototype.env']:
+        safe_file(ENV/name, mode=0o600)
+    config = verifier.load_private_config(ENV/'runtime.env')
+    deploy = verifier.load_private_config(ENV/'deploy.env')
+    prototype_bytes = (ENV/'prototype.env').read_bytes()
+    prototype = verifier.load_private_config(ENV/'prototype.env')
+    for key in ['PUBLIC_BASE_URL','OPDS_USERNAME','OPDS_PASSWORD','OPDS_SOURCE_PROXY_URL']:
+        require(config.get(key) and config[key] == prototype.get(key))
+    for key in ['OPDS_USERNAME','OPDS_PASSWORD']:
+        require(deploy.get(key) == config[key])
+    require(deploy.get('OPDS_WORKFLOW_ID') == str(WORKFLOW))
+    require(config.get('PORT') == '8787' and config.get('CACHE_PATH') == '/var/lib/searchfloor-opds/cache/catalog.sqlite')
+    ci_gate(deploy['OPDS_GITHUB_TOKEN'])
+    before = bot_health()
+    recorded_bot = next(row for row in rows if row.get('check') == 'bot-health')
+    require(before['MainPID'] == recorded_bot['MainPID'] and before['NRestarts'] == recorded_bot['NRestarts'])
+    verifier.verify(config, MAIN, live=False, fetch=verifier.request_curl)
+    require(show(UNIT) == identity)
+    resources('before-timer-resume')
+    try:
+        phase = 'timer-tick'
+        timer_tick(identity)
+        require(bot_health() == before and (ENV/'prototype.env').read_bytes() == prototype_bytes)
+        resources('after-timer')
+        emit('production-summary', valid=True, mainSha=MAIN, state=state(),
+             units={u:show(u) for u in [UNIT, DEPLOY, TIMER, PROTO]})
+    except BaseException:
+        control('stop', TIMER)
+        control('disable', TIMER)
+        emit('recovery', action='preserve-production', state=state(), timerDisabled=True)
+        raise
 
 
 def apply(provider_file):
@@ -456,12 +523,15 @@ if __name__ == '__main__':
     try:
         if len(sys.argv) == 3 and sys.argv[1] == '--provider':
             provider_prompt(sys.argv[2])
-        elif len(sys.argv) == 3 and sys.argv[1] == '--apply':
+        elif len(sys.argv) == 3 and sys.argv[1] in ['--apply', '--finish-timer']:
             def interrupted(*_):
                 raise InterruptedError('Operator interrupted')
             for incoming in [signal.SIGTERM, signal.SIGHUP]:
                 signal.signal(incoming, interrupted)
-            apply(sys.argv[2])
+            if sys.argv[1] == '--finish-timer':
+                finish_timer(sys.argv[2])
+            else:
+                apply(sys.argv[2])
         else:
             raise ValueError('Arguments')
     except BaseException as error:

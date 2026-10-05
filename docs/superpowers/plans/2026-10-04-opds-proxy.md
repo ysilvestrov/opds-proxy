@@ -244,6 +244,13 @@ failure/rollback/hold/no-op verifier passed on immutable c22ac2e fixture.
 Production privilege/config/deploy/no-op/lock/timer gates await operator script.
 Terminal entry point: `deploy/production-rollout.sh`; evidence/remaining gates:
 `docs/production-rollout-report.md`.
+Operator cutover on2026-10-05 passed main d66216c deployment/60s observation,
+local/HTTPS auth/static feeds, same-main noop and fixed-unit lock contention.
+Production is active/enabled; prototype stopped. Timer acceptance hit a duration
+parsing bug in the operator helper and remains pending with timer disabled.
+Resume via `deploy/finish-production-timer.sh`; sanitized receipt:
+`docs/production-rollout-cutover.jsonl`. No production rollback claim from an
+injected failure: deliberate failure was exercised only in isolation.
 
 **Files:** `.github/workflows/ci.yml`, `scripts/{package-release,autodeploy}.mjs`,
 `tests/deploy.test.ts`, deploy service/timer, `deploy/README.md`.

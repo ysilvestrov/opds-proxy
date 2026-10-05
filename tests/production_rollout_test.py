@@ -2,6 +2,7 @@
 import importlib.util
 import fcntl
 import os
+import json
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -20,6 +21,63 @@ def helper():
 
 
 class ProductionRolloutTests(unittest.TestCase):
+    def test_timer_accepts_systemd_formatted_monotonic_duration(self):
+        module = helper()
+        calls = []
+        def show(unit, fields=None):
+            if unit == module.TIMER:
+                if fields == ('LastTriggerUSecMonotonic',):
+                    return {'LastTriggerUSecMonotonic':'0'}
+                return {'LastTriggerUSecMonotonic':'5month 2w 8h 58min 59.115944s',
+                        'ActiveState':'active', 'UnitFileState':'enabled'}
+            if unit == module.DEPLOY:
+                return {'ActiveState':'inactive'}
+            return {'MainPID':'123','NRestarts':'0','UnitFileState':'enabled'}
+        module.show = show
+        module.control = lambda *args: calls.append(args)
+        module.run = lambda *args, **kwargs: SimpleNamespace(returncode=0)
+        module.journal_results = lambda *args: ['noop']
+        module.state = lambda: {'phase':'idle','settledSHA':module.MAIN}
+        module.emit = lambda *args, **kwargs: None
+        module.timer_tick({'MainPID':'123','NRestarts':'0'})
+        self.assertEqual(calls, [('enable',module.UNIT)])
+
+    def test_timer_does_not_accept_an_unchanged_formatted_trigger(self):
+        module = helper()
+        triggers = iter(['1h 2min', '1h 2min', '1h 7min'])
+        def show(unit, fields=None):
+            if unit == module.TIMER:
+                return {'LastTriggerUSecMonotonic':next(triggers), 'ActiveState':'active', 'UnitFileState':'enabled'}
+            return {'ActiveState':'inactive','MainPID':'123','NRestarts':'0','UnitFileState':'enabled'}
+        module.show = show
+        module.control = lambda *args: None
+        module.run = lambda *args, **kwargs: None
+        module.journal_results = lambda *args: ['noop']
+        module.state = lambda: {'phase':'idle','settledSHA':module.MAIN}
+        module.emit = lambda *args, **kwargs: None
+        with patch.object(module.time, 'sleep') as sleep:
+            module.timer_tick({'MainPID':'123','NRestarts':'0'})
+        sleep.assert_called_once_with(2)
+
+    def test_timer_resume_rejects_pending_state_without_touching_units(self):
+        module = helper()
+        rows = [{'check':'fixed-unit-deployment','valid':True,'result':result,
+                 'state':{'settledSHA':module.MAIN}} for result in ['deployed','noop']]
+        rows += [{'check':check,'valid':True} for check in
+                 ['fixed-unit-lock-contention','isolated-verifier','one-completed-feed']]
+        rows += [{'check':'resources','label':'production', 'units':{module.UNIT:{'MainPID':'123','NRestarts':'0'}}},
+                 {'check':'production-summary','valid':False,'phase':'timer-tick'}]
+        module.show = lambda unit, fields=None: ({'ActiveState':'active','UnitFileState':'enabled','MainPID':'123','NRestarts':'0','MemoryPeak':'1024'}
+                                                if unit == module.UNIT else {'ActiveState':'inactive','UnitFileState':'disabled'})
+        module.state = lambda: {'phase':'activating','settledSHA':module.MAIN}
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = Path(directory)/'checks.jsonl'
+            evidence.write_text('\n'.join(json.dumps(row) for row in rows))
+            with patch.object(module.os, 'geteuid', return_value=0), patch.object(module, 'control') as control:
+                with self.assertRaises(ValueError):
+                    module.finish_timer(evidence)
+            control.assert_not_called()
+
     def test_private_environment_round_trip_has_no_shell_interpolation(self):
         module = helper()
         values = {'OPDS_USERNAME': 'fixture', 'OPDS_PASSWORD': 'quote" $literal # \\ кирилиця'}
