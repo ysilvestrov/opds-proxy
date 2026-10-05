@@ -1,3 +1,9 @@
+> Latest owner device evidence, 2026-10-05: catalog/list/book metadata display,
+> but Download is absent in FBReader Premium. Acquisition/open acceptance FAILS
+> at visibility. MIME diagnosis and proposed correction are in
+> `fbreader-download-diagnosis.md`; owner spec/plan review is pending.
+> Earlier server acceptance remains valid and does not prove device compatibility.
+
 > Latest14:19UTC: server proxy prototype acceptance passed (e57f0a6), including
 > private HTTPS feeds and one ZIP/FB2. Prototype stopped; bot healthy/timer off.
 > Main dashboard actual usage after5.88MB. Device/protected fixture still pending.
@@ -68,7 +74,7 @@ Record OS/version/date and each result, without passwords/book content:
 | Next preserves query | Pending |
 | Empty filtered page with next remains navigable | Pending; use controlled test fixture |
 | Download sends Basic credentials separately | Pending |
-| ZIP MIME `application/zip`, filename `.fb2.zip`, open FB2 | Pending |
+| ZIP MIME `application/zip`, filename `.fb2.zip`, open FB2 | Blocked: Download absent; proposed acquisition MIME correction pending review |
 | Interrupted download permits fresh GET | Pending |
 
 Source proxy integration is prepared on the feature branch; the new exact-SHA

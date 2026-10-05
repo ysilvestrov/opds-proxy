@@ -1,3 +1,8 @@
+> Latest owner device evidence, 2026-10-05: FBReader shows catalog/books but no
+> Download. Server acceptance passed; device acceptance is blocked by acquisition
+> visibility. See `fbreader-download-diagnosis.md` and proposed MIME correction
+> plan; application/installed artifact unchanged pending owner spec/plan review.
+
 > Latest14:19UTC: server proxy prototype acceptance passed (e57f0a6), including
 > private HTTPS feeds and one ZIP/FB2. Prototype stopped; bot healthy/timer off.
 > Main dashboard actual usage after5.88MB. Device/protected fixture still pending.
