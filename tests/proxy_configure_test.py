@@ -1,5 +1,7 @@
 """Offline tests for private operator configuration; never touch real /etc."""
 from pathlib import Path
+import os
+import pty
 import subprocess
 import tempfile
 import unittest
@@ -18,6 +20,23 @@ def helpers():
 
 
 class ProxyConfigurationTests(unittest.TestCase):
+    def test_bare_filename_from_deploy_reaches_service_guard(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            command = Path(tmp) / 'systemctl'
+            command.write_text('#!/bin/sh\necho active\n')
+            command.chmod(0o755)
+            master, slave = pty.openpty()
+            try:
+                result = subprocess.run(['bash', SCRIPT.name], cwd=SCRIPT.parent,
+                                        env=dict(os.environ, PATH=f'{tmp}:/usr/bin:/bin'),
+                                        stdin=slave, stdout=slave, stderr=subprocess.PIPE, text=True)
+            finally:
+                os.close(slave)
+                os.close(master)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('searchfloor-opds.service must be inactive', result.stderr)
+            self.assertNotIn('Not a directory', result.stderr)
+
     def test_noninteractive_run_stops_before_sudo(self):
         result = subprocess.run(['bash', str(SCRIPT)], capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
