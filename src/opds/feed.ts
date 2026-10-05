@@ -103,7 +103,7 @@ export function renderFeed(
   body += data.books
     .map(
       (b) =>
-        `<entry><id>urn:opds:${xml(b.sourceName)}:book:${xml(b.id)}</id><title>${xml(b.title)}</title><updated>${xml(b.observedAt)}</updated>${b.authors.map((a) => `<author><name>${xml(a)}</name></author>`).join("")}${b.summary ? `<summary type="text">${xml(b.summary)}</summary>` : ""}${b.series ? `<category scheme="urn:opds:series" term="${xml(b.series)}" label="${xml(b.series + (b.seriesPosition ? " #" + b.seriesPosition : ""))}"/>` : ""}${link("alternate", b.sourceUrl, "text/html")}${link("http://opds-spec.org/acquisition", absolute(c.baseUrl, `/opds/${c.sourceName}/books/${b.id}/download.fb2.zip`), "application/zip")}</entry>`,
+        `<entry><id>urn:opds:${xml(b.sourceName)}:book:${xml(b.id)}</id><title>${xml(b.title)}</title><updated>${xml(b.observedAt)}</updated>${b.authors.map((a) => `<author><name>${xml(a)}</name></author>`).join("")}${b.summary ? `<summary type="text">${xml(b.summary)}</summary>` : ""}${b.series ? `<category scheme="urn:opds:series" term="${xml(b.series)}" label="${xml(b.series + (b.seriesPosition ? " #" + b.seriesPosition : ""))}"/>` : ""}${link("alternate", b.sourceUrl, "text/html")}${link("http://opds-spec.org/acquisition", absolute(c.baseUrl, `/opds/${c.sourceName}/books/${b.id}/download.fb2.zip`), "application/fb2+zip")}</entry>`,
     )
     .join("");
   return frame(

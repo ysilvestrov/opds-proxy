@@ -62,6 +62,7 @@ upstream transport, authentication or URL change is needed.
 Current OPDS-001 explicitly requires generic ZIP. Changing its intentional test
 before reviewing a revised requirement would violate SPEC-001 and AGENTS.md.
 Concrete spec delta, implementation and exact-SHA deployment/retest steps are in
-`superpowers/plans/2026-10-05-fbreader-acquisition-mime.md`, pending owner review.
-No application code or installed artifact was changed in this investigation.
+`superpowers/plans/2026-10-05-fbreader-acquisition-mime.md`, approved by the owner on 2026-10-05.
+Application link-type correction follows owner approval; installed artifact is
+unchanged pending a new verified feature CI artifact.
 No source or book requests, service changes, provider changes or bot changes.

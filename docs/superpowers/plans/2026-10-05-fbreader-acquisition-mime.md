@@ -1,6 +1,7 @@
 # FBReader acquisition MIME correction
 
-Status: proposed; owner specification and implementation-plan review pending.
+Status: owner approved specification delta and implementation plan on 2026-10-05.
+Application correction in progress; installed artifact/device retest pending.
 Evidence: `docs/fbreader-download-diagnosis.md`.
 Requirements: SPEC-001, OPDS-001, DOWNLOAD-001/002, AUTH-001.
 
