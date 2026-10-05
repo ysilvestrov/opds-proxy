@@ -18,8 +18,10 @@ try:
         cp=subprocess.run(args+['--url',URL],capture_output=True,timeout=18)
         result.update(client=version,exitCode=cp.returncode)
         header,body=cp.stdout.split(b'\r\n\r\n',1)
-        # Handle an HTTP CONNECT preamble without printing its contents.
-        if b'connection established' in header.lower(): header,body=body.split(b'\r\n\r\n',1)
+        # CONNECT/interim blocks are not the source response.
+        while (b'connection established' in header.split(b'\r\n',1)[0].lower()
+               or (header.startswith(b'HTTP/') and 100 <= int(header.split()[1]) < 200)):
+            header,body=body.split(b'\r\n\r\n',1)
         lines=header.decode('latin1').splitlines();result['status']=int(lines[0].split()[1]);result['protocol']=lines[0].split()[0]
         headers={k.strip().lower():v.strip() for line in lines[1:] if ':' in line for k,v in [line.split(':',1)]}
     else:

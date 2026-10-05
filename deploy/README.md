@@ -90,6 +90,29 @@ while timer can race you. Bot remains independent.
 
 ## Evidence still needed
 
+Existing prototype updates use [the dedicated procedure](../docs/codex-cli-proxy-prototype-update.md).
+Do not rerun bootstrap/prototype installation. Preserve installed Basic credentials;
+add `OPDS_SOURCE_PROXY_URL` privately to root-owned mode0600 OPDS env only.
+The optional HTTP(S) proxy is source-only and does not proxy GitHub or Cloudflare.
+Unset means direct; malformed values stop startup with a field-only error.
+Use independently created OPDS WebShare sub-user credentials, never bot env.
+Percent-encode reserved user/password URL characters before private entry.
+
+The accepted provider ceiling is1GB. Sub-user accounting draws from the shared
+plan; it is not reserved OPDS bandwidth. Record dashboard scope, cycle, remaining
+plan budget before/after acceptance. The provider dashboard is billing authority;
+there is no application monthly counter, API key, top-up or plan upgrade.
+For one test Download, observe size<=20MiB and total60s, then stop prototype.
+
+Read-only checks (on Linux):
+`set -o pipefail; sudo python3 scripts/verify-existing-prototype.py --expect-sha SHA --live | python3 scripts/diagnostics/record-jsonl.py /private/new-evidence.jsonl`
+Run recorder as the operator, not root; it creates fresh0600 output, flushes/fsyncs
+every sanitized row. Omit `--live` for static-only checks. A failed live503 preserves
+earlier health/Basic/XML evidence. No passwords/proxy URLs/query strings in output.
+Verifier uses existing root-only OPDS env, sends Basic in memory, rejects HTTP
+redirects, ignores ambient proxy env and caps each HTTP request at2MiB/15s.
+It never downloads a book or changes units, pointers, config or files.
+
 Actual workflow ID/CI run, artifact download from deploy account, native ABI
 check, installed unit/sudo rights, HTTPS/FBReader acceptance, healthy and failed
 release in isolated test environment, production route, RSS/CPU/cache/two-release
