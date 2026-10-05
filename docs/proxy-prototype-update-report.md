@@ -76,3 +76,15 @@ Owner FBReader3.8.31/protected empty-page tests remain a separate gate.
 No transient browser/process/secret file was created. Preserve staging/evidence
 for continuation; there is no successful deployment or merged worktree to clean.
 Sanitized preparation and the concrete blocker are delivered through Git only.
+
+## Owner-requested private input helper
+
+Owner confirmed credentials are not yet configured and requested a terminal
+script to enter/copy them. `deploy/configure-prototype-proxy.sh` implements only
+that private config step: hidden double input, safe URL validation, existing
+Basic/base/port/cache preservation, fresh root-only backup and atomic env update.
+It starts no service and copies no application artifact. Four new offline tests
+cover config preservation, unsafe/existing proxy refusal, private backup/save
+and noninteractive rejection. Full Python suite:15 passed; Bash/embedded-Python
+syntax passed. The helper was not run against actual /etc in this session.
+Operator sudo and dashboard budget remain prerequisites for activation.

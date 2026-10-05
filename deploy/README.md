@@ -117,3 +117,25 @@ Actual workflow ID/CI run, artifact download from deploy account, native ABI
 check, installed unit/sudo rights, HTTPS/FBReader acceptance, healthy and failed
 release in isolated test environment, production route, RSS/CPU/cache/two-release
 measurements. Prepared scripts and mock tests are not substitutes.
+
+## Private independent prototype proxy input
+
+From a private operator SSH terminal, run without sudo before the whole script:
+
+```sh
+bash deploy/configure-prototype-proxy.sh
+```
+
+The script prompts for sudo and then twice for a hidden absolute HTTP(S) proxy
+URL of the independent OPDS sub-user. Percent-encode reserved characters in
+credentials. No proxy value in shell history/argv/output; no bot env read.
+It refuses an existing proxy setting, active OPDS units, enabled production
+timer or occupied port8787. It preserves Basic/base/port/cache, backs up the
+original env in a fresh root-only0600 sibling and atomically adds only the
+proxy key; env remains root:root0600. This prepares config only: no artifact
+copy, source GET, pointer switch or service start.
+
+After successful private input, continue `docs/codex-cli-proxy-prototype-update.md`
+with the confirmed dashboard scope/cycle/shared remaining bandwidth. The staged
+artifact receipt is in `docs/proxy-prototype-update-artifact.json`. Do not paste
+credentials into chat or Git.
