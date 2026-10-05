@@ -21,6 +21,58 @@ def helper():
 
 
 class ProductionRolloutTests(unittest.TestCase):
+    def test_timer_schedules_initial_check_after_every_activation(self):
+        timer = (ROOT/'deploy/searchfloor-opds-deploy.timer').read_text()
+        self.assertIn('\nOnActiveSec=2min\n', timer)
+        self.assertIn('\nOnUnitInactiveSec=5min\n', timer)
+        self.assertNotIn('\nOnBootSec=', timer)
+
+    def test_timer_repair_rejects_unknown_installed_drift_before_write(self):
+        module = helper()
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory)/module.TIMER
+            target.write_bytes(b'unreviewed drift')
+            with patch.object(module, 'safe_file'), patch.object(module, 'atomic_file') as write:
+                with self.assertRaises(ValueError):
+                    module.repair_timer(target)
+                write.assert_not_called()
+
+    def test_timer_repair_backs_up_only_reviewed_timer_and_is_idempotent(self):
+        module = helper()
+        wanted = (ROOT/'deploy'/module.TIMER).read_bytes()
+        old = wanted.replace(b'OnActiveSec=2min', b'OnBootSec=2min')
+        with tempfile.TemporaryDirectory() as directory:
+            module.ENV = Path(directory)/'private'
+            module.ENV.mkdir()
+            untouched = module.ENV/'runtime.env'
+            untouched.write_bytes(b'fixture private config')
+            target = Path(directory)/module.TIMER
+            target.write_bytes(old)
+            calls = []
+            with patch.object(module, 'safe_file'), patch.object(module, 'emit'), patch.object(module, 'run', side_effect=lambda args: calls.append(args)):
+                module.repair_timer(target)
+                module.repair_timer(target)
+            self.assertEqual(target.read_bytes(), wanted)
+            self.assertEqual(untouched.read_bytes(), b'fixture private config')
+            backups = list(module.ENV.glob('.timer-backup-*/'+module.TIMER))
+            self.assertEqual(len(backups), 1)
+            self.assertEqual(backups[0].read_bytes(), old)
+            self.assertEqual(backups[0].stat().st_mode & 0o777, 0o600)
+            self.assertEqual(target.stat().st_mode & 0o777, 0o644)
+            self.assertEqual(calls, [['/usr/bin/systemd-analyze','verify',str(ROOT/'deploy'/module.TIMER)],
+                                     ['/usr/bin/systemctl','daemon-reload']])
+
+    def test_elapsed_timer_without_future_event_fails_without_waiting(self):
+        module = helper()
+        module.show = lambda *args: {'LastTriggerUSecMonotonic':'0','NextElapseUSecMonotonic':'infinity','SubState':'elapsed'}
+        module.control = lambda *args: None
+        module.run = lambda *args, **kwargs: None
+        module.emit = lambda *args, **kwargs: None
+        with patch.object(module.time, 'sleep') as sleep:
+            with self.assertRaises(ValueError):
+                module.timer_tick({'MainPID':'123','NRestarts':'0'})
+        sleep.assert_not_called()
+
     def test_timer_accepts_systemd_formatted_monotonic_duration(self):
         module = helper()
         calls = []
@@ -29,7 +81,7 @@ class ProductionRolloutTests(unittest.TestCase):
                 if fields == ('LastTriggerUSecMonotonic',):
                     return {'LastTriggerUSecMonotonic':'0'}
                 return {'LastTriggerUSecMonotonic':'5month 2w 8h 58min 59.115944s',
-                        'ActiveState':'active', 'UnitFileState':'enabled'}
+                        'NextElapseUSecMonotonic':'5month 2w 9h', 'ActiveState':'active', 'UnitFileState':'enabled'}
             if unit == module.DEPLOY:
                 return {'ActiveState':'inactive'}
             return {'MainPID':'123','NRestarts':'0','UnitFileState':'enabled'}
@@ -47,7 +99,7 @@ class ProductionRolloutTests(unittest.TestCase):
         triggers = iter(['1h 2min', '1h 2min', '1h 7min'])
         def show(unit, fields=None):
             if unit == module.TIMER:
-                return {'LastTriggerUSecMonotonic':next(triggers), 'ActiveState':'active', 'UnitFileState':'enabled'}
+                return {'LastTriggerUSecMonotonic':next(triggers), 'NextElapseUSecMonotonic':'1h 12min', 'ActiveState':'active', 'UnitFileState':'enabled'}
             return {'ActiveState':'inactive','MainPID':'123','NRestarts':'0','UnitFileState':'enabled'}
         module.show = show
         module.control = lambda *args: None

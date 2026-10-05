@@ -130,6 +130,47 @@ The earlier root-access blocker was resolved by the operator's terminal run abov
 Root/env/effective privilege, actual activation/60-second observation and
 no-op/lock evidence passed. **Automatic timer tick acceptance remains pending**.
 
+### Timer restart stall, 2026-10-05 22:38–22:44 UTC
+
+Second receipt: `production-timer-unscheduled.jsonl`. Fresh CI, private config,
+unchanged production/bot and local/public static acceptance passed again.
+Timer emitted infinity for its entire350s window; recovery preserved production
+and disabled timer. The duration parser fix worked, but did not fix this separate
+scheduling defect. Production PID2903006/NRestarts0 remained active.
+
+Read-only host checks found systemd255.4, persisted OPDS timer stamp mtime
+22:33:25.254434UTC, LastTriggerUSecMonotonic0, deploy-service active/inactive
+monotonic timestamps0. The original timer used OnBootSec2min plus
+OnUnitInactiveSec5min/Persistent=true. Systemd255 reloads the persisted realtime
+stamp, skips an elapsed boot trigger when a prior trigger exists, and skips an
+inactive-relative trigger whose base is zero. That explains the observed absence
+of a future event; the specific operation that lost service timestamps was not
+instrumented. Source: [systemd255 timer implementation](https://github.com/systemd/systemd/blob/v255/src/core/timer.c),
+[timer directive definitions](https://github.com/systemd/systemd/blob/v255/man/systemd.timer.xml).
+
+DEPLOY-001/spec0.4.9 and Task7 now require initial OnActiveSec2min, preserving
+OnUnitInactiveSec5min and15s jitter. It gives every timer activation a fresh base,
+including this restart; no boot-relative initial trigger remains. Continuation
+reviews/accepts only the exact old timer SHA2565696a7e… or corrected bytes, backs
+up only that unit privately/root0600, installs root0644 and daemon-reloads.
+All other infrastructure/config/current/state remain unchanged. No stamp
+deletion or direct deploy start is used to fake a timer tick.
+
+The same `deploy/finish-production-timer.sh` command now applies this narrow
+timer-only correction after all resume gates. Acceptance requires an actual
+automatic journal noop, unchanged runtime/bot identity, and a finite subsequent
+scheduled event. An elapsed/infinity timer fails promptly rather than silently
+waiting350s. Unknown installed timer drift is rejected before writing.
+
+42 offline Python tests passed, including initial activation-relative trigger,
+reviewed-only timer replacement/private backup/idempotency, drift refusal,
+unscheduled failure and duration handling; systemd unit verification, Bash
+syntax/help and diff checks passed. Independent sequential author review only.
+The root-free isolated systemd fixture could not run: no user systemd bus exists
+on this host. Live timer success is still pending operator execution; offline
+checks and source tracing are not a replacement. Agent has not installed this
+timer or enabled it. Healthy production and stopped prototype remain in place.
+
 ## Script checks
 
 Shell syntax/help passed;35 offline Python tests passed. Coverage: private env

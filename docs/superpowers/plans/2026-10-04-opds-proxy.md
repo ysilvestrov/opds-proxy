@@ -251,6 +251,14 @@ parsing bug in the operator helper and remains pending with timer disabled.
 Resume via `deploy/finish-production-timer.sh`; sanitized receipt:
 `docs/production-rollout-cutover.jsonl`. No production rollback claim from an
 injected failure: deliberate failure was exercised only in isolation.
+Timer restart correction (DEPLOY-001, spec0.4.9): replace boot-relative initial
+trigger with OnActiveSec=2min; retain OnUnitInactiveSec=5min/jitter15s. On systemd255
+a persisted realtime stamp disables elapsed boot trigger, while a reloaded
+oneshot may have inactive monotonic timestamp0. Initial activation-relative
+trigger avoids the observed infinity schedule. Review/install only that timer
+after settled-production/config/CI/HTTP gates; backup privately, daemon-reload,
+then require actual automatic noop and a finite subsequent scheduled event.
+No deployer/runtime/script/state/secret changes or manual stamp deletion.
 
 **Files:** `.github/workflows/ci.yml`, `scripts/{package-release,autodeploy}.mjs`,
 `tests/deploy.test.ts`, deploy service/timer, `deploy/README.md`.

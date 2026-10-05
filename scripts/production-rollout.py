@@ -39,6 +39,7 @@ ROOT = Path('/opt/searchfloor-opds')
 ENV = Path('/etc/searchfloor-opds')
 STATE = Path('/var/lib/searchfloor-opds-deploy/state/deployment.json')
 LOCK = Path('/var/lib/searchfloor-opds-deploy/lock')
+OLD_TIMER_HASH = '5696a7e298c54d4a69cad72a6879f5a551d39fe4c79f1d902fa421b8776ebbba'
 phase = 'preflight'
 spec = importlib.util.spec_from_file_location('verifier', REPO/'scripts/verify-existing-prototype.py')
 verifier = importlib.util.module_from_spec(spec)
@@ -320,11 +321,15 @@ def timer_tick(identity):
     run(['/usr/bin/systemctl', 'enable', '--now', TIMER])
     tick = False
     while time.time()-started < 350:
-        current = show(TIMER, ('LastTriggerUSecMonotonic','NextElapseUSecMonotonic','ActiveState','UnitFileState'))
+        current = show(TIMER, ('LastTriggerUSecMonotonic','NextElapseUSecMonotonic','ActiveState','SubState','UnitFileState'))
         trigger = current.get('LastTriggerUSecMonotonic','0')
         if trigger not in ['', '0', 'infinity', previous]:
             tick = True
-        if tick and show(DEPLOY)['ActiveState'] == 'inactive' and journal_results(started):
+        scheduled = current.get('NextElapseUSecMonotonic') not in [None, '', '0', 'infinity']
+        if current.get('SubState') == 'elapsed' and not scheduled:
+            emit('timer-unscheduled', valid=False, timer=current)
+            raise ValueError('Timer has no future event')
+        if tick and scheduled and show(DEPLOY)['ActiveState'] == 'inactive' and journal_results(started):
             break
         if int(time.time()-started) % 30 == 0:
             emit('timer-wait', elapsedSeconds=int(time.time()-started), nextTickMonotonic=current.get('NextElapseUSecMonotonic'))
@@ -333,6 +338,28 @@ def timer_tick(identity):
     require(current['ActiveState'] == 'active' and current['UnitFileState'] == 'enabled' and show(UNIT)['UnitFileState'] == 'enabled')
     require(state().get('phase') == 'idle' and state().get('settledSHA') == MAIN)
     emit('timer-tick', valid=True, result='noop', timer=current, runtimeRestarted=False)
+
+
+def reviewed_timer_bytes(target):
+    safe_file(target, mode=0o644)
+    current = target.read_bytes()
+    wanted = (REPO/'deploy'/TIMER).read_bytes()
+    require(current == wanted or hashlib.sha256(current).hexdigest() == OLD_TIMER_HASH)
+    return current, wanted
+
+
+def repair_timer(target=Path('/etc/systemd/system')/TIMER):
+    current, wanted = reviewed_timer_bytes(target)
+    if current == wanted:
+        return
+    run(['/usr/bin/systemd-analyze', 'verify', str(REPO/'deploy'/TIMER)])
+    backup = Path(tempfile.mkdtemp(prefix='.timer-backup-', dir=ENV))
+    atomic_file(backup/TIMER, current, 0o600)
+    atomic_file(target, wanted, 0o644)
+    run(['/usr/bin/systemctl','daemon-reload'])
+    emit('timer-unit-update', valid=True, path=str(target), uid=0, mode='0o644',
+         beforeSHA256=hashlib.sha256(current).hexdigest(), afterSHA256=hashlib.sha256(wanted).hexdigest(),
+         initialDelaySeconds=120, repeatedDelaySeconds=300, randomizedDelaySeconds=15)
 
 
 def finish_timer(evidence_file):
@@ -366,7 +393,10 @@ def finish_timer(evidence_file):
     for unit in [UNIT, DEPLOY, TIMER, PROTO]:
         installed = Path('/etc/systemd/system')/unit
         safe_file(installed, mode=0o644)
-        require(installed.read_bytes() == (REPO/'deploy'/unit).read_bytes())
+        if unit == TIMER:
+            reviewed_timer_bytes(installed)
+        else:
+            require(installed.read_bytes() == (REPO/'deploy'/unit).read_bytes())
     for name in ['runtime.env','deploy.env','prototype.env']:
         safe_file(ENV/name, mode=0o600)
     config = verifier.load_private_config(ENV/'runtime.env')
@@ -388,6 +418,7 @@ def finish_timer(evidence_file):
     resources('before-timer-resume')
     try:
         phase = 'timer-tick'
+        repair_timer()
         timer_tick(identity)
         require(bot_health() == before and (ENV/'prototype.env').read_bytes() == prototype_bytes)
         resources('after-timer')

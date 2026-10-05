@@ -4,7 +4,7 @@
 Власник підтвердив список книг, metadata та завантаження у FBReader на c22ac2e
 і погодив фіналізацію бази та налаштування deployment. Production activation
 і timer ще потребують фактичних operator-доказів.
-**Версія:** 0.4.8. Independent source proxy та базовий reader flow прийнято;
+**Версія:** 0.4.9. Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
@@ -435,8 +435,13 @@ SIGTERM SHALL stop accepting, cancel queued work, drain active transfers
 
 ### Requirement: DEPLOY-001 — Exact-SHA artifact release
 
-Окремий pull timer SHALL перевіряти main кожні 5 min. Main після green CI
-означає дозвіл на звичайний application release. До activation MUST
+Окремий pull timer SHALL перевіряти main кожні 5 min.
+Перший запуск SHALL плануватися через 2 min після активації самого timer
+(`OnActiveSec=2min`), наступні — через 5 min після завершення deploy-service
+(`OnUnitInactiveSec=5min`), з randomized delay до 15 s. Повторне ввімкнення
+timer після зупинки SHALL створювати наступну подію навіть за наявності
+persisted trigger timestamp і відсутності inactive timestamp deploy-service.
+Main після green CI означає дозвіл на звичайний application release. До activation MUST
 перевірятися required CI workflow/jobs саме на candidate SHA; missing/pending/
 failed checks блокують реліз. Workflow identity фіксується deployment config,
 не вибирається за довільним green check. Ready Linux artifact SHALL містити

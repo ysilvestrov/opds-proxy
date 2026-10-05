@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Resume the last gate of a settled production rollout; no cutover/config writes.
+# Resume settled production; install only the reviewed timer correction if needed.
 set -euo pipefail
 set +x
 umask 077
 if [[ ${1:-} == --help ]]; then
   echo 'Usage: bash deploy/finish-production-timer.sh [prior checks.jsonl]'
-  echo 'Checks settled production and observes one automatic timer no-op; sudo required.'
+  echo 'Checks settled production, repairs only the reviewed timer, then observes an automatic no-op.'
   exit 0
 fi
 [[ $# -le 1 && $EUID != 0 && -t 0 && -t 1 ]] || { echo 'STOP: run without sudo in a private interactive terminal.' >&2; exit 1; }
