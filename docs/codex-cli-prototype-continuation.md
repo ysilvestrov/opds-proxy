@@ -6,6 +6,11 @@
 Цей бріф продовжує Task 6, не дозволяє production activation чи ввімкнення timer.
 Вимоги: ARCH-001, AUTH-001, CONFIG-001, DEPLOY-001, OPS-002, ACCEPT-001.
 
+Оновлення 2026-10-05: Cloudflare mapping і DNS вже створено, тунель healthy,
+тариф Free Website; див. `docs/cloudflare-route-report.md`. Пункт Cloudflare
+нижче виконано: перевірити наявний mapping, не створювати його повторно.
+У браузері OPDS повертає 502; runtime/bootstrap кроки залишаються невиконаними.
+
 ## Що потрібно від оператора
 
 1. Сесія на сервері, у якій дозволене встановлення через sudo.

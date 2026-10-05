@@ -384,8 +384,10 @@ deploy-user MUST NOT змінювати privileged helper. Installed infrastruct
 Шляхи: `/opt/searchfloor-opds/{staging,releases,current}`,
 `/etc/searchfloor-opds`, `/var/lib/searchfloor-opds/cache`,
 `/var/lib/searchfloor-opds-deploy/{state,lock}`. Запропонований hostname
-`opds.ysilvestrov-ai.uk` не зарезервовано; перед створенням перевірити його
-та порт 8787. Наявний beer-api route не змінюється.
+`opds.ysilvestrov-ai.uk` налаштовано 2026-10-05 у наявному тунелі
+`hetzner-vps` → `http://127.0.0.1:8787`; API/DNS докази —
+`docs/cloudflare-route-report.md`. Перед повторним налаштуванням перевірити
+наявний mapping, перед запуском — порт 8787. Наявний beer-api route не змінюється.
 Початкові unit budgets: runtime MemoryHigh=256M, MemoryMax=384M,
 CPUQuota=50% одного CPU, TasksMax=64; deployer MemoryMax=768M,
 CPUQuota=100%, concurrency 1. Це проектні defaults, не вимір потреб сервісу.
@@ -478,7 +480,9 @@ Staged reader fixture XML не має serving route; його захищене �
 4. Main отримано з origin; CI workflow ID 374905819 і exact-SHA Linux prototype
    artifact підтверджено в docs/linux-ci-evidence.md. Production-main artifact
    та доступ із серверного deploy-user ще не перевірені.
-5. Installed bootstrap permissions і Cloudflare route ще не перевірені.
+5. Installed bootstrap permissions ще не перевірені. Cloudflare route/DNS
+   створено й перевірено 2026-10-05; external 401/authenticated XML після
+   фактичного запуску залишаються неперевіреними (docs/cloudflare-route-report.md).
    Platform/ABI сумісність підтверджена звітом підготовки; перед фактичним
    запуском повторно перевіряються сумісність, стан units та вільний порт.
 

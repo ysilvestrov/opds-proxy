@@ -300,6 +300,11 @@ Continue Task 6 using docs/codex-cli-prototype-continuation.md; reader checks
 remain pending. Staged empty-page XML has no serving route: protected fixture
 serving is still an open implementation step before full ACCEPT-001.
 
+2026-10-05: Cloudflare route/DNS created through authorized MCP; existing tunnel
+healthy, plan Free Website, full configuration preserved except the new OPDS
+ingress. Browser OPDS returns 502; installation/readiness/client acceptance remain
+pending. See docs/cloudflare-route-report.md; do not recreate the hostname route.
+
 Recommended: native execution in this chat via superpowers:executing-plans.
 Tasks depend on the same adapter/catalog/HTTP interfaces; for a single-user
 service this avoids repeated agent context. Subagent execution is optional
