@@ -1,5 +1,10 @@
 # FBReader acceptance — baseline accepted
 
+Production continuation, 2026-10-05: main CI/release identity and isolated
+deployment rollback verifier passed. Root production activation/timer await
+operator `deploy/production-rollout.sh`; evidence is in
+`docs/production-rollout-report.md`. Reader baseline acceptance is retained.
+
 Власник 2026-10-05 явно підтвердив: завантажується список книг, можна побачити
 базову інформацію і завантажити книгу. Поточний стан погоджено як baseline.
 Target: FBReader for Android3.8.31; installed prototype c22ac2e6edafeba1563d88363326b2bd19cbb097.

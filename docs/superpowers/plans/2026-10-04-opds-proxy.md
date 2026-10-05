@@ -238,6 +238,13 @@ Basic auth behavior and a concrete bootstrap go/no-go result.
 
 ## Task 7: Linux release artifacts and isolated autodeploy
 
+2026-10-05 rollout continuation: main d66216c push CI/release origin verified;
+readable installed infrastructure hashes match; actual isolated activation,
+failure/rollback/hold/no-op verifier passed on immutable c22ac2e fixture.
+Production privilege/config/deploy/no-op/lock/timer gates await operator script.
+Terminal entry point: `deploy/production-rollout.sh`; evidence/remaining gates:
+`docs/production-rollout-report.md`.
+
 **Files:** `.github/workflows/ci.yml`, `scripts/{package-release,autodeploy}.mjs`,
 `tests/deploy.test.ts`, deploy service/timer, `deploy/README.md`.
 

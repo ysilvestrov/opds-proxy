@@ -1,0 +1,15 @@
+{
+  "time": "2026-10-05T22:06:09.761244+00:00",
+  "artifactSha": "c22ac2e6edafeba1563d88363326b2bd19cbb097",
+  "artifactDirectory": "/opt/searchfloor-opds/prototype/c22ac2e6edafeba1563d88363326b2bd19cbb097",
+  "exitCode": 0,
+  "productionModified": false,
+  "sourceRequests": 0,
+  "result": {
+    "successfulRelease": "deployed",
+    "failedRelease": "rolled-back",
+    "failedRetry": "held",
+    "rollbackHealth": true,
+    "noop": "noop"
+  }
+}
