@@ -3,7 +3,7 @@
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; prototype
 встановлено й зупинено після upstream 403, production не активовано.
-**Версія:** 0.4.3. **Дата:** 2026-10-05.
+**Версія:** 0.4.4. Proxy delta нижче — DRAFT / OWNER REVIEW. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -140,6 +140,65 @@ proxy connection settings; інші секрети/дані бота не чит
 не дозвіл використовувати секрети бота у production OPDS. Production proxy
 transport потребує окремої конфігурації/перегляду spec та deployment.
 
+#### Proposed architecture delta — independent source proxy (owner review)
+
+Evidence: server branch `codex/server-source-diagnostics`, commit `cffb346`;
+`docs/server-source-resolution.md` and server JSONL. Actual Node adapter direct
+отримав 403/challenge, через existing WebShare proxy — 200, 20 книг, next=2.
+Direct urllib теж отримав 200: blanket VPS-IP ban не доведений. Search і Download
+через нові OPDS credentials ще не перевірені. Нова модель нижче — пропозиція,
+не чинний config/API contract до owner review.
+
+Власник створив окремий WebShare sub-user і має незалежні OPDS credentials.
+За повідомленням власника нижчий provider limit ніж 1 GB недоступний. Наданий
+екран показує 1.0 GB, actual 5.41 MB і projected 14.69 MB; область статистики
+(main account чи sub-user) не встановлена. Ці значення — snapshot, не прогноз
+майбутніх OPDS downloads. Proxy secrets у spec/репозиторій не додаються.
+
+Після схвалення delta:
+- SOURCE-002 / CONFIG-001: optional `OPDS_SOURCE_PROXY_URL`, лише absolute
+  HTTP(S) URL з path empty або `/`, без query/fragment; некоректне задане значення
+  відхиляє startup без друку URL/userinfo. Unset зберігає direct для local/tests.
+  Поточний VPS deployment конфігурує proxy явно через окремий OPDS env.
+- ARCH-001: composition root створює один власний undici ProxyAgent, інжектує
+  transport тільки в SearchfloorClient для HTML/Download. Без global dispatcher,
+  HTTP_PROXY на весь процес, впливу на GitHub/deployer чи startup читання bot env.
+  ProxyAgent повторно використовується й закривається після bounded shutdown.
+- SOURCE-002 / DOWNLOAD-001/002: залишаються всі source queue/spacing/redirect/
+  retry/cooldown, HTML/ZIP caps, deadlines, backpressure та cancellation.
+  Proxy407/connect failure повертає availability503; без direct fallback,
+  cookies, browser, stealth або rotation-on-denial. Провайдер може сам призначати
+  exit адреси між з'єднаннями; сервіс не підбирає нову адресу після denial.
+- CONFIG-001 / OPS-002: proxy credentials тільки окремого OPDS sub-user у
+  root-only prototype/runtime env; не bot credentials. Endpoint/userinfo/password
+  не потрапляють у argv, errors/logs, artifacts, Git або кеш. Не потрібен WebShare
+  management API key. Bot settings, shared plan і Cloudflare Free не змінюються.
+- ACCEPT-001: local mock CONNECT/proxy auth/stream/cancel tests, новий exact-SHA
+  Linux artifact і reviewed existing-installation update/rollback; installer
+  --apply не повторюється. Спершу окремі credentials перевіряються одним bounded
+  GET, потім private prototype search/pagination/one Download/resources/FBReader.
+  Production/timer залишаються off до всіх чинних gates.
+
+Proposed scenarios for SOURCE-002 / CONFIG-001 / DOWNLOAD-002:
+
+##### Scenario: Configured proxy is unavailable
+- **WHEN** configured proxy returns407 or connection fails
+- **THEN** the request returns availability503 or eligible stale catalog
+- **AND** no direct retry or dispatcher replacement occurs.
+
+##### Scenario: Invalid proxy configuration
+- **WHEN** OPDS_SOURCE_PROXY_URL has unsupported scheme, path, query or fragment
+- **THEN** startup fails with the field name only
+- **AND** endpoint/userinfo/password never enter error output.
+
+##### Scenario: Download through private proxy
+- **WHEN** an authenticated reader starts a valid completed-book Download
+- **THEN** proxy streaming preserves <=4KiB sniff, <=20MiB/60s limits and backpressure
+- **AND** disconnect aborts upstream, releases the slot and sends no proxy credentials to FBReader.
+
+Implementation plan draft: `docs/superpowers/plans/2026-10-05-source-proxy.md`.
+This draft records the chosen candidate and review scope, not installed behavior.
+
 #### Scenario: Owner-approved comparison through the existing proxy
 - **WHEN** direct-запит серверного клієнта відхилений, а власник погодив proxy experiment
 - **THEN** той самий обмежений запит можна виконати через наявний проксі бота
@@ -151,6 +210,25 @@ transport потребує окремої конфігурації/перегл�
 - **WHEN** Searchfloor повертає 429 із Retry-After 60 s
 - **THEN** сервіс не робить повтор через 10 s
 - **AND** зберігає cooldown на 60 s і повертає доступний stale-кеш або 503.
+
+### Requirement: SOURCE-003 — Provider bandwidth policy (DRAFT / owner review)
+
+Ця нова вимога належить до proposed proxy delta й не змінює чинний runtime
+до review/реалізації. Provider sub-user ceiling **1 GB** SHALL бути прийнятним
+для v1. Це не окремий резерв bandwidth: WebShare враховує трафік у загальному
+plan budget. Сервіс SHALL NOT мати власний monthly hard cap/автоматичне
+поповнення/paid upgrade/provider management API key у v1.
+Provider dashboard SHALL бути authority для billed usage; operator SHALL
+зафіксувати scope/cycle/remaining shared і sub-user budget під час prototype
+acceptance та перед production. Власник контролює dashboard під час користування.
+Cache/one-user/no-crawl/on-demand acquisition залишаються межами навантаження.
+Локальні payload bytes MUST NOT оголошуватися точним billing measurement.
+
+#### Scenario: Shared provider quota is exhausted
+- **WHEN** WebShare припиняє source access через вичерпання quota
+- **THEN** сервіс повертає придатний stale-кеш за CACHE-002 або503
+- **AND** Download не робить direct fallback/auto top-up/підбір іншого proxy
+- **AND** static OPDS та readiness залишаються незалежними від upstream.
 
 ## 4. Каталог і протокол
 

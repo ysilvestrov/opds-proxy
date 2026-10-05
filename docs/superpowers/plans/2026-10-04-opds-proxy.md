@@ -368,3 +368,18 @@ information is not the next step. No source-admin message is authorized by this 
   proxy. SOURCE-002/ARCH-001 diagnostic exception and secret boundaries updated.
 - [ ] Server Claude executes matched direct/proxy matrix before considering a
   production transport; results via Git, no endpoint/credentials in evidence.
+
+## Verified source-proxy candidate and next planning stage — 2026-10-05
+
+- [x] Fetch/review server cffb346 evidence: actual Node direct403, proxy200,
+  20 parsed books/next2; direct urllib200 prevents a blanket-IP-ban conclusion.
+- [x] Owner creates independent WebShare sub-user; separate credentials available.
+- [x] Revise proxy draft for accepted provider minimum1GB/shared plan accounting;
+  no own monthly cap or provider billing integration in proposed v1.
+- [ ] Owner reviews root spec0.4.4 proxy delta, then revised implementation plan
+  docs/superpowers/plans/2026-10-05-source-proxy.md and execution method.
+- [ ] Implement isolated source transport, verify dedicated credentials, build new
+  Linux artifact and validate private prototype before reader/production gates.
+
+Server diagnostic script/helper fixes need independent Linux code review/test
+verification before integration; this stage imports evidence and plan only.
