@@ -1,0 +1,26 @@
+{"time": "2026-10-05T13:59:39.357149+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T13:59:39.513576+00:00", "check": "resources", "label": "before", "runtime": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "SubState": "dead"}, "VmRSS": null, "ramAvailableBytes": 6284763136, "diskAvailableBytes": 35466821632, "freeInodes": 2082914, "cacheBytes": {"catalog.sqlite": 12288, "catalog.sqlite-wal": 0, "catalog.sqlite-shm": 0}, "retainedCodeLogicalBytes": {"16cc521448bbb792aa74594cf7c1c1def5ae16f9": 28855828, "e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174}}
+{"time": "2026-10-05T13:59:39.633029+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T13:59:39.909145+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T13:59:40.222265+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T13:59:40.513641+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T13:59:40.818705+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T13:59:41.141953+00:00", "check": "startup-readiness", "valid": true}
+{"origin": "local", "path": "/health", "check": "health", "status": 200, "bytes": 63, "valid": true}
+{"origin": "local", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"origin": "https", "path": "/opds", "check": "basic", "status": 403, "bytes": 712, "valid": false}
+{"time": "2026-10-05T13:59:41.862778+00:00", "check": "runtime-event", "event": "listening"}
+{"time": "2026-10-05T13:59:41.862982+00:00", "check": "runtime-event", "event": "stopped"}
+{"time": "2026-10-05T13:59:42.000309+00:00", "check": "resources", "label": "after-stop", "runtime": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "SubState": "dead"}, "VmRSS": null, "ramAvailableBytes": 6289428480, "diskAvailableBytes": 35466817536, "freeInodes": 2082914, "cacheBytes": {"catalog.sqlite": 12288, "catalog.sqlite-wal": 0, "catalog.sqlite-shm": 0}, "retainedCodeLogicalBytes": {"16cc521448bbb792aa74594cf7c1c1def5ae16f9": 28855828, "e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174}}
+{"time": "2026-10-05T13:59:42.046153+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T13:59:42.104624+00:00", "check": "final-state", "valid": true, "units": {"searchfloor-opds-prototype.service": {"ActiveState": "inactive", "UnitFileState": "static"}, "searchfloor-opds.service": {"ActiveState": "inactive", "UnitFileState": "disabled"}, "searchfloor-opds-deploy.service": {"ActiveState": "inactive", "UnitFileState": "static"}, "searchfloor-opds-deploy.timer": {"ActiveState": "inactive", "UnitFileState": "disabled"}}, "port8787Free": true, "currentSha": "e57f0a6d33799593afc594a8adefabfa46ee6341"}
+{"time": "2026-10-05T13:59:42.107539+00:00", "check": "rollback", "pointerRestored": true, "privateConfigRestored": true, "baselineLeftStopped": true}
+{"time": "2026-10-05T13:59:42.107625+00:00", "check": "acceptance-summary", "valid": false, "phase": "private-feeds", "failure": "VerificationError"}

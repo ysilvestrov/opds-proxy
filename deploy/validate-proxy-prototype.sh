@@ -120,28 +120,19 @@ def restore_config(backup):
         if os.path.exists(name):os.unlink(name)
 
 
-def download_once(config, url):
-    class NoRedirect(urllib.request.HTTPRedirectHandler):
-        def redirect_request(self,*args):return None
-    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect())
+def download_once(config, url, fetch):
     auth='Basic '+base64.b64encode((config['OPDS_USERNAME']+':'+config['OPDS_PASSWORD']).encode()).decode()
-    row={'check':'one-acquisition','valid':False,'branch':'full-file-validation','serverCancellationExercised':False}
+    row={'check':'one-acquisition','valid':False,'branch':'full-file-validation','serverCancellationExercised':False,'transport':'system-curl-default-UA'}
     previous=signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(TimeoutError('Deadline')))
     signal.setitimer(signal.ITIMER_REAL,60)
     try:
-        try:response=opener.open(urllib.request.Request(url,headers={'Authorization':auth,'Accept':'application/zip'}),timeout=60)
-        except urllib.error.HTTPError as error:response=error
-        with response:
-            row['status']=response.status
-            mime=response.headers.get('Content-Type','').split(';')[0].strip().lower()
-            if response.status!=200 or mime!='application/zip':raise ValueError('Acquisition response')
-            chunks=[];count=0
-            while chunk:=response.read(65536):
-                count+=len(chunk);row['zipBytes']=count
-                if count>20*1024*1024:raise ValueError('ZIP limit')
-                chunks.append(chunk)
-            row['fb2Present']=inspect_zip(b''.join(chunks))
-            row['valid']=True
+        status,headers,body=fetch(url,auth,timeout=60,limit=20*1024*1024,accept='application/zip')
+        row['status']=status
+        mime=headers.get('content-type','').split(';')[0].strip().lower()
+        if status!=200 or mime!='application/zip':raise ValueError('Acquisition response')
+        row['zipBytes']=len(body)
+        row['fb2Present']=inspect_zip(body)
+        row['valid']=True
     except Exception:
         row['failure']='acquisition'
         raise
@@ -195,10 +186,12 @@ def main():
             except Exception:emit({'check':'startup-readiness','valid':False,'failure':'not-ready'})
             if time.monotonic()>=deadline:raise ValueError('Readiness deadline')
             time.sleep(0.25)
+        resources('after-readiness')
         phase='private-feeds'
+        emit({'check':'acceptance-transport','client':'system-curl-default-UA','automaticFallback':False})
         completed=[]
         def fetch(url, authorization):
-            result=verifier.request(url,authorization)
+            result=verifier.request_curl(url,authorization)
             if url.endswith('/opds/searchfloor/completed?page=1') and authorization and result[0]==200:completed.append(result[2])
             return result
         verifier.verify(config,SHA,live=True,fetch=fetch)
@@ -213,7 +206,7 @@ def main():
                     acquisition=url;break
             if acquisition:break
         if not acquisition:raise ValueError('Listed acquisition missing')
-        download_once(config,acquisition)
+        download_once(config,acquisition,verifier.request_curl)
         phase='runtime-resources'
         resources('during')
         if bot_health()!=before:raise ValueError('Bot state changed')

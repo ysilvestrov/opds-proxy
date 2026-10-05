@@ -592,3 +592,11 @@ independent protected proxy config and current shared-provider budget are unveri
 Baseline remains stopped, production timer disabled, bot healthy/NRestarts0.
 New-artifact runtime, dedicated source/Download and device acceptance remain Pending.
 Evidence and continuation stop point: `proxy-prototype-update-report.md`.
+
+## Proxy candidate acceptance13:59UTC — local pass, HTTPS urllib403
+
+New exact-SHA e57f0a6 readiness, local Basic and XML passed. First public urllib
+Basic check received403 before live source/acquisition; rollback restored old
+16cc521 pointer/pre-proxy env and left prototype stopped. Bot healthy/NRestarts0;
+production timer disabled. Detailed evidence/finite inbound-client diagnosis in
+`proxy-prototype-update-report.md`. Reader/Download acceptance still pending.

@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import signal
 import stat
+import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -97,6 +98,28 @@ def request(url, authorization):
         signal.signal(signal.SIGALRM, previous)
 
 
+def request_curl(url, authorization, *, timeout=15, limit=2*1024*1024,
+                 accept='application/atom+xml,application/json,application/opensearchdescription+xml'):
+    """Explicit genuine curl transport for operator checks, never a 403 fallback."""
+    config='header = "Authorization: '+authorization+'"\n' if authorization else ''
+    args=['/usr/bin/curl','--disable','--noproxy','*','--silent','--show-error',
+          '--max-time',str(timeout),'--max-filesize',str(limit),'--include',
+          '--header','Accept: '+accept,'--config','-','--url',url]
+    try:
+        result=subprocess.run(args,input=config.encode(),capture_output=True,
+                              env={'PATH':'/usr/bin:/bin'},timeout=timeout+1)
+        if result.returncode:raise VerificationError('HTTP transport failed')
+        header,body=result.stdout.split(b'\r\n\r\n',1)
+        while 100<=int(header.split()[1])<200:
+            header,body=body.split(b'\r\n\r\n',1)
+        if len(header)>65536 or len(body)>limit:raise VerificationError('HTTP body limit')
+        lines=header.decode('latin1').splitlines()
+        headers={key.lower():value.strip() for line in lines[1:] if ':' in line for key,value in [line.split(':',1)]}
+        return int(lines[0].split()[1]),headers,body
+    except Exception:
+        raise VerificationError('HTTP transport failed') from None
+
+
 def verify(config, expected_sha, *, live=False, fetch=request):
     if not re.fullmatch(r'[0-9a-f]{40}', expected_sha): raise VerificationError('Invalid expected SHA')
     base = config['PUBLIC_BASE_URL'].rstrip('/')
@@ -162,12 +185,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--expect-sha', required=True)
     parser.add_argument('--live', action='store_true')
+    parser.add_argument('--transport', choices=['urllib','curl'], default='urllib')
     args = parser.parse_args()
     try:
         if not hasattr(os, 'geteuid') or os.geteuid() != 0: raise VerificationError('Root is required for private OPDS config')
         installed = json.loads(Path('/opt/searchfloor-opds/prototype/current/release.json').read_text(encoding='utf8'))
         if installed.get('sha') != args.expect_sha: raise VerificationError('Installed SHA mismatch')
-        verify(load_private_config(), args.expect_sha, live=args.live)
+        verify(load_private_config(), args.expect_sha, live=args.live,
+               fetch=request_curl if args.transport=='curl' else request)
         return 0
     except Exception:
         emit({'check': 'summary', 'valid': False, 'failure': 'verification'})

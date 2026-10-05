@@ -628,3 +628,15 @@ Staged reader fixture XML не має serving route; його захищене �
 
 Ці перевірки не блокують огляд design, але блокують відповідні твердження
 про готовність. Якщо доказ змінює вимогу — спочатку оновлюються spec і план.
+
+### Additional acceptance evidence, 2026-10-05 13:59 UTC
+
+Exact e57f0a6 proxy artifact locally passed readiness/Basic/static XML. First
+public urllib check returned403; finite own-host diagnostics reproduced
+Cloudflare1010 for genuine urllib versus502 for genuine curl at the stopped
+origin. This concerns inbound operator-client acceptance, not source transport.
+Rollback restored16cc521/pre-proxy env; production/timer and bot preserved.
+Future operator verification explicitly selects genuine system curl, without
+UA spoofing, automatic fallback or Cloudflare changes. Requirements unchanged;
+Searchfloor dedicated GET previously passed, Download/reader still pending.
+Evidence: docs/proxy-prototype-update-report.md and associated JSONL.

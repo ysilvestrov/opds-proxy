@@ -6,12 +6,47 @@ import json
 from pathlib import Path
 import unittest
 from types import SimpleNamespace
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = Path(__file__).resolve().parents[1]
 SHA = 'a' * 40
 
 
 class ResumeTests(unittest.TestCase):
+    def test_curl_transport_uses_real_client_and_keeps_auth_out_of_argv(self):
+        calls=[]
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(handler):
+                calls.append(dict(handler.headers))
+                handler.send_response(401 if '/denied' in handler.path else 200)
+                handler.send_header('Content-Type','application/atom+xml')
+                handler.end_headers();handler.wfile.write(b'<feed/>')
+            def log_message(handler,*args): pass
+        server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
+        thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+        try:
+            base=f'http://127.0.0.1:{server.server_port}'
+            import subprocess
+            from unittest.mock import patch
+            real_run=subprocess.run
+            def checked_run(args,**kwargs):
+                self.assertNotIn('fixture-secret',' '.join(args))
+                self.assertIn('--noproxy',args)
+                return real_run(args,**kwargs)
+            with patch('subprocess.run',side_effect=checked_run):
+                status,headers,body=self.module.request_curl(base+'/feed','Basic fixture-secret')
+                denied,_,_=self.module.request_curl(base+'/denied',None)
+            self.assertEqual(status,200);self.assertEqual(denied,401)
+            self.assertEqual(body,b'<feed/>')
+            self.assertEqual(calls[0]['Authorization'],'Basic fixture-secret')
+            self.assertTrue(calls[0]['User-Agent'].startswith('curl/'))
+            self.assertNotIn('Authorization',calls[1])
+            with self.assertRaises(self.module.VerificationError):
+                self.module.request_curl(base+'/feed',None,limit=4)
+        finally:
+            server.shutdown();server.server_close();thread.join()
+
     def setUp(self):
         spec = importlib.util.spec_from_file_location('resume', ROOT / 'scripts/verify-existing-prototype.py')
         self.module = importlib.util.module_from_spec(spec)

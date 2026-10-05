@@ -164,3 +164,34 @@ cancellation integration remains separate evidence. Failure stops prototype
 and restores pointer/pre-proxy config; no production/timer/bot changes.
 26 offline tests passed, including actual temporary pointer/env rollback after
 live-verifier failure. No activation/download has occurred in the agent session.
+
+## First manual activation — local checks passed, inbound urllib rejected
+
+Operator session13:59:39–13:59:42UTC activated exact e57f0a6 candidate. Readiness
+and all local Basic/static XML/OpenSearch checks passed. First public /opds
+unauthenticated urllib check got403, so no authenticated live feed or Download
+was attempted. Prototype stopped; private pre-proxy env and baseline pointer
+restored. Independent agent readback confirms old16cc521 pointer, stopped units,
+disabled production timer and healthy bot/NRestarts0. The final-state row with
+e57f0a6 is **before rollback**, not the final pointer: the following rollback
+row and independent readback establish16cc521. Both immutable releases retained.
+Evidence: `proxy-prototype-acceptance-first.jsonl`. No book bytes persisted.
+
+Two finite own-host unauthenticated diagnostics after rollback: genuine urllib
+received403 with Cloudflare1010; genuine system curl/default UA received502
+consistent with the stopped origin. This same urllib1010 observation already
+appears in cloudflare-route-report.md. It is inbound client/edge evidence, not
+Searchfloor denial or proof that FBReader passes. No Cloudflare route/rules/tier
+changed, no browser UA spoof or source request in these diagnostics.
+Evidence: `proxy-prototype-inbound-diagnostics.jsonl`.
+
+Added explicit `--transport curl` option to the read-only verifier and selected
+system curl directly for future acceptance and acquisition checks, before any
+request. Never automatic fallback/retry after403. Curl's actual default UA is
+unchanged, ambient proxies/curlrc disabled, auth only stdin, caps/deadlines/no
+redirects retained. Local real HTTP fixture tests check genuine curl identity,
+non-argv auth, absent auth for401 and unknown-length response cap.27 tests passed.
+Runtime resource snapshot now also occurs after readiness so failed public
+checks retain real process RSS/CPU/peak evidence. Application src/artifact/SHA
+unchanged. A next controlled attempt requires re-entering OPDS proxy privately
+(the rollback removed it), then running validation; **do not repeat staging**.

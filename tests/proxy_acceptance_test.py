@@ -55,7 +55,7 @@ class AcceptanceZipTests(unittest.TestCase):
             scope['resources'] = lambda *args: None
             scope['bot_health'] = lambda: {'ActiveState':'active','NRestarts':'0'}
             def failed_verify(*args, **kwargs): raise ValueError('live503 fixture')
-            verifier = SimpleNamespace(load_private_config=lambda path=env: json.loads(path.read_text()), verify=failed_verify, request=lambda *args: None)
+            verifier = SimpleNamespace(load_private_config=lambda path=env: json.loads(path.read_text()), verify=failed_verify, request_curl=lambda *args: None)
             spec = SimpleNamespace(loader=SimpleNamespace(exec_module=lambda module: None))
             def systemctl(args, **kwargs):
                 state['ActiveState'] = 'active' if args[-2] == 'start' else 'inactive'
