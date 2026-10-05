@@ -384,3 +384,7 @@ information is not the next step. No source-admin message is authorized by this 
 
 Server diagnostic script/helper fixes need independent Linux code review/test
 verification before integration; this stage imports evidence and plan only.
+
+## Baseline accepted — 2026-10-05
+
+Owner confirmed FBReader list, metadata and download on c22ac2e. ACCEPT-001 in spec0.4.8 records that acceptance; remaining device/edge scenarios are tracked in docs/backlog.md. Tasks7–8 continue through docs/codex-cli-production-rollout.md: exact-main Linux artifact, isolated real-process rollback regression, installed privilege/lock checks and successful production/no-op/timer evidence. Preparation and local checks do not imply host activation. No bot changes, new tunnel or migration.

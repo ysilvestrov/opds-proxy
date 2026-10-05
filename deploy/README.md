@@ -1,9 +1,12 @@
 # Operator installation and release procedure
 
-Prepared files, **not installed**. Follow `../spec.md` (DEPLOY-001/002,
+Infrastructure preparation and operator procedure. Follow `../spec.md` (DEPLOY-001/002,
 OPS-001/002, ACCEPT-001). Current Hetzner host only; server migration is excluded.
 Do not touch bot paths/secrets/units/tunnel route. Actual FBReader acceptance
-is a production activation gate; arrange a controlled HTTPS prototype first.
+was accepted by the owner on c22ac2e on 2026-10-05. For the existing host continue
+with [production rollout](../docs/codex-cli-production-rollout.md); do not repeat
+bootstrap or create another tunnel route. The instructions below also describe
+initial installation on an unconfigured host. Arrange a controlled HTTPS prototype first.
 Use `../docs/codex-cli-prototype.md` for that stage. Feature-branch CI creates
 `opds-prototype-<sha>`; only main produces `opds-release-<sha>` accepted by the
 production deployer. The manual prototype has separate code/cache/config and

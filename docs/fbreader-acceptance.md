@@ -1,116 +1,35 @@
-> Latest: c22ac2e installed, HTTPS20 FB2 ZIP acquisition links passed;
-> owner reports “Спрацювало”: missing Download resolved. Prototype active/ready,
-> production/timer off. File-open/auth/cancellation outcomes were not individually
-> reported. Evidence: `fbreader-mime-update-report.md`.
+# FBReader acceptance — baseline accepted
 
-> Latest: owner approved MIME correction, merged into feature as c22ac2e;
-> exact push CI/artifact verified. Operator installation and device retest pending.
-> Run `deploy/update-fbreader-prototype.sh`; see `fbreader-mime-update-report.md`.
+Власник 2026-10-05 явно підтвердив: завантажується список книг, можна побачити
+базову інформацію і завантажити книгу. Поточний стан погоджено як baseline.
+Target: FBReader for Android3.8.31; installed prototype c22ac2e6edafeba1563d88363326b2bd19cbb097.
+Root spec.md0.4.8 / ACCEPT-001 фіксує це приймання та перенесення крайових
+device-сценаріїв у docs/backlog.md. Production deployment/rollback gates окремі.
 
-> Owner device evidence, 2026-10-05: catalog/list/book metadata display,
-> but Download is absent in FBReader Premium. Acquisition/open acceptance FAILS
-> at visibility. MIME diagnosis and proposed correction are in
-> `fbreader-download-diagnosis.md`; owner spec/plan review is approved.
-> Earlier server acceptance remains valid and does not prove device compatibility.
-
-> Latest14:19UTC: server proxy prototype acceptance passed (e57f0a6), including
-> private HTTPS feeds and one ZIP/FB2. Prototype stopped; bot healthy/timer off.
-> Main dashboard actual usage after5.88MB. Device/protected fixture still pending.
-> Earlier installation/403 statuses below are historical.
-
-> Latest status, 2026-10-05 09:10 UTC: prototype was installed, then stopped
-> after the live feed returned 503. A matching upstream GET confirmed Cloudflare
-> challenge (403). Basic/static successes are inferred, not recorded per request.
-> All device checks remain Pending. See `prototype-report.md` and
-> `source-diagnostics-review.md`; earlier preparation statuses below are historical.
-
-# FBReader acceptance — pending owner test
-
-Latest operator result, 2026-10-05 08:50–08:51 UTC: prototype installed and
-started, then stopped after live completed feed 503/upstream 403. Static checks
-were reached/passed according to helper execution order, but no complete
-per-request report exists. Device tests below remain Pending; do not ask the
-owner to test a stopped catalog. See docs/codex-cli-source-diagnostics.md.
-Earlier uninstalled endpoint statements below are historical preparation state.
-
-Automated tests prove XML/HTTP/streaming behavior, not reader compatibility.
-Target supplied by owner on 2026-10-04: **FBReader for Android, version 3.8.31**.
-Actual Basic forwarding, ZIP opening and navigation have not been tested.
-Production activation is **NO-GO until this gate passes**. One-time infrastructure
-preparation and manual private prototype startup are allowed to obtain this
-evidence; neither enables production or its deployment timer.
-
-Use the separately configured HTTPS test endpoint `/opds` and its dedicated
-Basic credentials, never credentials embedded in URLs. Listener is loopback;
-remote testing requires an operator-approved HTTPS tunnel route or equivalent.
-No public plaintext listener.
-
-The HTTPS endpoint has not been deployed; no working catalog URL or credentials
-are being claimed here. The operator must first provide a controlled private
-prototype endpoint using the reviewed implementation and Linux/native checks.
-Record the actual test date separately from the date the owner supplied version.
-
-Server preparation evidence received 2026-10-05: `docs/prototype-report.md`.
-Artifact is verified/staged; installation and HTTPS are blocked, so every device
-result below remains Pending. Continue via `docs/codex-cli-prototype-continuation.md`.
-The staged empty-page XML has no serving route yet; that fixture needs protected
-serving before its device test. It must not be treated as an application endpoint.
-
-For this target, test in order:
-1. Add the supplied HTTPS URL ending in `/opds` as an external OPDS catalog.
-   Enter the dedicated username/password when requested; keep them out of URLs.
-2. Open Searchfloor, then completed books. Confirm Cyrillic title/author metadata.
-3. Search for `Инициация`; compare against current source results, keeping only
-   complete/downloadable books. The captured mixed-status evidence is historical,
-   not a promise of the current number of search results.
-4. Follow next where available; confirm the query remains the same. Exercise the
-   empty-page-with-next case using a controlled fixture, not an unbounded crawl.
-5. Download one listed completed book and open it. Record any separate auth prompt,
-   unsupported-format message or failure to open the `.fb2.zip` file.
-6. Cancel a transfer and retry with a fresh Download.
-
-Report each check as pass/fail and include any displayed error text. The operator
-may correlate sanitized endpoint/status logs to check acquisition auth; never
-record Authorization values, credentials or book text.
-
-Record OS/version/date and each result, without passwords/book content:
-
-| Check | Result |
+| Сценарій | Фактичний результат |
 |---|---|
-| Add catalog `/opds`, Basic prompt, source navigation | Owner confirmed catalog login/navigation |
-| Completed books, Unicode metadata | Owner screenshots confirm displayed list/book metadata |
-| Search mixed statuses: only complete/Download books | Pending |
-| Next preserves query | Pending |
-| Empty filtered page with next remains navigable | Pending; use controlled test fixture |
-| Download sends Basic credentials separately | Pending |
-| FB2 ZIP acquisition `application/fb2+zip`, raw ZIP, filename `.fb2.zip`, open FB2 | Download visibility fixed per owner after c22ac2e; file-open outcome not separately supplied |
-| Interrupted download permits fresh GET | Pending |
+| Каталог і список книг | PASS — підтверджено власником |
+| Базова інформація про книгу | PASS — підтверджено власником |
+| Книга пропонує Download і завантажується | PASS — підтверджено власником після MIME correction |
+| Приватний HTTPS/Basic і acquisition links | Server PASS; окремі device auth prompts не описані |
+| Відкриття FB2 ZIP після download | Не підтверджено окремо; READ-04 |
+| Search і next зі збереженням query | Device pending; READ-01 |
+| Empty filtered page with next | Device pending; READ-02, protected fixture |
+| Переривання й повторне завантаження | Device pending; READ-03 |
 
-Source proxy integration is prepared on the feature branch; the new exact-SHA
-manual prototype must pass dedicated OPDS proxy/static/live checks before this
-device session. Follow docs/codex-cli-proxy-prototype-update.md; installation,
-reader tests and protected empty-page serving are not yet confirmed.
+Owner confirmation не підміняє неперевірені рядки автоматичним Pass.
+Core flow прийнято; ці device edge cases не блокують baseline promotion за
+рішенням власника. Source limits, ZIP cap, deadline, cancellation й auth
+залишаються чинними й покриті fixture/local CONNECT tests.
 
-If MIME needs adjustment, update OPDS-001 and its renderer tests from observed
-evidence. If Basic fails, request one owner decision before any auth fallback.
+Серверні докази: docs/proxy-prototype-update-report.md (dedicated OPDS proxy,
+HTTPS/search/one next та435050B ZIP/FB2 in-memory), docs/fbreader-mime-update-report.md,
+docs/fbreader-mime-acceptance-passed.jsonl і docs/fbreader-mime-cleanup.json.
+Application MIME correction: acquisition application/fb2+zip; raw HTTP application/zip.
+Раніше відсутній Download виправлено на c22ac2e, користувацьке приймання закрито
+поточним повідомленням власника. Попередні installation/403/MIME failed стани
+зберігаються як історія в перелічених reports і не описують поточну базу.
 
-## Proxy prototype update preparation — 2026-10-05
-
-Exact-SHA e57f0a6 artifact verification/staging and operator native-load check passed.
-Activation was not attempted: outside-sandbox sudo requires an operator password;
-independent protected proxy config and current shared-provider budget are unverified.
-Baseline remains stopped, production timer disabled, bot healthy/NRestarts0.
-New-artifact runtime, dedicated source/Download and device acceptance remain Pending.
-Evidence and continuation stop point: `proxy-prototype-update-report.md`.
-
-## Server prerequisite now passed — 2026-10-05 14:19UTC
-
-Dedicated OPDS proxy, exact-SHA readiness, private public HTTPS XML/search/next
-and one authenticated ZIP/FB2 passed on the server (e57f0a6). Evidence:
-`proxy-prototype-update-report.md`. This does not mark any device row Pass.
-Prototype is stopped after the bounded session; new current/config retained.
-Operator may start only `searchfloor-opds-prototype.service` for the controlled
-owner device test and stop it afterward; never enable production/timer.
-Endpoint: https://opds.ysilvestrov-ai.uk/opds with existing dedicated OPDS Basic
-credentials. Do not paste credentials into chat. Protected empty-page fixture
-serving and actual FBReader tests still require separate recorded evidence.
+Endpoint: https://opds.ysilvestrov-ai.uk/opds. Використовувати наявні окремі
+Basic credentials без паролів у URL/чаті/reports. Переходячи у production,
+зберегти hostname, credentials і provider transport; cache можна перебудувати.

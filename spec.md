@@ -1,11 +1,12 @@
 # OPDS Proxy — OpenSpec
 
-**Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
-специфікацію з namespace searchfloor; proxy prototype пройшов server acceptance
-2026-10-05 14:19UTC; manual reader session активна, production не активовано.
-**Версія:** 0.4.7. Independent source proxy реалізовано;
-server acceptance passed; c22ac2e installed, owner confirms Download visibility correction.
-Remaining individual device acceptance checks pending. **Дата:** 2026-10-05.
+**Статус:** BASELINE ACCEPTED / PRODUCTION ROLLOUT IN PROGRESS.
+Власник підтвердив список книг, metadata та завантаження у FBReader на c22ac2e
+і погодив фіналізацію бази та налаштування deployment. Production activation
+і timer ще потребують фактичних operator-доказів.
+**Версія:** 0.4.8. Independent source proxy та базовий reader flow прийнято;
+розширені device/edge сценарії перенесено в backlog за рішенням власника.
+**Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -588,9 +589,16 @@ Production timer MUST залишатися вимкненим до прийма�
 
 Release SHALL пройти test/typecheck/build, fixture/mock contract tests,
 Linux native-module load check та клієнтський FBReader acceptance.
+Для початкової baseline власник 2026-10-05 явно прийняв робочий flow:
+список книг → базова інформація → завантаження у FBReader Android3.8.31.
+Це закриває базовий reader gate для першого production release. Search/next,
+empty-page-with-next, interruption/retry та окреме file-open спостереження
+SHALL залишатися явно неперевіреними device-сценаріями в `docs/backlog.md`;
+вони не блокують baseline promotion за уточненим рішенням власника. Source/
+Download caps, приватна авторизація й автоматичні regressions не послаблюються.
 CI MUST NOT масово опитувати Searchfloor. Owner acceptance SHALL фіксувати
-OS/version, дату, root/search/mixed statuses/empty page with next/Download/open,
-Basic auth і MIME behavior, без паролів/тексту книг. Bootstrap/автодеплой
+OS/version, дату, фактично перевірені сценарії й відкладені перевірки,
+без паролів/тексту книг. Bootstrap/автодеплой
 SHALL мати окремі фактичні докази; unit tests не є доказом встановлення.
 Виміри RSS/CPU/cache+WAL/two releases SHALL бути збережені для поточного
 capacity check і майбутнього окремого переїзду.
@@ -599,6 +607,14 @@ capacity check і майбутнього окремого переїзду.
 - **WHEN** автоматичні перевірки успішні, а клієнтський тест чи встановлення не виконано
 - **THEN** звіт називає відповідну частину неперевіреною/підготовленою
 - **AND** не стверджує, що сервіс працює у FBReader або на сервері.
+
+#### Scenario: Owner accepts the initial working baseline
+- **WHEN** власник підтверджує список, metadata та завантаження і просить
+  вважати поточний стан базою, а крайові сценарії додати до наступного плану
+- **THEN** базовий reader gate прийнято, а відкладені device-сценарії залишаються
+  відкритими в backlog без вигаданих Pass
+- **AND** production timer вмикається лише після green-main artifact,
+  фактичного deployment/rollback evidence та production health перевірки.
 
 ### Аудитні факти, не гарантії
 
