@@ -10,6 +10,35 @@ production deployer. The manual prototype has separate code/cache/config and
 unit `searchfloor-opds-prototype.service`; do not enable its boot startup or the
 production timer during acceptance.
 
+For the approved pinned candidate, run the terminal helper as your normal operator
+account in a private SSH terminal (do not put sudo before the whole script):
+
+**Fresh installation only.** The already-installed server prototype is preserved;
+do not rerun `--apply` there. Source-proxy integration and an existing-installation
+verifier require the review described in `docs/server-source-resolution.md`.
+
+```sh
+bash deploy/start-prototype.sh --check
+bash deploy/start-prototype.sh --apply
+```
+
+The helper verifies exact GitHub workflow/run/artifact identity and both digests,
+safe-extracts fresh staging, checks host compatibility and refuses service/port
+collisions. Apply prompts through ordinary sudo, invokes the reviewed bootstrap,
+installs only prototype code/current, and generates a dedicated password in
+root:root/0600 prototype.env when it still matches the untouched template.
+An existing configured env is preserved; existing prototype code/current is a
+collision requiring operator inspection. The helper never changes Cloudflare
+routes or starts/enables production/timer. HTTP failure stops only the prototype
+it attempted to start. Successful checks append sanitized evidence to
+`docs/prototype-report.md` and leave the prototype running for device acceptance.
+Per-request rows are flushed/fsynced to protected `http-checks.jsonl` before
+assertions, retaining earlier checks on failure and excluding query strings.
+Retrieve credentials only in your private terminal using
+`sudo cat /etc/searchfloor-opds/prototype.env`; never paste them into logs/chat.
+After your reader test, run `sudo systemctl stop searchfloor-opds-prototype.service`.
+The fixture route and actual FBReader/ZIP acceptance remain separate pending steps.
+
 ## Before installation
 
 Inspect `bootstrap.sh --dry-run`, units, helper and sudoers. Confirm Ubuntu

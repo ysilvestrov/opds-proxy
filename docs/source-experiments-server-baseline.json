@@ -1,0 +1,111 @@
+{
+  "before": {
+    "time": "2026-10-05T11:03:52+00:00",
+    "provenance": "Initial read-only tool observations before Phase A; no recreated measurement",
+    "botHealth": {
+      "ok": true
+    },
+    "botNRestarts": 0,
+    "prototype": "inactive/dead/static",
+    "production": "inactive/dead/disabled",
+    "deployService": "inactive/dead/static",
+    "timer": "inactive/dead/disabled",
+    "ramTotalBytes": 8127746048,
+    "ramAvailableBytes": 6229102592,
+    "diskAvailableBytes": 35581083648,
+    "freeInodes": 2091469
+  },
+  "after": {
+    "time": "2026-10-05T11:07:43.740018+00:00",
+    "units": [
+      {
+        "NRestarts": "0",
+        "Id": "warsaw-beer-bot.service",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-prototype.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-deploy.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "Id": "searchfloor-opds-deploy.timer",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      }
+    ],
+    "botHealth": {
+      "ok": true
+    },
+    "memoryBytes": {
+      "MemTotal": 8127746048,
+      "MemAvailable": 6216450048,
+      "SwapTotal": 4294963200,
+      "SwapFree": 3183013888
+    },
+    "disk": "Filesystem       1B-blocks        Used   Available Use% Mounted on\n/dev/sda1      80307429376 41404235776 35580579840  54% /\n",
+    "inodes": "Filesystem      Inodes   IUsed   IFree IUse% Mounted on\n/dev/sda1      4862256 2770798 2091458   57% /\n"
+  },
+  "finalVerification": {
+    "time": "2026-10-05T11:21:04.253601+00:00",
+    "units": [
+      {
+        "NRestarts": "0",
+        "Id": "warsaw-beer-bot.service",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-prototype.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-deploy.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "Id": "searchfloor-opds-deploy.timer",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      }
+    ],
+    "botHealth": {
+      "ok": true
+    },
+    "installedSha": "16cc521448bbb792aa74594cf7c1c1def5ae16f9"
+  }
+}

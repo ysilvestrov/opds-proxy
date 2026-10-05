@@ -3,7 +3,7 @@
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; prototype
 встановлено й зупинено після upstream 403, production не активовано.
-**Версія:** 0.4.3. **Дата:** 2026-10-05.
+**Версія:** 0.4.4. **Дата:** 2026-10-05. Source-proxy delta нижче — pending review.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -139,6 +139,40 @@ proxy connection settings; інші секрети/дані бота не чит
 та процес не змінюються. Це вузький виняток для діагностики ARCH-001,
 не дозвіл використовувати секрети бота у production OPDS. Production proxy
 transport потребує окремої конфігурації/перегляду spec та deployment.
+
+#### Proposed architecture delta — source proxy (awaiting owner review)
+
+Докази 2026-10-05: `docs/source-experiments-server-http.jsonl` і
+`docs/source-experiments-server-proxy.jsonl`. Actual Node adapter direct отримав
+403/challenge, через погоджений existing proxy — 200 і parse 20 книг/next=2.
+Direct urllib також отримав 200, тому blanket VPS-IP ban не встановлено.
+Це перевірений diagnostic candidate, не deployed source transport.
+
+**Наведене нижче є пропозицією для review, не чинним config/API contract.**
+Після схвалення цього delta та implementation plan:
+
+- SOURCE-002: optional `OPDS_SOURCE_PROXY_URL` дозволятиме лише явно
+  configured HTTP(S) proxy. Один reuse dispatcher на процес для Searchfloor
+  HTML і Download; без rotation-on-denial, automatic direct fallback, cookies,
+  browser/stealth чи глобальної зміни fetch dispatcher. Усі поточні spacing,
+  concurrency, queue, redirect/origin, retry/cooldown і cap/deadline зберігаються.
+- CONFIG-001 / ARCH-001 / OPS-002: окремі OPDS proxy credentials у власному
+  root-only env, ніколи bot env на startup; URL/endpoint/пароль не логуються.
+  Operator спочатку перевіряє доступний provider budget та виділяє окремий
+  sub-user/ліміт у наявному плані без зміни bot settings чи paid upgrade.
+- DOWNLOAD-001/002: той самий dispatcher передає streaming Response з
+  backpressure й AbortSignal; ZIP sniffing <=4 KiB, <=20 MiB і 60 s зберігаються.
+  Proxy407/connect failure — source availability failure, без direct fallback.
+  Денial/challenge зупиняє запит, не запускає пошук іншого exit IP.
+- ACCEPT-001: потрібні local mock proxy/stream/cancel тести, exact-SHA Linux
+  artifact, окремий operator review/config крок і existing-installation
+  validation із per-request durable evidence до FBReader. Поточний installed
+  pinned artifact/current/config не змінюються цією пропозицією.
+
+Implementation plan: `docs/superpowers/plans/2026-10-05-source-proxy.md`.
+До review немає дозволу на retained application implementation або
+постійне використання bot proxy credentials. Budget/credentials і review —
+конкретні невиконані prerequisites наступного етапу.
 
 #### Scenario: Owner-approved comparison through the existing proxy
 - **WHEN** direct-запит серверного клієнта відхилений, а власник погодив proxy experiment
