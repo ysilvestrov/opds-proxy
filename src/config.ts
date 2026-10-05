@@ -21,6 +21,13 @@ const schema = z.object({
     .max(128)
     .refine((v) => !v.includes(":")),
   OPDS_PASSWORD: z.string().min(1).max(1024),
+  OPDS_SOURCE_PROXY_URL: z.string().url().refine((value) => {
+    try {
+      const u = new URL(value);
+      return ["http:", "https:"].includes(u.protocol) &&
+        ["", "/"].includes(u.pathname) && !u.search && !u.hash;
+    } catch { return false; }
+  }).optional(),
   RELEASE_SHA: z
     .string()
     .regex(/^[0-9a-f]{40}$/)

@@ -18,7 +18,7 @@ existing Hono/SQLite/Vitest, local CONNECT proxy/upstream mocks, Python3.12+ ver
 
 **Spec:** root `spec.md`0.4.5; SOURCE-002/003, ARCH-001, CONFIG-001,
 DOWNLOAD-001/002, AUTH-001, OPS-001/002, DEPLOY-001/002, ACCEPT-001, COST-001.
-**Status:** OWNER SPEC APPROVED 2026-10-05; PLAN READY FOR OWNER REVIEW.
+**Status:** OWNER SPEC AND PLAN APPROVED 2026-10-05; INLINE EXECUTION IN PROGRESS.
 No source transport implementation or server activation performed by this plan.
 
 ## Global Constraints
@@ -71,7 +71,7 @@ No source transport implementation or server activation performed by this plan.
 - `scripts/diagnostics/record-jsonl.py`: selected reviewed server recorder import;
   `record(lines: Iterable[str], output: Path) -> None`, fresh0600 file, flush/fsync.
 
-## Task1: Explicit source transport, config and lifecycle
+### Task 1: Explicit source transport, config and lifecycle
 
 **Modify:** src/config.ts, src/index.ts, package.json, package-lock.json,
 .env.example, tests/runtime.test.ts.
@@ -92,9 +92,9 @@ tests/transport.test.ts, tests/helpers/connect-proxy.ts.
   Wire transport once into existing SearchfloorClient; close it after cancellation
   within existing shutdown deadline. Sanitize errors rather than log causes/URLs.
 - [ ] Run the same targeted tests GREEN, then
-  `node node_modules/tsc/bin/tsc --noEmit`; commit Task1 owned files.
+  `node node_modules/typescript/bin/tsc --noEmit`; commit Task1 owned files.
 
-## Task2: Proxy streaming and source limits
+### Task 2: Proxy streaming and source limits
 
 **Modify:** tests/client.test.ts, tests/download.test.ts, helper from Task1;
 implementation only for defects against approved requirements.
@@ -115,7 +115,7 @@ existing SearchfloorClient/list/getBook/openDownload and Downloads.streamBook.
 - [ ] Fix only demonstrated transport/boundary defects; same targeted command GREEN.
  Run test/typecheck/build and Linux native-load CI after changes; commit Task2.
 
-## Task3: Durable existing-installation verification and operator files
+### Task 3: Durable existing-installation verification and operator files
 
 **Modify:** deploy/prototype.env.example, deploy/runtime.env.example, deploy/README.md.
 **Create:** scripts/verify-existing-prototype.py, tests/prototype_resume_test.py.
@@ -139,7 +139,7 @@ provider usage scope/cycle baseline and session limits for60s transfer.
 - [ ] Run resume/selected recorder/curl tests GREEN plus shell/Python syntax checks;
 commit reviewed Task3 changes. No new sudoers privilege or infrastructure auto-update.
 
-## Task4: Exact-SHA artifact and private prototype acceptance
+### Task 4: Exact-SHA artifact and private prototype acceptance
 
 **Modify/create operator evidence:** docs/prototype-report.md,
 docs/fbreader-acceptance.md, docs/runtime-measurements.md,
@@ -169,7 +169,7 @@ Stop manual prototype after testing; production/timer remain off for later gates
 
 ## Handoff and self-review
 
-Spec approved; owner plan review is the remaining pre-code gate. Preserve inline
+Spec and plan approved by owner (`так`). Preserve inline
 sequential execution in current folder/feat branch. No new worktree or server move.
 
 Coverage: Task1 implements ARCH-001/CONFIG-001 and bounded OPS-001 lifecycle;
@@ -180,3 +180,4 @@ and SOURCE-003 provider budget evidence. AUTH/OPDS public contract unchanged.
 The plan adds no browser, provider API, monthly counter, new source or public route.
 No claim of installed proxy integration until Task4 evidence exists. Changes in
 server cffb346 not selected above remain preserved for separate review.
+

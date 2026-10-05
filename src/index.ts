@@ -8,6 +8,7 @@ import { SearchfloorClient } from "./sources/searchfloor/client.js";
 import { Catalog } from "./catalog.js";
 import { createApp } from "./api/app.js";
 import { Downloads } from "./api/download.js";
+import { createSourceTransport } from "./sources/transport.js";
 const identity = new URL("../release.json", import.meta.url);
 const releaseSHA = existsSync(identity)
   ? JSON.parse(readFileSync(identity, "utf8")).sha
@@ -23,12 +24,16 @@ const log = pino({
     "cookie",
     "headers.authorization",
     "headers.cookie",
+    "OPDS_SOURCE_PROXY_URL",
+    "proxyUrl",
+    "headers.proxy-authorization",
   ],
 });
 const cache = new Cache(config.CACHE_PATH, {
   onReset: (reason) => log.warn({ event: "cache_reset", reason }),
 });
-const client = new SearchfloorClient();
+const transport = createSourceTransport(config.OPDS_SOURCE_PROXY_URL);
+const client = new SearchfloorClient({ fetch: transport.fetch });
 const catalog = new Catalog({ cache, client });
 const downloads = new Downloads({ catalog, client });
 let ready = true;
@@ -64,6 +69,7 @@ async function shutdown() {
     await new Promise((r) => setTimeout(r, 50));
   downloads.abortAll();
   client.close();
+  await transport.close();
   server.closeAllConnections();
   cache.close();
   log.info({ event: "stopped" });
