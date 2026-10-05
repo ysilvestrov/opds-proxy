@@ -13,7 +13,7 @@ OPDS 1.2 XML та пошук; FB2 ZIP передається потоком на
 p-queue, zod, pino, Vitest; Linux packaging; systemd, Cloudflare Tunnel.
 
 **Spec:** Кореневий `spec.md` у форматі OpenSpec — єдине нормативне джерело
-правди; чернетку створено в Task 0, огляд власником ще не завершено. Вхідні матеріали:
+правди; створено в Task 0, власник погодив дизайн і продовження реалізації. Вхідні матеріали:
 `docs/basic-plan.md` (погоджено користувачем 2026-10-04) та `docs/server-audit.md`.
 Базовий план і цей implementation plan не є альтернативними специфікаціями.
 
@@ -25,7 +25,7 @@ p-queue, zod, pino, Vitest; Linux packaging; systemd, Cloudflare Tunnel.
 - При зміні вимог оновлювати `spec.md` у тому самому PR/commit-наборі, що й код.
   При розбіжності spec/код/план визначити потрібний результат і виправити
   розбіжність; не трактувати випадкову поведінку коду як нову вимогу.
-- Репозиторій `https://github.com/ysilvestrov/opds-proxy`; локальний git ще не налаштований.
+- Репозиторій `https://github.com/ysilvestrov/opds-proxy`; робоча гілка `feat/opds-v1`, draft PR #1.
 - Ціль — чинний Hetzner, OPDS поряд із ботом. Спільний переїзд — окремий проєкт.
 - Один користувач, лише завершені доступні книги; unknown не означає completed.
 - Public namespace `/opds/{name}/...`, єдине v1 name — `searchfloor`.
@@ -288,6 +288,14 @@ failed/orphaned releases are pruned only after safe recovery or on idle ticks.
 Linux CI/native packaging has now passed for the pinned prototype candidate;
 see docs/linux-ci-evidence.md. Remaining installed permissions, actual deploy/rollback
 and capacity evidence must not be inferred from Windows fixture/mock tests.
+
+Server preparation report received 2026-10-05: docs/prototype-report.md.
+Pinned artifact/host compatibility and infrastructure syntax/dry-run verified;
+installation/startup blocked by sandbox sudo, HTTPS route unverified/NXDOMAIN.
+Bot remained healthy with NRestarts=0. No OPDS units or credentials installed.
+Continue Task 6 using docs/codex-cli-prototype-continuation.md; reader checks
+remain pending. Staged empty-page XML has no serving route: protected fixture
+serving is still an open implementation step before full ACCEPT-001.
 
 Recommended: native execution in this chat via superpowers:executing-plans.
 Tasks depend on the same adapter/catalog/HTTP interfaces; for a single-user

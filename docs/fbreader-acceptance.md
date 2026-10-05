@@ -17,6 +17,12 @@ are being claimed here. The operator must first provide a controlled private
 prototype endpoint using the reviewed implementation and Linux/native checks.
 Record the actual test date separately from the date the owner supplied version.
 
+Server preparation evidence received 2026-10-05: `docs/prototype-report.md`.
+Artifact is verified/staged; installation and HTTPS are blocked, so every device
+result below remains Pending. Continue via `docs/codex-cli-prototype-continuation.md`.
+The staged empty-page XML has no serving route yet; that fixture needs protected
+serving before its device test. It must not be treated as an application endpoint.
+
 For this target, test in order:
 1. Add the supplied HTTPS URL ending in `/opds` as an external OPDS catalog.
    Enter the dedicated username/password when requested; keep them out of URLs.

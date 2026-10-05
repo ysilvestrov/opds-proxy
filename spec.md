@@ -434,6 +434,15 @@ Node 24.19.0; 4 CPU, 7.6 GiB RAM; близько 6 GiB available RAM, 34 GiB dis
 та bot health працювали. Searchfloor повертав реальні completed/search HTML,
 HEAD одного Download — ZIP MIME. Аудит не змінював production.
 
+За `docs/prototype-report.md`, 2026-10-04 22:17–22:19 UTC: exact-SHA
+prototype artifact перевірено та staged; фактичні x64/glibc 2.39/Node ABI 137
+сумісні з manifest. Infrastructure syntax/dry-run успішні. Встановлення
+не виконано через sandbox sudo (`no new privileges`), DNS candidate hostname
+повернув NXDOMAIN, tunnel mapping неперевірений. Bot health залишився 200,
+NRestarts=0. Native runtime на хості, HTTPS і FBReader ще не перевірено.
+Staged reader fixture XML не має serving route; його захищене обслуговування
+залишається невиконаним кроком приймання. Ці факти не змінюють вимоги.
+
 ### Обов'язкові непідтверджені перевірки
 
 1. Варіації MIME/розміру інших книг і серверний GET лишаються неперевіреними;
@@ -446,7 +455,9 @@ HEAD одного Download — ZIP MIME. Аудит не змінював produc
 4. Main отримано з origin; CI workflow ID 374905819 і exact-SHA Linux prototype
    artifact підтверджено в docs/linux-ci-evidence.md. Production-main artifact
    та доступ із серверного deploy-user ще не перевірені.
-5. Права bootstrap/Cloudflare route, CPU/libc/Node ABI та вільний порт перед запуском.
+5. Installed bootstrap permissions і Cloudflare route ще не перевірені.
+   Platform/ABI сумісність підтверджена звітом підготовки; перед фактичним
+   запуском повторно перевіряються сумісність, стан units та вільний порт.
 
 Ці перевірки не блокують огляд design, але блокують відповідні твердження
 про готовність. Якщо доказ змінює вимогу — спочатку оновлюються spec і план.
