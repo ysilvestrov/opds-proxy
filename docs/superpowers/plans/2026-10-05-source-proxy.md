@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans
 > to implement sequentially in this session. Preserve the previously selected
 > current-folder/separate-branch workflow; no subagent implementation delegation.
-> Steps use checkbox (`- [ ]`) syntax for tracking.
+> Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Restore server-side Searchfloor access through an independent OPDS
 WebShare sub-user while preserving private OPDS, source limits and streamed ZIP.
@@ -16,10 +16,10 @@ fallback on failure; deployer/GitHub requests are independent.
 **Tech Stack:** Node24/TypeScript strict, Node24-compatible pinned undici,
 existing Hono/SQLite/Vitest, local CONNECT proxy/upstream mocks, Python3.12+ verifier.
 
-**Spec:** root `spec.md`0.4.5; SOURCE-002/003, ARCH-001, CONFIG-001,
+**Spec:** root `spec.md`0.4.6; SOURCE-002/003, ARCH-001, CONFIG-001,
 DOWNLOAD-001/002, AUTH-001, OPS-001/002, DEPLOY-001/002, ACCEPT-001, COST-001.
 **Status:** OWNER SPEC AND PLAN APPROVED 2026-10-05; INLINE EXECUTION IN PROGRESS.
-No source transport implementation or server activation performed by this plan.
+Source transport implemented and reviewed; server activation/reader acceptance pending.
 
 ## Global Constraints
 
@@ -78,20 +78,20 @@ No source transport implementation or server activation performed by this plan.
 **Create:** src/sources/transport.ts, tests/config.test.ts,
 tests/transport.test.ts, tests/helpers/connect-proxy.ts.
 
-- [ ] Write config tests: absent direct; HTTP(S) valid; empty/socks/file/path/query/
+- [x] Write config tests: absent direct; HTTP(S) valid; empty/socks/file/path/query/
   fragment invalid; failure contains OPDS_SOURCE_PROXY_URL but no userinfo/URL.
-- [ ] Write actual local CONNECT tests: configured request reaches proxy/upstream;
+- [x] Write actual local CONNECT tests: configured request reaches proxy/upstream;
   two requests reuse the same transport;407/connection failure has zero direct
   upstream requests; diagnostics never contain fixture password/endpoint.
-- [ ] Write runtime fixture test: injected source dispatcher closes after abort/
+- [x] Write runtime fixture test: injected source dispatcher closes after abort/
   drain and process exits within25s; global fetch/ambient proxy env not changed.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/config.test.ts tests/transport.test.ts tests/runtime.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/config.test.ts tests/transport.test.ts tests/runtime.test.ts`;
   observe missing transport/config assertions fail before implementation.
-- [ ] Pin a compatible undici dependency/lockfile in development. Implement exact
+- [x] Pin a compatible undici dependency/lockfile in development. Implement exact
   interface above; adapt dispatcher init without weakening strict TypeScript.
   Wire transport once into existing SearchfloorClient; close it after cancellation
   within existing shutdown deadline. Sanitize errors rather than log causes/URLs.
-- [ ] Run the same targeted tests GREEN, then
+- [x] Run the same targeted tests GREEN, then
   `node node_modules/typescript/bin/tsc --noEmit`; commit Task1 owned files.
 
 ### Task 2: Proxy streaming and source limits
@@ -101,18 +101,18 @@ implementation only for defects against approved requirements.
 **Consumes:** Task1 SourceFetch and loopback CONNECT fixture;
 existing SearchfloorClient/list/getBook/openDownload and Downloads.streamBook.
 
-- [ ] Add proxy-backed tests: forbidden redirect rejected before another origin;
+- [x] Add proxy-backed tests: forbidden redirect rejected before another origin;
  403 has exactly one upstream request/no agent replacement; Retry-After60s
  establishes full cooldown;2MiB cap/15s deadline remain enforced.
-- [ ] Add real proxy-stream tests: ZIP prefix replay byte-for-byte,20MiB cap,
+- [x] Add real proxy-stream tests: ZIP prefix replay byte-for-byte,20MiB cap,
  slow consumer doesn't consume full upstream early, cancellation closes tunnel,
  slot becomes available, shutdown aborts remaining transfer. Use synthetic ZIP
  bytes and local mocks; tests can shorten injected clocks/timeouts appropriately.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/transport.test.ts tests/client.test.ts tests/download.test.ts tests/runtime.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/transport.test.ts tests/client.test.ts tests/download.test.ts tests/runtime.test.ts`;
  record actual new boundary results. Already-passing integration tests need no
  implementation change. If a boundary fails, preserve that RED before fixing it.
  Do not duplicate existing unit checks merely to increase count.
-- [ ] Fix only demonstrated transport/boundary defects; same targeted command GREEN.
+- [x] Fix only demonstrated transport/boundary defects; same targeted command GREEN.
  Run test/typecheck/build and Linux native-load CI after changes; commit Task2.
 
 ### Task 3: Durable existing-installation verification and operator files
@@ -123,20 +123,20 @@ existing SearchfloorClient/list/getBook/openDownload and Downloads.streamBook.
 its regression coverage, curl CONNECT diagnostic fix/coverage. Do not cherry-pick
 unreviewed installer/spec or copy its historical Basic/secret output into reports.
 
-- [ ] Review selected changes against root spec; run their offline tests in WSL/Linux.
+- [x] Review selected changes against root spec; run their offline tests in WSL/Linux.
  If installer safety tests run as root, do not count root-guard rejection as proof
  of later collision guards. Keep installer separate; existing validation won't use it.
-- [ ] Add resume verifier tests: existing installed SHA/config accepted; wrong SHA,
+- [x] Add resume verifier tests: existing installed SHA/config accepted; wrong SHA,
 401/MIME/XML/live503 fails with earlier rows retained; fixture secrets/query text
 absent from stdout/argv; zero bootstrap, env writes, pointer switches or unit changes.
-- [ ] Run `python3 -m unittest discover -s tests -p '*resume_test.py'` RED;
+- [x] Run `python3 -m unittest discover -s tests -p '*resume_test.py'` RED;
 implement verify-existing-prototype.py and reviewed recorder pipeline. Credentials
 remain in OPDS root-only env, read in memory; normal-user recorder receives only
 sanitized rows. Live source checks require explicit --live; no book download here.
-- [ ] Add optional proxy entry to separate OPDS env examples with a clearly fake
+- [x] Add optional proxy entry to separate OPDS env examples with a clearly fake
 placeholder; document private operator input, unchanged Basic credentials,
 provider usage scope/cycle baseline and session limits for60s transfer.
-- [ ] Run resume/selected recorder/curl tests GREEN plus shell/Python syntax checks;
+- [x] Run resume/selected recorder/curl tests GREEN plus shell/Python syntax checks;
 commit reviewed Task3 changes. No new sudoers privilege or infrastructure auto-update.
 
 ### Task 4: Exact-SHA artifact and private prototype acceptance
@@ -147,9 +147,9 @@ docs/codex-cli-proxy-prototype-update.md (concrete operator procedure).
 **Consumes:** Task1/2 tested source transport, Task3 verifier/recorder,
 existing safe artifact extraction/manifest checks and manual prototype unit.
 
-- [ ] Push implementation; require successful test/typecheck/build/package on exact
+- [x] Push implementation; require successful test/typecheck/build/package on exact
 SHA. Record workflow/run/artifact/digests; package includes Linux native dependencies.
-- [ ] Prepare concrete operator procedure before host action: verify bot/units/port,
+- [x] Prepare concrete operator procedure before host action: verify bot/units/port,
 new artifact/source identities; preserve old immutable code and pointer, use fresh
 immutable SHA directory, privately add OPDS proxy config without replacing Basic
 credentials. Document rollback pointer/config, stopping prototype on any failure.
@@ -180,4 +180,3 @@ and SOURCE-003 provider budget evidence. AUTH/OPDS public contract unchanged.
 The plan adds no browser, provider API, monthly counter, new source or public route.
 No claim of installed proxy integration until Task4 evidence exists. Changes in
 server cffb346 not selected above remain preserved for separate review.
-

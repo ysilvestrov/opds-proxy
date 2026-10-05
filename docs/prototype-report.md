@@ -554,6 +554,19 @@ post-deployment cleanup does not apply; staged inputs remain for the operator.
 Exit 1. Installation may be partial; inspect before rerunning. No acceptance is claimed.
 Protected evidence: `/home/ysi/opds/prototype-staging-16cc521/terminal-6iQPyU`.
 
+## Independent proxy update prepared — 2026-10-05
+
+Owner approved separate OPDS WebShare sub-user and provider1GB ceiling.
+New source-only transport and read-only verifier are implemented/reviewed on
+feat/opds-v1; operator procedure is docs/codex-cli-proxy-prototype-update.md.
+Use the application SHA/run/digests in docs/source-proxy-ci-evidence.md.
+The existing stopped installation remains unchanged by desktop implementation.
+Do not rerun installer --apply; preserve Basic config and prior immutable code.
+Dedicated proxy GET, installed new artifact, private HTTPS/live acquisition,
+resource/provider measurements and FBReader acceptance remain pending.
+Production/timer off. Server evidence returns via codex/proxy-prototype-acceptance
+Git branch; no archive transfer is required.
+
 ```text
 Id=searchfloor-opds-prototype.service
 LoadState=loaded

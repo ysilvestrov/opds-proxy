@@ -82,6 +82,59 @@ No direct fallback, retry, challenge solving or proxy rotation. On403/407/error,
 preserve evidence, restore private env backup and stop; do not activate prototype.
 Success via the old bot proxy is not evidence for this sub-user.
 
+Concrete one-GET program (run from reviewed checkout after privately configuring
+OPDS env; replace `NEW_SHA` only, never credentials). It selects the immutable new
+code before changing current. Recorder runs unprivileged. Use a fresh output path.
+
+```sh
+set -o pipefail
+sudo python3 - NEW_SHA <<'PY' | python3 scripts/diagnostics/record-jsonl.py source-get-new.jsonl
+import importlib.util, json, os, pathlib, re, subprocess, sys
+try:
+    sha = sys.argv[1]
+    if not re.fullmatch(r'[0-9a-f]{40}', sha): raise ValueError('SHA')
+    directory = pathlib.Path('/opt/searchfloor-opds/prototype') / sha
+    if json.loads((directory / 'release.json').read_text())['sha'] != sha: raise ValueError('Manifest')
+    spec = importlib.util.spec_from_file_location('verifier', 'scripts/verify-existing-prototype.py')
+    verifier = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(verifier)
+    config = verifier.load_private_config()
+    if not config.get('OPDS_SOURCE_PROXY_URL'): raise ValueError('Proxy required')
+    program = r'''
+let transport;
+let row = {check:'dedicated-source-get',valid:false};
+try {
+  const root = new URL('file://' + process.env.OPDS_PROBE_DIR + '/dist/');
+  const {loadConfig} = await import(new URL('config.js',root));
+  const {createSourceTransport} = await import(new URL('sources/transport.js',root));
+  const {readLimited} = await import(new URL('sources/searchfloor/client.js',root));
+  const {parsePage} = await import(new URL('sources/searchfloor/parse.js',root));
+  transport = createSourceTransport(loadConfig().OPDS_SOURCE_PROXY_URL);
+  const signal = AbortSignal.timeout(15000);
+  const response = await transport.fetch('https://searchfloor.org/?status=is_finished&page=1',
+    {signal,redirect:'manual',headers:{'User-Agent':'opds-proxy/0.1',Accept:'text/html,application/zip'}});
+  row.status = response.status;
+  const bytes = await readLimited(response,2*1024*1024,signal);
+  row.bytes = bytes.length;
+  if(response.status !== 200) throw Error('Status');
+  const page = parsePage(new TextDecoder().decode(bytes),1,new Date().toISOString());
+  Object.assign(row,{books:page.books.length,nextPage:page.nextPage,valid:true});
+} catch { row.failure='source'; process.exitCode=1; }
+finally {
+  console.log(JSON.stringify(row));
+  await transport?.close();
+}
+'''
+    child_env = dict(config, PATH='/usr/bin:/bin', OPDS_PROBE_DIR=str(directory))
+    result = subprocess.run(['/usr/bin/node','--input-type=module','-'], input=program,
+                            text=True, env=child_env, timeout=20, check=False)
+    sys.exit(result.returncode)
+except Exception:
+    print(json.dumps({'check':'dedicated-source-get','valid':False,'failure':'setup'}), flush=True)
+    sys.exit(1)
+PY
+```
+
 ## Activate and validate the manual prototype
 
 After the dedicated GET succeeds, recheck collisions. Atomically switch only
