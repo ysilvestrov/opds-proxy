@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-05T14:25:44.909892+00:00",
+  "provenance": "Owner supplied dashboard text after server acceptance; same main-account context as prior clarification",
+  "scope": "main account",
+  "planLimitDisplay": "1.0 GB",
+  "actualUsageDisplay": "5.88 MB",
+  "previousActualUsageDisplay": "5.41 MB",
+  "displayedMainDeltaMB": 0.47,
+  "projectedUsageDisplay": "15.79 MB",
+  "projectedRemainingDisplay": "1008.21 MB",
+  "opdsSubUserActualAfter": "separate sub-user figure not supplied",
+  "attribution": "main-account change can include bot traffic; not an exact OPDS billing measurement"
+}

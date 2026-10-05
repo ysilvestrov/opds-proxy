@@ -1,4 +1,10 @@
-# Proxy prototype update — blocked before private configuration
+# Proxy prototype update — server acceptance passed
+
+Latest outcome14:19UTC: private HTTPS feeds and one ZIP/FB2 passed on e57f0a6.
+Prototype stopped, new current/config retained, bot healthy, production timer off.
+Main dashboard actual usage after5.88MB recorded. Device/protected empty-page
+and separate sub-user actual-after evidence remain pending. Earlier blockers
+and failed attempts below are historical and resolved as described afterward.
 
 2026-10-05. Requirements: DEPLOY-001, OPS-002, SOURCE-002/003,
 CONFIG-001, AUTH-001, DOWNLOAD-001/002, ACCEPT-001.
@@ -195,3 +201,61 @@ Runtime resource snapshot now also occurs after readiness so failed public
 checks retain real process RSS/CPU/peak evidence. Application src/artifact/SHA
 unchanged. A next controlled attempt requires re-entering OPDS proxy privately
 (the rollback removed it), then running validation; **do not repeat staging**.
+
+## Server acceptance — PASS, 2026-10-05 14:19:11–14:19:20 UTC
+
+Exact application e57f0a6d33799593afc594a8adefabfa46ee6341 passed readiness,
+12 local/public unauthenticated401 checks, authenticated local/public root,
+source XML and OpenSearch MIME/namespace checks, one completed/search page and
+one completed next page. Search returned valid XML851B; the verifier proves
+protocol validity, not nonempty mixed-status semantics or a particular query's
+results. One listed authenticated HTTPS acquisition returned200,435050 ZIP bytes
+and a single validated FB2 member; signature/CRC/expanded cap checked in memory.
+No book bytes/name/text persisted. Full-file branch exercised; live cancellation
+was not exercised by this same request. Local proxy cancellation tests are CI
+evidence, not an additional live claim.
+
+Operator evidence read directly from protected JSONL and committed as
+`proxy-prototype-acceptance-passed.jsonl`. Independent agent final-state readback
+`proxy-prototype-final-state.json` confirms current=e57f0a6, prototype/deployer/
+production inactive, timer disabled, port8787 free, bot active/healthy/NRestarts0.
+No rollback needed for the successful attempt. New private config retained.
+No Cloudflare/provider settings or bot resources changed.
+
+Snapshot during: process RSS109728KiB (107.16MiB), cgroup MemoryCurrent57212928B,
+MemoryPeak58699776B (55.98MiB), CPUUsage1.706716s. RSS and cgroup accounting are
+different measurements and must not be equated. Cache DB45056B/WAL20632B/SHM32768B
+during,45056B DB with WAL/SHM0 after stop. Retained immutable code logical bytes:
+old28855828/new28859174 (57715002 combined). These are one short-session
+snapshots, not peak workload proof. RAM available remained above6.24GB; disk
+available about35.46GB,2.08M free inodes. No resource failure observed.
+
+Provider main/sub-user **actual** dashboard usage after was requested; HTTP/ZIP
+payload counts cannot substitute for billing. FBReader3.8.31 auth/acquisition/open,
+query/next and protected empty-page fixture remain owner acceptance. The manual
+prototype is stopped at session end, with new current/config prepared for that
+separate controlled device session. Production activation remains NO-GO until
+reader/provider/deployment gates complete.
+
+## Provider usage after and post-deployment cleanup
+
+Owner supplied main-dashboard Actual Usage5.88MB,0.6% of1.0GB after the test;
+prior5.41MB. Display delta0.47MB is a main-account observation and may include
+bot traffic, not an independently attributed OPDS bill. Projected15.79MB and
+remaining1008.21MB are projections, not actuals. Separate OPDS sub-user billed
+usage after was not supplied; don't invent it from payload counts. Snapshot:
+`proxy-prototype-provider-after.json`. Available main quota remains sufficient
+for the controlled owner reader session; no plan or top-up changes.
+
+Following successful deployment/runtime verification, removed only task-owned
+private staging proxy-update-e57f0a6-w7ipksvh after digest/code identity checks.
+Both immutable installed releases, root-only rollback backups, sanitized raw
+operator evidence and unmerged/dirty checkouts/branches preserved. CI artifact
+receipt's stage path is historical and no longer exists. Cleanup receipt:
+`proxy-prototype-cleanup.json`. No merged worktree/local branch existed to delete.
+
+Server program complete: verified artifact, independent proxy, protected HTTPS
+feeds, one ZIP, stop/resource/bot evidence and successful rollback observation
+from the prior failed session are all delivered via this Git branch. Production
+activation remains deferred. The owner reader/protected fixture and separately
+scoped sub-user usage-after observations are explicitly outstanding.

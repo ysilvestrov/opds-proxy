@@ -1,3 +1,8 @@
+> Latest14:19UTC: server proxy prototype acceptance passed (e57f0a6), including
+> private HTTPS feeds and one ZIP/FB2. Prototype stopped; bot healthy/timer off.
+> Main dashboard actual usage after5.88MB. Device/protected fixture still pending.
+> Earlier installation/403 statuses below are historical.
+
 # Desktop comparative diagnostic — 2026-10-05 09:26 UTC
 
 Owner declined contacting the source administrator and requested another path.
@@ -600,3 +605,14 @@ Basic check received403 before live source/acquisition; rollback restored old
 16cc521 pointer/pre-proxy env and left prototype stopped. Bot healthy/NRestarts0;
 production timer disabled. Detailed evidence/finite inbound-client diagnosis in
 `proxy-prototype-update-report.md`. Reader/Download acceptance still pending.
+
+## Latest server prototype acceptance — PASS, 2026-10-05 14:19 UTC
+
+Application e57f0a6d33799593afc594a8adefabfa46ee6341 passed exact readiness,
+local/public401 Basic, authenticated XML/OpenSearch, completed/search/one next
+page and one435050-byte ZIP with validated FB2 in memory. Full-file transfer
+passed; live cancellation/device acceptance remain untested. Runtime snapshots,
+independent stopped final state and full JSONL are linked from
+`proxy-prototype-update-report.md`. Bot health200/NRestarts0, production/timer off.
+Prototype stopped; new current/private proxy config retained. Provider dashboard
+usage after and FBReader/protected empty-page fixture remain pending.

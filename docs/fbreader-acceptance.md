@@ -1,3 +1,8 @@
+> Latest14:19UTC: server proxy prototype acceptance passed (e57f0a6), including
+> private HTTPS feeds and one ZIP/FB2. Prototype stopped; bot healthy/timer off.
+> Main dashboard actual usage after5.88MB. Device/protected fixture still pending.
+> Earlier installation/403 statuses below are historical.
+
 > Latest status, 2026-10-05 09:10 UTC: prototype was installed, then stopped
 > after the live feed returned 503. A matching upstream GET confirmed Cloudflare
 > challenge (403). Basic/static successes are inferred, not recorded per request.
@@ -82,3 +87,15 @@ independent protected proxy config and current shared-provider budget are unveri
 Baseline remains stopped, production timer disabled, bot healthy/NRestarts0.
 New-artifact runtime, dedicated source/Download and device acceptance remain Pending.
 Evidence and continuation stop point: `proxy-prototype-update-report.md`.
+
+## Server prerequisite now passed — 2026-10-05 14:19UTC
+
+Dedicated OPDS proxy, exact-SHA readiness, private public HTTPS XML/search/next
+and one authenticated ZIP/FB2 passed on the server (e57f0a6). Evidence:
+`proxy-prototype-update-report.md`. This does not mark any device row Pass.
+Prototype is stopped after the bounded session; new current/config retained.
+Operator may start only `searchfloor-opds-prototype.service` for the controlled
+owner device test and stop it afterward; never enable production/timer.
+Endpoint: https://opds.ysilvestrov-ai.uk/opds with existing dedicated OPDS Basic
+credentials. Do not paste credentials into chat. Protected empty-page fixture
+serving and actual FBReader tests still require separate recorded evidence.

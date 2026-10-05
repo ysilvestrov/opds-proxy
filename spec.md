@@ -1,10 +1,10 @@
 # OPDS Proxy — OpenSpec
 
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
-специфікацію з namespace searchfloor та продовження реалізації; prototype
-встановлено й зупинено після upstream 403, production не активовано.
+специфікацію з namespace searchfloor; proxy prototype пройшов server acceptance
+2026-10-05 14:19UTC і зупинений, production не активовано.
 **Версія:** 0.4.6. Independent source proxy реалізовано в feature branch;
-server/device acceptance pending. **Дата:** 2026-10-05.
+server acceptance passed; device acceptance pending. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -640,3 +640,17 @@ Future operator verification explicitly selects genuine system curl, without
 UA spoofing, automatic fallback or Cloudflare changes. Requirements unchanged;
 Searchfloor dedicated GET previously passed, Download/reader still pending.
 Evidence: docs/proxy-prototype-update-report.md and associated JSONL.
+
+### Latest server acceptance evidence, 2026-10-05 14:19UTC
+
+Exact e57f0a6 passed dedicated sub-user GET and subsequent operator private
+local/public Basic/XML/OpenSearch, completed/search/one next, one435050B ZIP/FB2
+in-memory validation. Full-file branch only; live cancellation/FBReader/protected
+empty-page fixture pending. New prototype current/config retained, unit stopped;
+production/timer off, bot healthy/NRestarts0. Raw measurements and independent
+final-state evidence are in docs/proxy-prototype-update-report.md. Dashboard
+actual usage after remains pending. No app source, limits or requirements changed.
+
+Main dashboard usage after:5.88MB (prior5.41MB); main delta не доводить окремий
+OPDS billing. Separate sub-user usage after не надана. Тимчасове artifact staging
+прибрано після перевіреного запуску; immutable code/evidence/unmerged work збережено.
