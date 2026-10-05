@@ -2,6 +2,8 @@
 from pathlib import Path
 import os
 import pty
+import select
+import time
 import subprocess
 import tempfile
 import unittest
@@ -20,6 +22,33 @@ def helpers():
 
 
 class ProxyConfigurationTests(unittest.TestCase):
+    def test_hidden_input_works_with_a_real_controlling_terminal(self):
+        # A read/write text open of /dev/tty requires seeking and fails on Linux.
+        code = SCRIPT.read_text().split("<<'PY'\n", 1)[1].split('\nPY\n', 1)[0]
+        program = "scope={'__name__':'offline_test'}\nexec("+repr(code)+",scope)\nprint('MATCH', scope['read_proxy']() == 'http://fixture-secret@proxy.invalid')"
+        pid, terminal = pty.fork()
+        if pid == 0:
+            os.chdir(ROOT)
+            os.execv('/usr/bin/python3', ['python3', '-c', program])
+        output = b''
+        prompts = [b'Independent OPDS proxy URL (hidden): ', b'Repeat proxy URL (hidden): ']
+        deadline = time.monotonic() + 5
+        try:
+            while b'MATCH True' not in output and time.monotonic() < deadline:
+                if select.select([terminal], [], [], 0.1)[0]:
+                    try: chunk = os.read(terminal, 4096)
+                    except OSError: break
+                    if not chunk: break
+                    output += chunk
+                    if prompts and prompts[0] in output:
+                        prompts.pop(0)
+                        os.write(terminal, b'http://fixture-secret@proxy.invalid\n')
+            self.assertIn(b'MATCH True', output)
+            self.assertNotIn(b'fixture-secret', output)
+        finally:
+            os.close(terminal)
+            os.waitpid(pid, 0)
+
     def test_bare_filename_from_deploy_reaches_service_guard(self):
         with tempfile.TemporaryDirectory() as tmp:
             command = Path(tmp) / 'systemctl'

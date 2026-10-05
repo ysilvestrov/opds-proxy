@@ -88,3 +88,9 @@ cover config preservation, unsafe/existing proxy refusal, private backup/save
 and noninteractive rejection. Full Python suite:15 passed; Bash/embedded-Python
 syntax passed. The helper was not run against actual /etc in this session.
 Operator sudo and dashboard budget remain prerequisites for activation.
+
+Terminal helper corrections: bare filename path resolution fixed; real Linux
+TTY reproduction showed r+ text open fails before credential input. Prompt stream
+now opens write-only; getpass controls its own hidden input and visible fallback
+is forbidden. Failure reports only stage/type.17 offline tests passed, including
+a controlling-PTY double-input test proving fixture secret is not echoed.

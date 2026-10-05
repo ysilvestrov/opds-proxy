@@ -27,12 +27,25 @@ import importlib.util
 import os
 from pathlib import Path
 import tempfile
+import warnings
 from urllib.parse import urlsplit
 
 spec = importlib.util.spec_from_file_location('verifier', 'scripts/verify-existing-prototype.py')
 verifier = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(verifier)
 parse_systemd_env = verifier.parse_systemd_env
+stage = 'configuration-check'
+
+
+def read_proxy():
+    # getpass opens its own input fd; the stream is only for prompt output.
+    # Never fall back to visible input if terminal echo control fails.
+    with warnings.catch_warnings(), open('/dev/tty', 'w') as tty:
+        warnings.simplefilter('error', getpass.GetPassWarning)
+        proxy = getpass.getpass('Independent OPDS proxy URL (hidden): ', stream=tty)
+        confirmation = getpass.getpass('Repeat proxy URL (hidden): ', stream=tty)
+    if proxy != confirmation: raise ValueError('Inputs differ')
+    return proxy
 
 
 def with_proxy(original, proxy):
@@ -72,6 +85,7 @@ def save_private(path, original, updated):
 
 
 def main():
+    global stage
     if os.geteuid() != 0: raise ValueError('Root required')
     path = Path('/etc/searchfloor-opds/prototype.env')
     config = verifier.load_private_config(path)
@@ -80,14 +94,15 @@ def main():
         raise ValueError('Proxy already configured; inspect privately before changing')
     if any(not config.get(key) for key in ('PUBLIC_BASE_URL', 'PORT', 'CACHE_PATH', 'OPDS_USERNAME', 'OPDS_PASSWORD')):
         raise ValueError('Existing config incomplete')
-    with open('/dev/tty', 'r+') as tty:
-        proxy = getpass.getpass('Independent OPDS proxy URL (hidden): ', stream=tty)
-        confirmation = getpass.getpass('Repeat proxy URL (hidden): ', stream=tty)
-    if proxy != confirmation: raise ValueError('Inputs differ')
+    stage = 'hidden-terminal-input'
+    proxy = read_proxy()
     # Validate before creating any backup or writing config.
     original = path.read_text()
+    stage = 'proxy-validation'
     updated = with_proxy(original, proxy)
+    stage = 'private-backup-and-save'
     backup = save_private(path, original, updated)
+    stage = 'saved-config-check'
     verifier.load_private_config(path)
     print('Private OPDS proxy saved; Basic/base/port/cache preserved. Root-only backup: ' + str(backup))
     print('No source request, install, pointer switch or service start performed.')
@@ -96,7 +111,7 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except (Exception, KeyboardInterrupt):
-        print('STOP: private setup failed; details suppressed. Inspect config/backup privately before retrying.')
+    except (Exception, KeyboardInterrupt) as error:
+        print('STOP: private setup failed at ' + stage + ' (' + type(error).__name__ + '). Inspect config/backup privately before retrying.')
         raise SystemExit(1) from None
 PY
