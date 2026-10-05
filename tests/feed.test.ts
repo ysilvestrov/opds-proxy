@@ -41,7 +41,7 @@ it("renders escaped UTF-8 acquisition, stable identity and absolute next links",
     f.entry.link.find(
       (l: any) => l["@_rel"] === "http://opds-spec.org/acquisition",
     )["@_type"],
-  ).toBe("application/zip");
+  ).toBe("application/fb2+zip");
 });
 it("keeps empty-page next and stale observation time", () => {
   const xml = renderFeed(
