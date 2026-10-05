@@ -8,6 +8,10 @@
 | ID | Пріоритет | Робота | Критерій готовності |
 |---|---|---|---|
 | DEP-01 | P0 зараз | Фіналізувати baseline, main release та production автодеплой | Green exact-SHA main artifact; one-time activation; timer enabled після deployment/rollback evidence |
+| AUTH-02 | P1 першим | FBReader повторно запитує пароль | Відтворити на Android3.8.31, дослідити scope/realm/redirects та збереження credentials; узгодити рішення без послаблення приватного доступу |
+| META-01 | P1 після auth | Анонс і обкладинка з картки книги | Bounded source evidence/fixture, mapping OPDS summary/image, cache/traffic policy у spec; реальна картка у FBReader |
+| META-02 | P2 | Жанри та розмір книги | Перевірити доступність/семантику upstream; не плутати розмір ZIP, тексту та кількість сторінок; OPDS/device mapping і unknown handling |
+| LINKS-01 | P2 | Related links на автора та серію | Перевірити upstream URL/IDs і відображення у FBReader; вирішити web-links чи OPDS navigation до реалізації; не вдавати готовий author/series catalog |
 | READ-01 | P1 | Пошук і query-preserving next у FBReader | Реальні device результати search/next, без повного crawl |
 | READ-02 | P1 | Порожня відфільтрована сторінка з next | Protected fixture навігується у FBReader, немає public test route |
 | READ-03 | P1 | Перервати Download і виконати fresh GET | Тунель/слот звільняються, повторне завантаження працює |
@@ -17,10 +21,13 @@
 | UX-01 | P2 | Зрозумілі повідомлення для 404/429/502 | Коди незмінні, тексти без секретів; окрема погоджена зміна |
 | OPS-02 | P2 | Розрізняти безпечні abort/timeout diagnostics | Зберегти sanitization; не пропускати native socket/endpoint causes |
 | DOC-01 | P2 | Скоротити HTML fixtures та історичні reports | Зберегти contract cases й provenance, не переписувати artifact history |
-| IDEAS | Не визначено | Ідеї/зауваження власника | Спершу зібрати список, потім узгодити порядок та критерії |
 
 P0 — завершення поточного етапу. P1 — наступна надійність/приймання.
 P2 — невеликі покращення, які не блокують погоджену базу.
+AUTH-02/META-01/META-02/LINKS-01 записані зі слів власника 2026-10-05;
+причини та джерело полів ще не перевірені. Пропонований порядок після DEP-01:
+AUTH-02, META-01, META-02, LINKS-01; edge checks READ-01–04 виконувати поряд
+із відповідними змінами. Це план обговорення, не підтвердження причин проблем.
 Автори/жанри зарезервовані в архітектурі, але автоматично не додаються до
 scope наступного релізу. Нові джерела та спільний переїзд VPS — окремі рішення.
 
