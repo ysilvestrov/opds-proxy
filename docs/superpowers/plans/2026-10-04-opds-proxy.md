@@ -326,3 +326,45 @@ from code; artifact-based autodeploy preserves current-server scope.
 Task 0 establishes OpenSpec authority; every later task checks its signatures,
 limits and scenarios against spec.md, updating requirements when evidence
 changes a design decision.
+
+## Follow-up from source diagnostics — 2026-10-05
+
+Evidence: `docs/prototype-report.md`, `docs/source-diagnostics-review.md`.
+SOURCE-002 / ACCEPT-001: upstream returns 403 with `CF-Mitigated: challenge`.
+Prototype is installed but stopped; production and timer remain disabled.
+No tunnel/WAF change is proposed for upstream access.
+
+- [x] Verify the 13 handoff manifest hashes and reconcile the latest report.
+- [x] Prepare an owner-review access request; it has not been sent.
+- [x] Owner declined contacting Searchfloor; retain the request as an unsent draft.
+- [x] One desktop comparative GET returned HTTP 200; no challenge markers within
+  the inspected 16 KiB. Parsing/Download remain unverified.
+- [x] Owner requires a fully server-side solution; local/PC-dependent deployment
+  is rejected. ARCH-001 now records this availability invariant.
+- [x] Owner approved investigation, refined to local/WSL experiments first,
+  then an executable handoff to server Claude if necessary.
+- [x] Local finite matrix completed; real403 not reproduced, synthetic403/API503
+  reproduced. Evidence: docs/local-source-experiments-20261005.md.
+- [x] Prepare reusable incremental diagnostic runner and server Claude program.
+- [ ] Execute docs/claude-server-source-experiments.md on the actual VPS;
+  return results via a Git branch, not repeated manual archive transfers.
+- [ ] Obtain server evidence before choosing another transport. A browser 200
+  alone does not prove search, pagination or compliant streamed Download.
+- [ ] If feasible, review revised spec and implementation plan before adding a
+  browser adapter or changing runtime/resource/deployment budgets.
+- [ ] Review/import server helper and its tests selectively, not the stale patch.
+- [ ] Before another validation run, add failing regression tests for partial
+  HTTP evidence persistence, then fix it and align ACCEPT-001 as necessary.
+- [ ] Prepare a separate resume/validation procedure for the existing installation
+  without reinstalling, replacing credentials or enabling production/timer.
+- [ ] Once upstream access is available, perform bounded live checks and collect
+  direct per-request evidence; then complete protected fixture/device acceptance.
+
+Offline fixture/mock work can proceed while source access remains unresolved.
+The latest diagnostic already identifies a challenge; repeating it without new
+information is not the next step. No source-admin message is authorized by this plan.
+
+- [x] Owner additionally approved controlled comparison through the existing bot
+  proxy. SOURCE-002/ARCH-001 diagnostic exception and secret boundaries updated.
+- [ ] Server Claude executes matched direct/proxy matrix before considering a
+  production transport; results via Git, no endpoint/credentials in evidence.

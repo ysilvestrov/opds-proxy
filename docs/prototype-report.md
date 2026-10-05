@@ -1,4 +1,118 @@
+# Desktop comparative diagnostic — 2026-10-05 09:26 UTC
+
+Owner declined contacting the source administrator and requested another path.
+Exactly one matching Node GET was made from the desktop PC to
+`https://searchfloor.org/?page=1&status=is_finished`, using the existing
+`opds-proxy/0.1` User-Agent and `text/html,application/zip` Accept header,
+15-second timeout and manual redirects. No cookies, retries, proxies, alternate
+UA, challenge solving or book download. Response inspection was capped at 16 KiB;
+no raw HTML was stored or printed.
+
+At `2026-10-05T09:26:36.401Z`: HTTP **200**, server `cloudflare`, content-type
+`text/html; charset=utf-8`, CF-Ray `a45b62b7ee28b9e4-PRG`, cf-mitigated/retry-after
+null. Inspected 16,384 bytes; all four diagnostic markers (1010, 1015,
+challenge title, explicit access denied) false.
+
+This shows the same ordinary client can receive HTTP 200 from the desktop while
+the earlier VPS request received a challenge. It does not prove valid complete
+HTML, successful parsing, downloads, stable future access or the specific rule
+responsible for the VPS challenge. No new server unit/health checks were made.
+
+Owner subsequently rejected local deployment: the solution must run entirely
+on the server. ARCH-001 records this invariant. A server-browser feasibility
+probe is a proposed next step, not an implemented/approved production transport. The administrator request
+remains an unsent draft; contacting them is not an active next step.
+
+---
+
 # Private HTTPS prototype preparation report
+
+## Latest source diagnostic — 2026-10-05 09:07–09:10 UTC
+
+Executed `docs/codex-cli-source-diagnostics.md` as **diagnosis only**. Read
+AGENTS/spec/source contract, the prior operator trace/evidence and the complete
+actual terminal helper. No helper/application/artifact or infrastructure changes.
+SOURCE-002, CACHE-002, AUTH-001, ARCH-001 and ACCEPT-001 remain unchanged;
+COST-001 from the latest reviewed remote specification was also respected:
+no Cloudflare operations or paid resources were requested.
+
+Exactly **one** upstream request was made from this host with the brief's Node
+code: system `/usr/bin/node`, 15-second timeout, manual redirects, exact URL
+`https://searchfloor.org/?page=1&status=is_finished`, User-Agent `opds-proxy/0.1`
+and Accept `text/html,application/zip`. No retries, cookies, proxy, browser-UA
+substitution, book download or challenge solving. At most 16,384 response bytes
+were inspected in memory; raw HTML was neither persisted nor printed.
+
+Sanitized result (only the approved header allowlist and marker booleans):
+
+```json
+{
+  "date": "2026-10-05T09:08:00.785Z",
+  "status": 403,
+  "headers": {
+    "server": "cloudflare",
+    "content-type": "text/html; charset=UTF-8",
+    "cf-ray": "a45b47809a219ea9-CDG",
+    "cf-mitigated": "challenge",
+    "retry-after": null
+  },
+  "inspectedBytes": 5513,
+  "markers": {
+    "error1010": false,
+    "error1015": false,
+    "challengeTitle": true,
+    "explicitAccessDenied": false
+  }
+}
+```
+
+No Location header was present. This is fresh evidence of a Cloudflare challenge
+on the **upstream source**; it does not establish the specific rule, why this
+client/host matched it, or permanent denial of all automated access. The exact
+policy remains **unknown**. The response is not 200 and does not establish recovery.
+Changing our inbound OPDS tunnel/WAF cannot resolve protection on searchfloor.org.
+
+Trace interpretation is unchanged: operator helper reached the first live
+completed assertion only after exact-SHA health, all 12 unauthenticated Basic
+checks and 6 authenticated static XML/MIME/link checks across local/HTTPS origins.
+These successes are **inferred from execution order and the reported assertion**,
+not preserved per-request evidence. The stored `http-checks.json` is zero bytes;
+the helper buffers all results until its final print. Its existing safety tests
+cover collisions/help, not persistence of partial HTTP results. Helper and tests
+were inspected and returned unchanged, not fixed in this diagnostic step.
+
+| Unit/health | Before 09:07:28 UTC | After 09:10:02 UTC |
+|---|---|---|
+| Prototype | inactive/dead, static, NRestarts=0 | unchanged |
+| Production OPDS | inactive/dead, disabled, NRestarts=0 | unchanged |
+| Deploy service | inactive/dead, static, NRestarts=0 | unchanged |
+| Production timer | inactive/dead, disabled | unchanged |
+| Bot | active/running, NRestarts=0 | unchanged |
+| Bot loopback health | HTTP 200, `{"ok":true}` | HTTP 200, `{"ok":true}` |
+
+No prototype/production/timer restart, bootstrap, reinstall, env/credential read,
+credential regeneration, bot resource access or Cloudflare operation occurred.
+Remaining gates: approved source access, reliable per-request evidence on resumed
+validation of the **existing** installation, bounded live catalog/search tests,
+runtime RSS/CPU/cache measurements, protected empty-page fixture and actual
+FBReader Basic acquisition/ZIP opening. No catalog acceptance is claimed.
+
+Prepared owner-review draft: `docs/source-access-request.md`. It asks Searchfloor
+to inspect the timestamp/CF-Ray and specify permitted API/client/allowlist access
+and limits. **Not sent**. No UA spoofing, proxy/IP changes or challenge bypass
+is proposed as a fix. After authorized access is restored, separately arrange
+manual prototype startup and validation without running installer --apply again.
+
+Desktop handoff: `/home/ysi/opds/source-diagnostics-handoff-20261005.tar.gz` with
+a companion `.sha256`. It contains exact helper/tests, deployment README, this
+report, the diagnostic brief, access-request draft, sanitized response/unit/health
+evidence and a review patch relative to fetched `origin/feat/opds-v1`
+`66f6d4785bc1341b84f6c6cb86eac365b3d5d9a1`. No publishing/PR change was made.
+Helper SHA256 before/after: `c78b12caf4cc1ad4537da9102ad2ccd01bb135ef0c9c2dd03abb68324105dc69`.
+Tests SHA256 before/after: `34240ae47ae545757ea66aaf103f5b44020bcdc1195cc743c8ca880ecaaf7877`.
+The bundle excludes env files, credentials, bot data, raw source HTML and release
+archives. Review the patch before applying it to a desktop checkout with its own
+changes; no automatic patch application or merge is implied.
 
 ## Latest operator result — 2026-10-05 08:50–08:51 UTC
 

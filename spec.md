@@ -3,7 +3,7 @@
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; prototype
 встановлено й зупинено після upstream 403, production не активовано.
-**Версія:** 0.4.1. **Дата:** 2026-10-05.
+**Версія:** 0.4.3. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа
@@ -65,11 +65,20 @@ Acquisition проходить через той самий приватний H
 I/O SHALL бути відокремлене від чистого парсингу/форматування; залежності
 передаються з composition root. Config MUST читатися й валідуватися один раз.
 OPDS MUST NOT використовувати процес, БД, секрети, lock/state або unit бота.
+Каталог, пошук і acquisition SHALL виконуватися суто на сервері, без залежності
+від увімкненого персонального ПК, домашнього агента чи ручного імпорту для
+звичайного користування. Поточне місце — чинний Hetzner-хост; інший deployment
+чи source transport потребує окремого перегляду цієї специфікації.
 
 #### Scenario: OPDS fails or restarts
 - **WHEN** OPDS завершується аварійно чи перезапускається
 - **THEN** бот не перезапускається, його DB/state не змінюються
 - **AND** усі writable шляхи OPDS належать його окремим каталогам.
+
+#### Scenario: Personal computer is offline
+- **WHEN** персональний ПК власника вимкнений або не має інтернету
+- **THEN** це не впливає на роботу server-side каталогу, пошуку й acquisition
+- **AND** доступність Searchfloor залишається окремою upstream-залежністю.
 
 ## 3. Джерело та моделі
 
@@ -120,6 +129,23 @@ SHALL завершувати поточний запит і встановлюв
 Queue SHALL мати максимум 20 очікуваних запитів і 30 s wait deadline;
 перевищення повертає 503. Redirect SHALL бути manual, максимум 3 hops,
 тільки HTTPS і той самий origin; DNS/мережеві обмеження не обходяться.
+
+Окремий diagnostic spike MAY порівняти direct-доступ із наявним проксі бота,
+що власник явно погодив 2026-10-05. Використовуються тільки цей проксі та
+звичайні HTTP-клієнти, без ротації адрес, stealth або challenge solving.
+Proxy URL/credentials SHALL залишатися лише в пам'яті/приватному environment,
+без argv, logs, Git чи звітів. Діагностика MAY використати тільки наявні
+proxy connection settings; інші секрети/дані бота не читаються, його конфігурація
+та процес не змінюються. Це вузький виняток для діагностики ARCH-001,
+не дозвіл використовувати секрети бота у production OPDS. Production proxy
+transport потребує окремої конфігурації/перегляду spec та deployment.
+
+#### Scenario: Owner-approved comparison through the existing proxy
+- **WHEN** direct-запит серверного клієнта відхилений, а власник погодив proxy experiment
+- **THEN** той самий обмежений запит можна виконати через наявний проксі бота
+- **AND** звіт містить status/CF-Ray і proxyUsed, без endpoint/credentials
+- **AND** успіх не оголошує конкретну WAF-політику чи production-ready proxy integration.
+
 
 #### Scenario: Source throttles the service
 - **WHEN** Searchfloor повертає 429 із Retry-After 60 s
@@ -401,15 +427,36 @@ CPUQuota=100%, concurrency 1. Це проектні defaults, не вимір п
 
 ## 8. Приймання та фактичний стан
 
-Latest operator evidence, 2026-10-05 08:50–08:51 UTC:
+Latest operator evidence, 2026-10-05 09:07–09:10 UTC:
 `docs/prototype-report.md`. Prototype code/current/config та infrastructure
 встановлено оператором; exact-SHA readiness/native/cache startup відбулися.
 Basic/static XML перевірки описані за порядком helper execution; незалежний
 per-request JSON порожній, тому повного доказу приймання немає. Live completed
-feed повернув 503; matching Node upstream запит підтвердив 403. Прототип
-зупинений; production/timer disabled, bot health 200/NRestarts=0 за звітом.
-Причина upstream denial ще невідома. Не повторювати install --apply;
-наступний крок — `docs/codex-cli-source-diagnostics.md`, без обходу SOURCE-002.
+feed повернув 503. Один matching Node upstream GET 2026-10-05 09:08 UTC
+підтвердив HTTP 403 та `CF-Mitigated: challenge` від Searchfloor Cloudflare.
+Конкретне правило й причина його спрацювання невідомі; постійна заборона
+автоматизованого доступу не доведена. Наш inbound tunnel/WAF це не виправляє.
+Прототип зупинений; production/timer disabled, bot health 200/NRestarts=0
+за звітом. Не повторювати install --apply. Наступні кроки: погоджений доступ
+до джерела, виправлення збереження проміжних HTTP-доказів і окрема перевірка
+вже встановленого прототипу; без обходу SOURCE-002.
+`docs/source-access-request.md` — чернетка для власника, не надіслана.
+Власник 2026-10-05 відхилив звернення й попросив інший шлях. Один matching
+GET з desktop ПК о 09:26 UTC отримав HTTP 200 без challenge headers/маркерів
+у перших 16 KiB. Повний парсинг/Download цим не доведені. Власник відхилив локальний deployment:
+сервіс має працювати суто на сервері (ARCH-001). Звичайний серверний браузер
+розглядається лише як діагностична гіпотеза; production transport не змінено.
+Cloudflare не підтримує automated browsers для проходження production challenges;
+успіх headless Chromium не припускається. Діагностичний кандидат описано в
+`docs/codex-cli-server-browser-feasibility.md`.
+Власник погодив локальні/WSL експерименти перед серверним продовженням.
+2026-10-05 10:39–10:44 UTC: Windows і WSL Linux Node24 actual client,
+Linux urllib/curl HTTP1.1/2 та Windows headless Chrome отримали 200.
+Actual client розібрав 20 книг, next=2. Синтетичний upstream403 відтворює
+client/API503 без повторів; реальна відмова VPS локально не відтворена.
+Докази: `docs/local-source-experiments-20261005.md`. Це не доводить причину
+WAF-рішення чи відновлення VPS. Наступна погоджена діагностика —
+`docs/claude-server-source-experiments.md`; source transport не змінено.
 Історичні статуси uninstalled нижче не описують останній operator result.
 
 ### Requirement: COST-001 — Preserve Cloudflare Free and approve bill increases

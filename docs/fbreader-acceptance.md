@@ -1,3 +1,9 @@
+> Latest status, 2026-10-05 09:10 UTC: prototype was installed, then stopped
+> after the live feed returned 503. A matching upstream GET confirmed Cloudflare
+> challenge (403). Basic/static successes are inferred, not recorded per request.
+> All device checks remain Pending. See `prototype-report.md` and
+> `source-diagnostics-review.md`; earlier preparation statuses below are historical.
+
 # FBReader acceptance — pending owner test
 
 Latest operator result, 2026-10-05 08:50–08:51 UTC: prototype installed and
