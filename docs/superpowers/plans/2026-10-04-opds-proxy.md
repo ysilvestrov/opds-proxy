@@ -305,6 +305,14 @@ healthy, plan Free Website, full configuration preserved except the new OPDS
 ingress. Browser OPDS returns 502; installation/readiness/client acceptance remain
 pending. See docs/cloudflare-route-report.md; do not recreate the hostname route.
 
+2026-10-05 08:50–08:51 UTC operator result supersedes preparation blockers:
+prototype infrastructure/code/current/config installed, exact-SHA startup reached,
+then stopped after live-feed 503. Matching upstream Node request confirmed 403;
+policy unknown, no bypass attempted. Static/Basic checks inferred from helper
+order, per-request JSON empty; FBReader remains pending. Do not reinstall.
+Continue bounded SOURCE-002 diagnosis via docs/codex-cli-source-diagnostics.md.
+Server-only start-prototype helper/tests must be supplied for repository review.
+
 Recommended: native execution in this chat via superpowers:executing-plans.
 Tasks depend on the same adapter/catalog/HTTP interfaces; for a single-user
 service this avoids repeated agent context. Subagent execution is optional

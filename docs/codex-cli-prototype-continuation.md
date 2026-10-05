@@ -1,5 +1,11 @@
 # Продовження встановлення приватного прототипу
 
+**Latest status, 2026-10-05 08:50–08:51 UTC:** за operator report інсталяцію
+вже виконано. Прототип зупинений після live feed 503/upstream 403. Інструкції
+початкового встановлення нижче тепер історичні: **не повторювати --apply**.
+Продовжуй за `docs/codex-cli-source-diagnostics.md`; зберегти code/current/config
+і credentials. Production/timer залишаються вимкненими.
+
 Стан за `docs/prototype-report.md`: артефакт перевірений і підготовлений,
 але сервіс, credentials і HTTPS ще не встановлені. Перевірки відбулися
 2026-10-04 22:17–22:19 UTC (2026-10-05 00:17–00:19 Europe/Warsaw).

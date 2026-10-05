@@ -1,7 +1,8 @@
 # OPDS Proxy — OpenSpec
 
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
-специфікацію з namespace searchfloor та продовження реалізації; deployment ще немає.
+специфікацію з namespace searchfloor та продовження реалізації; prototype
+встановлено й зупинено після upstream 403, production не активовано.
 **Версія:** 0.4.1. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
@@ -400,6 +401,17 @@ CPUQuota=100%, concurrency 1. Це проектні defaults, не вимір п
 
 ## 8. Приймання та фактичний стан
 
+Latest operator evidence, 2026-10-05 08:50–08:51 UTC:
+`docs/prototype-report.md`. Prototype code/current/config та infrastructure
+встановлено оператором; exact-SHA readiness/native/cache startup відбулися.
+Basic/static XML перевірки описані за порядком helper execution; незалежний
+per-request JSON порожній, тому повного доказу приймання немає. Live completed
+feed повернув 503; matching Node upstream запит підтвердив 403. Прототип
+зупинений; production/timer disabled, bot health 200/NRestarts=0 за звітом.
+Причина upstream denial ще невідома. Не повторювати install --apply;
+наступний крок — `docs/codex-cli-source-diagnostics.md`, без обходу SOURCE-002.
+Історичні статуси uninstalled нижче не описують останній operator result.
+
 ### Requirement: COST-001 — Preserve Cloudflare Free and approve bill increases
 
 Проєкт SHALL зберігати поточний Cloudflare Free tier. Перед конфігурацією чи
@@ -480,7 +492,8 @@ Staged reader fixture XML не має serving route; його захищене �
 4. Main отримано з origin; CI workflow ID 374905819 і exact-SHA Linux prototype
    artifact підтверджено в docs/linux-ci-evidence.md. Production-main artifact
    та доступ із серверного deploy-user ще не перевірені.
-5. Installed bootstrap permissions ще не перевірені. Cloudflare route/DNS
+5. Встановлення bootstrap виконано оператором; root ownership не підтверджено
+   незалежним stat із sandbox, який показує mapped ownership. Cloudflare route/DNS
    створено й перевірено 2026-10-05; external 401/authenticated XML після
    фактичного запуску залишаються неперевіреними (docs/cloudflare-route-report.md).
    Platform/ABI сумісність підтверджена звітом підготовки; перед фактичним

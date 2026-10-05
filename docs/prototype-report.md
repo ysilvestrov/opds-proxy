@@ -1,5 +1,207 @@
 # Private HTTPS prototype preparation report
 
+## Latest operator result — 2026-10-05 08:50–08:51 UTC
+
+Infrastructure and pinned prototype code/current/config **were installed by the
+operator** using `deploy/start-prototype.sh --apply`. The prototype started and
+was subsequently stopped by the failure trap. Current blocker: **Searchfloor
+denies the matching Node request with HTTP 403; live catalog returns 503**.
+The earlier uninstalled/DNS-blocked statuses below are historical.
+
+Operator evidence: `prototype-staging-16cc521/terminal-6iQPyU` and the failed-run
+entry at the end of this report. Operator terminal output confirms successful
+bootstrap, root-owned immutable installation and protected prototype.env
+preparation/preservation. Config/credentials were not read in this investigation.
+Sandbox maps host ownership to nobody/nogroup, so ownership was not independently
+certified from the sandbox's stat output.
+
+Sanitized prototype journal for 08:49–08:51 UTC contains only:
+`listening` with exact SHA `16cc521448bbb792aa74594cf7c1c1def5ae16f9` and port 8787,
+one `request_failed` with status 503, then `stopped`. No startup or native-module
+error was observed. Reaching readiness confirms native SQLite/cache startup.
+
+The operator verifier reached the first live completed feed assertion. Its
+execution order establishes that exact-SHA health, unauthenticated Basic 401
+checks for root/source/OpenSearch/completed/search/download and authenticated
+root/source/OpenSearch XML/MIME/absolute-link checks passed both locally and
+through HTTPS before the live request failed. This is supported by the supplied
+trace location; individual passed checks were not persisted because the verifier
+prints its JSON only after completing all checks. `http-checks.json` is empty,
+so there is no independent per-request status record and no full acceptance claim.
+Search/download/reader tests, RSS/CPU/cache sizes and ZIP opening remain Pending.
+
+Read-only diagnosis at **08:51:35 UTC** reproduced one bounded upstream GET:
+`https://searchfloor.org/?page=1&status=is_finished`, system Node 24 fetch,
+manual redirects, 15-second timeout, User-Agent `opds-proxy/0.1` and
+Accept `text/html,application/zip` (exact client headers). Response:
+**403**, MIME `text/html; charset=UTF-8`, no Location or Retry-After.
+Body was cancelled, not stored or printed. No further source requests, retries,
+header/user-agent substitutions, proxy changes or challenge bypass were attempted.
+The exact upstream policy producing 403 is unknown; WAF/IP/geographic/client rules
+have not been established. This is evidence of denial, not proof of any one rule.
+
+Causal path: `SearchfloorClient.request` rejects HTTP 403 with
+`SourceError("Source denied request")`; its default status is 503.
+With no usable cached page, Catalog propagates it; HTTP API returns 503 and the
+terminal helper's live-feed assertion fails, triggering prototype stop.
+Relevant code: `src/sources/searchfloor/client.ts`, `src/catalog.ts`,
+`src/api/app.ts`, `deploy/start-prototype.sh`. SOURCE-002 requires denial without
+bypass; CACHE-002 allows 503 without usable cache. No source/application fix or
+artifact substitution is justified by this evidence.
+
+Current actual state: prototype inactive/dead, NRestarts=0, static; production
+inactive/dead and disabled; timer inactive/dead and disabled. Bot remains
+active/running, NRestarts=0; loopback health HTTP 200, `{"ok":true}`.
+No credentials, bot resources, Cloudflare routes/settings, application code or
+installed units were changed during diagnosis. The prototype was not restarted.
+
+**Do not rerun --apply:** prototype code/current already exist and the installer
+deliberately refuses that collision. Resolve authorized upstream access first,
+then resume validation of the existing installation without reinstalling or
+regenerating credentials. An owner/source-side access decision is needed before
+the live catalog can be accepted; do not weaken Basic or expose it publicly.
+
+Operator helper prepared: `deploy/start-prototype.sh`. Run as the normal user
+in a private SSH terminal with `bash deploy/start-prototype.sh --apply`.
+It prompts for sudo inside the script, revalidates the pinned artifact, prepares
+prototype-only code/config, starts the manual unit and performs protected HTTP
+checks. Success/failure appends actual evidence here. No apply was run by Codex.
+The helper's `--check` ran successfully against the actual GitHub artifact on
+2026-10-05; no sudo/install/start occurred. Bash and embedded Python syntax checks
+passed, as did the Python suite (5 tests including refusal of production/deploy/
+timer/prototype/port collisions before network or sudo). This proves preparation
+and safety guards, not actual privileged installation or HTTPS runtime acceptance.
+
+## Current continuation status — 2026-10-05
+
+Actual continuation checks: **08:15:19–08:16:44 UTC**.
+Status: **exact artifact revalidated; bootstrap blocked by sudo authentication**.
+DNS now resolves and HTTPS responds, but the prototype remains uninstalled and
+the endpoint returns **502**, not a working private catalog. Production and its
+timer remain inactive/not installed. FBReader acceptance remains Pending.
+
+Read the user-provided `docs/codex-cli-prototype-continuation.md`, existing
+instructions/specification, original prototype brief and this report. Fetched
+`origin/feat/opds-v1`: latest instruction commit
+`66f6d4785bc1341b84f6c6cb86eac365b3d5d9a1`. Read its continuation brief,
+`docs/cloudflare-route-report.md` and specification changes via `git show`/diff.
+The latest specification is 0.4.1 and adds COST-001; no Cloudflare configuration,
+paid features or subscriptions were changed during this continuation.
+Local HEAD remains `a53812af538cc43e3f68d365f013dd79c1ae9d9a`; the existing
+untracked continuation brief and report were preserved without checkout/merge
+overwrites. Remote changes to operator scripts/units/workflow: none.
+The **application** remains pinned to `16cc521448bbb792aa74594cf7c1c1def5ae16f9`.
+
+### Fresh safety and route observations
+
+| Check | Before, 08:15:19 UTC | After, 08:16:44 UTC |
+|---|---|---|
+| Bot service | active/running, NRestarts=0 | active/running, NRestarts=0 |
+| Bot loopback `/health` | HTTP 200, `{"ok":true}` | HTTP 200, `{"ok":true}` |
+| Production OPDS | not-found/inactive/dead | not-found/inactive/dead |
+| Prototype unit | not-found/inactive/dead | not-found/inactive/dead |
+| OPDS deploy service | not-found/inactive/dead | not-found/inactive/dead |
+| OPDS timer | not-found/inactive/dead; not enabled | not-found/inactive/dead; not enabled |
+| Port 8787 | No TCP listener | No TCP listener |
+
+Cloudflared was active/running with NRestarts=0. DNS A responses were
+`172.67.162.84` and `104.21.33.116`; HTTPS GET `/opds` returned HTTP **502**.
+TLS verification was left enabled, redirects were not followed, and no edge
+protection/client-signature settings were altered.
+Read the latest recorded Cloudflare API evidence: existing healthy `hetzner-vps`
+tunnel, configuration version 4, exact OPDS mapping to
+`http://127.0.0.1:8787`, existing beer-api/code routes preserved, Free Website.
+This continuation verifies DNS/HTTP externally; it does not independently
+re-read the dashboard/API configuration. **Do not recreate the existing route.**
+The earlier NXDOMAIN/route-creation instructions below are historical and
+superseded by this continuation and the route report.
+
+### Fresh artifact and preparation checks
+
+Re-read GitHub workflow/run/jobs/artifact metadata. Same repository, workflow
+`374905819`, successful completed push run `37238876789`, exact branch/SHA and
+all four successful jobs. Artifact `11316800751` has the exact pinned name,
+7,355,075-byte wrapper, expected GitHub digest and expired=false; expiry remains
+`2026-10-18T22:09:14Z`. No new/latest application artifact was substituted.
+
+Re-hashed both local archives: wrapper
+`44b0d9421087466537e7e1d73379575a0725a15f021aed833478053f490ae1de`, tar
+`e681894680fbc8fec0ab14b453dcce9526e856a28b5d37b06243829fcf90984c`.
+External checksum file exactly identified `release.tgz`. Used the reviewed
+safe extractor again into fresh owned staging:
+
+```text
+/home/ysi/opds/prototype-staging-16cc521/recheck-20261005-6L94hu/wrapper
+/home/ysi/opds/prototype-staging-16cc521/recheck-20261005-6L94hu/extracted
+```
+
+Verified the fresh wrapper's external tar checksum before safe tar extraction.
+Manifest compatibility returned true: exact application SHA, Linux/x64,
+Node major 24, ABI 137, glibc 2.39, cache schema 1. Host `/usr/bin/node` remains
+v24.19.0/ABI 137/glibc 2.39; Python remains 3.12.3.
+Compared every relative directory/file and file SHA256 in the earlier extracted
+tree against the fresh one: identical, with no symlinks or special entries.
+No artifact code/native module was executed and no npm install/build ran.
+
+Re-ran both `bash -n` checks, `systemd-analyze verify`, `visudo -cf deploy/sudoers`
+and bootstrap dry-run: all exited 0. The same unrelated account-name and sandbox
+sudo.conf ownership warnings appeared; sudoers explicitly parsed OK.
+
+### Privileged installation attempt and remaining operator action
+
+The continuation explicitly authorizes the platform's ordinary privileged-command
+approval mechanism. Used it for this exact prepared action, with noninteractive
+sudo to avoid requesting/logging a password:
+
+```sh
+sudo -n bash /home/ysi/opds/opds-proxy-prototype/deploy/bootstrap.sh --apply
+```
+
+The privileged tool call ran; **sudo exited 1: `sudo: a password is required`**.
+This was a sudo authentication failure, not an automatic approval-review
+rejection. Bootstrap did not execute or install anything. No attempt was made
+to bypass sudo, alter sandbox protections, obtain the password in chat, or use
+bot privileges/credentials. This replaces the prior no-new-privileges diagnosis
+for the latest attempt: the ordinary privileged mechanism reached sudo, which
+requires operator authentication for this command.
+
+The concrete next step is an authenticated normal operator SSH session:
+
+```sh
+cd /home/ysi/opds/opds-proxy-prototype
+systemctl show searchfloor-opds.service searchfloor-opds-prototype.service searchfloor-opds-deploy.service searchfloor-opds-deploy.timer -p LoadState -p ActiveState -p UnitFileState
+ss -ltn 'sport = :8787'
+bash deploy/bootstrap.sh --dry-run
+sudo bash deploy/bootstrap.sh --apply
+```
+
+Enter the sudo password only in that session's protected interactive prompt.
+Stop on production/deploy/timer activity, enabled timer or port/path collisions.
+Do not start/enable any production unit or timer. Then continue the immutable
+installation/config/start/verification procedure recorded below and in the
+continuation brief, revalidating the artifact and host at the time of install.
+Use the freshly extracted candidate above; preserve existing env files and
+configure only prototype.env with dedicated credentials stored root:root/0600.
+
+Dependent steps remain blocked: immutable `/opt` installation, prototype/current,
+root-only credential generation/retrieval, runtime account/native/cache startup,
+manual systemd start, local/HTTPS 401 Basic challenge and authenticated XML,
+bounded completed/search probes and RSS/CPU/cache+WAL/SHM measurements.
+No functional catalog URL or credentials can be issued yet. No Searchfloor
+requests or book downloads were made during this continuation.
+
+The controlled reader fixture still has no protected serving origin/route;
+the continuation explicitly leaves it separate from main prototype startup.
+It was not published or added to any cache. Full ACCEPT-001 remains Pending;
+record actual owner/device results in `docs/fbreader-acceptance.md` later.
+
+No bot resources, Cloudflare/DNS settings, units/accounts, production pointers,
+state/locks, environment files or system packages changed. The only new files
+are the fresh owned extraction, plus the updated report; fetching updated Git
+remote metadata. No successful deployment or merged worktree cleanup occurred.
+
+## Historical preparation — 2026-10-04
+
 Actual checks: **2026-10-04 22:17:48–22:19:25 UTC** on the current host.
 Status: **artifact verified and staged; installation/startup/HTTPS blocked**.
 Production activation is NO-GO. No installed or working HTTPS endpoint is claimed.
@@ -232,3 +434,25 @@ systemd infrastructure, DNS, routes, packages, privileged paths or credentials
 were installed/changed. Files created are the separate checkout, owned staging
 artifact/extraction/fixture files and this report. No deployment succeeded, so
 post-deployment cleanup does not apply; staged inputs remain for the operator.
+
+## Failed operator terminal run — 2026-10-05T08:50:32.096077+00:00
+
+Exit 1. Installation may be partial; inspect before rerunning. No acceptance is claimed.
+Protected evidence: `/home/ysi/opds/prototype-staging-16cc521/terminal-6iQPyU`.
+
+```text
+Id=searchfloor-opds-prototype.service
+LoadState=loaded
+ActiveState=inactive
+UnitFileState=static
+
+Id=searchfloor-opds.service
+LoadState=loaded
+ActiveState=inactive
+UnitFileState=disabled
+
+Id=searchfloor-opds-deploy.timer
+LoadState=loaded
+ActiveState=inactive
+UnitFileState=disabled
+```

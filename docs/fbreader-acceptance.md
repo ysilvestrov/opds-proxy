@@ -1,5 +1,12 @@
 # FBReader acceptance — pending owner test
 
+Latest operator result, 2026-10-05 08:50–08:51 UTC: prototype installed and
+started, then stopped after live completed feed 503/upstream 403. Static checks
+were reached/passed according to helper execution order, but no complete
+per-request report exists. Device tests below remain Pending; do not ask the
+owner to test a stopped catalog. See docs/codex-cli-source-diagnostics.md.
+Earlier uninstalled endpoint statements below are historical preparation state.
+
 Automated tests prove XML/HTTP/streaming behavior, not reader compatibility.
 Target supplied by owner on 2026-10-04: **FBReader for Android, version 3.8.31**.
 Actual Basic forwarding, ZIP opening and navigation have not been tested.
