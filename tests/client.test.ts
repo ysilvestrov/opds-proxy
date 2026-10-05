@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
+import { createSourceTransport } from "../src/sources/transport.js";
+import { createConnectProxyFixture } from "./helpers/connect-proxy.js";
 import {
   SearchfloorClient,
   SourceError,
@@ -12,6 +14,25 @@ const empty = readFileSync(
   new URL("fixtures/searchfloor/empty-search.html", import.meta.url),
   "utf8",
 );
+it("preserves denial, redirect, cooldown, HTML cap and deadline through real CONNECT",async()=>{
+  const fixture=await createConnectProxyFixture();const transport=createSourceTransport(fixture.proxyUrl);
+  let now=0;
+  const client=new SearchfloorClient({spacingMs:0,timeoutMs:100,now:()=>now,
+    fetch:(input,init)=>{const u=new URL(input);return transport.fetch(fixture.upstreamUrl+u.pathname+u.search,init);}});
+  try{
+    fixture.respond=(_q,r)=>{r.writeHead(403);r.end("challenge");};
+    await expect(client.list(null,1)).rejects.toMatchObject({status:503});expect(fixture.upstreamRequests).toBe(1);
+    fixture.respond=(_q,r)=>{r.writeHead(302,{location:"https://other.example/"});r.end();};
+    await expect(client.list(null,1)).rejects.toMatchObject({status:502});expect(fixture.upstreamRequests).toBe(2);
+    fixture.respond=(_q,r)=>{r.writeHead(429,{"retry-after":"60"});r.end();};
+    await expect(client.list(null,1)).rejects.toMatchObject({status:503});
+    now=59999;await expect(client.list(null,1)).rejects.toMatchObject({status:503});expect(fixture.upstreamRequests).toBe(3);
+    now=60000;fixture.respond=(_q,r)=>r.end("x".repeat(2*1024*1024+1));
+    await expect(client.list(null,1)).rejects.toMatchObject({status:502});
+    fixture.respond=(_q,r)=>{r.writeHead(200);r.write("<html>");};
+    const start=Date.now();await expect(client.list(null,1)).rejects.toMatchObject({status:503});expect(Date.now()-start).toBeLessThan(1000);
+  }finally{client.close();await transport.close();await fixture.close();}
+});
 it("encodes source query/page and returns filtered typed books", async () => {
   let url = "";
   const fragment = readFileSync(

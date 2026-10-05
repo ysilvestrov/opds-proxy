@@ -1,6 +1,9 @@
 import { it, expect } from "vitest";
 import { Downloads } from "../src/api/download.js";
 import type { Book } from "../src/domain/book.js";
+import { SearchfloorClient } from "../src/sources/searchfloor/client.js";
+import { createSourceTransport } from "../src/sources/transport.js";
+import { createConnectProxyFixture } from "./helpers/connect-proxy.js";
 const book: Book = {
   sourceName: "searchfloor",
   id: "1",
@@ -12,6 +15,37 @@ const book: Book = {
   observedAt: new Date().toISOString(),
 };
 const zip = Uint8Array.from([80, 75, 3, 4, 1, 2, 3]);
+it("real proxy replays ZIP, limits bytes, backpressures and aborts on disconnect/shutdown/deadline",async()=>{
+  const fixture=await createConnectProxyFixture();const transport=createSourceTransport(fixture.proxyUrl);
+  const client=new SearchfloorClient({spacingMs:0,fetch:(input,init)=>transport.fetch(fixture.upstreamUrl+new URL(input).pathname,init)});
+  const downloads=new Downloads({catalog:{book:async()=>book},client});
+  const waitAborted=async(count:number)=>{for(let n=0;n<100&&fixture.abortedUpstreams<count;n++)await new Promise(r=>setTimeout(r,10));expect(fixture.abortedUpstreams).toBeGreaterThanOrEqual(count);};
+  try{
+    fixture.respond=(_q,r)=>{r.writeHead(200,{"content-type":"application/zip"});r.write(zip.subarray(0,2));r.end(zip.subarray(2));};
+    expect(new Uint8Array(await(await downloads.streamBook("1",new AbortController().signal)).arrayBuffer())).toEqual(zip);
+    fixture.respond=(_q,r)=>{r.writeHead(200,{"content-type":"application/zip","content-length":String(20*1024*1024+1)});r.write(zip);};
+    await expect(downloads.streamBook("1",new AbortController().signal)).rejects.toMatchObject({status:502});
+    await waitAborted(1);
+    let sent=0;const total=32*1024*1024;const chunk=Buffer.alloc(64*1024);
+    fixture.respond=(_q,r)=>{
+      r.writeHead(200,{"content-type":"application/zip"});r.write(zip);sent=0;
+      const pump=()=>{while(!r.destroyed&&sent<total){sent+=chunk.length;if(!r.write(chunk)){r.once("drain",pump);return;}}if(sent>=total)r.end();};pump();
+    };
+    const slow=await downloads.streamBook("1",new AbortController().signal);
+    await new Promise(r=>setTimeout(r,100));expect(sent).toBeLessThan(total);
+    await slow.body!.cancel();expect(downloads.active).toBe(0);await waitAborted(2);
+    fixture.respond=(_q,r)=>{r.writeHead(200,{"content-type":"application/zip"});r.write(zip);};
+    const active=await downloads.streamBook("1",new AbortController().signal);downloads.abortAll();
+    await expect(active.arrayBuffer()).rejects.toThrow();expect(downloads.active).toBe(0);await waitAborted(3);
+    const bounded=new Downloads({catalog:{book:async()=>book},client},{deadlineMs:40});
+    const timed=await bounded.streamBook("1",new AbortController().signal);
+    await expect(timed.arrayBuffer()).rejects.toThrow();expect(bounded.active).toBe(0);await waitAborted(4);
+    // Unknown Content-Length must also hit the default20MiB cap while reading.
+    fixture.respond=(_q,r)=>{r.writeHead(200,{"content-type":"application/zip"});r.write(zip);for(let i=0;i<321;i++)r.write(chunk);r.end();};
+    const oversized=await downloads.streamBook("1",new AbortController().signal);
+    await expect(oversized.arrayBuffer()).rejects.toThrow();expect(downloads.active).toBe(0);
+  }finally{downloads.abortAll();client.close();await transport.close();await fixture.close();}
+});
 const setup = (response: () => Promise<Response>, options = {}) =>
   new Downloads(
     { catalog: { book: async () => book }, client: { openDownload: response } },
