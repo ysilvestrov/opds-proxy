@@ -1,3 +1,8 @@
+> Latest: c22ac2e installed, HTTPS20 FB2 ZIP acquisition links passed;
+> owner reports “Спрацювало”: missing Download resolved. Prototype active/ready,
+> production/timer off. File-open/auth/cancellation outcomes were not individually
+> reported. Evidence: `fbreader-mime-update-report.md`.
+
 > Latest: owner approved MIME correction, merged into feature as c22ac2e;
 > exact push CI/artifact verified. Operator installation and device retest pending.
 > Run `deploy/update-fbreader-prototype.sh`; see `fbreader-mime-update-report.md`.
@@ -72,13 +77,13 @@ Record OS/version/date and each result, without passwords/book content:
 
 | Check | Result |
 |---|---|
-| Add catalog `/opds`, Basic prompt, source navigation | Pending |
-| Completed books, Unicode metadata | Pending |
+| Add catalog `/opds`, Basic prompt, source navigation | Owner confirmed catalog login/navigation |
+| Completed books, Unicode metadata | Owner screenshots confirm displayed list/book metadata |
 | Search mixed statuses: only complete/Download books | Pending |
 | Next preserves query | Pending |
 | Empty filtered page with next remains navigable | Pending; use controlled test fixture |
 | Download sends Basic credentials separately | Pending |
-| ZIP MIME `application/zip`, filename `.fb2.zip`, open FB2 | Blocked on e57f0a6: Download absent; corrected c22ac2e installation/retest pending |
+| FB2 ZIP acquisition `application/fb2+zip`, raw ZIP, filename `.fb2.zip`, open FB2 | Download visibility fixed per owner after c22ac2e; file-open outcome not separately supplied |
 | Interrupted download permits fresh GET | Pending |
 
 Source proxy integration is prepared on the feature branch; the new exact-SHA

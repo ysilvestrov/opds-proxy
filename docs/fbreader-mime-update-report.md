@@ -1,3 +1,9 @@
+> Update completed: operator installed c22ac2e on 2026-10-05 at15:38UTC;
+> private HTTPS acquisition links passed; owner reported “Спрацювало” after the
+> FBReader retest. Download visibility blocker resolved. Prototype is active,
+> ready with exact corrected SHA; production/timer remain inactive/disabled.
+> Earlier operator-password blocker below is historical.
+
 # FBReader MIME update — 2026-10-05
 
 Owner approved the proposed specification delta and plan. OPDS-001/spec0.4.7 now
@@ -67,3 +73,27 @@ interrupted download remain pending; production activation stays deferred.
 After successful operator installation/runtime verification, clean only this
 task's staging and clean merged worktree/branch per AGENTS.md. Preserve dirty,
 unmerged and unrelated worktrees, raw sanitized evidence and rollback releases.
+
+## Verified operator result and owner feedback
+
+Staging runtime-user native query and synthetic MIME passed. HTTPS completed
+feed200,12863bytes,20 FB2 ZIP acquisition links passed; Basic/static checks
+passed, config preserved, no book downloaded by the automated verifier. Bot
+health200/NRestarts0 before/after. Raw sanitized receipts are
+`fbreader-mime-stage-passed.jsonl` and `fbreader-mime-acceptance-passed.jsonl`.
+The verifier stopped the prototype; the wrapper then started it for reader use.
+Agent subsequently checked `/health`: ready=true, SHA=c22ac2e; current pointer
+matches, prototype active, production service inactive/disabled and timer
+inactive/disabled. No service change by agent.
+
+Owner said “Спрацювало” in response to the corrected update and FBReader retest.
+This resolves the reported missing Download. The reply does not separately
+state file-open, separate credential forwarding or interruption results; those
+individual device observations are not invented. Protected empty-page fixture,
+query-preserving next and provider sub-user usage-after still need their own
+acceptance evidence. No production activation is inferred from this success.
+
+Task staging and downloaded wrapper removed after verified runtime success; raw
+sanitary JSONL retained. Clean PR2 merged worktree/local branch removed after
+checking clean state, MERGED status and ancestry. Dirty/unmerged checkouts and
+immutable releases/private backups retained. Receipt: `fbreader-mime-cleanup.json`.

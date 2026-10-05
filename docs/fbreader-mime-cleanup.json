@@ -1,0 +1,13 @@
+{
+  "time": "2026-10-05T15:44:01.711853+00:00",
+  "applicationSha": "c22ac2e6edafeba1563d88363326b2bd19cbb097",
+  "runtimeHealthVerified": true,
+  "mergedPr": 2,
+  "cleanMergedWorktreeRemoved": "/home/ysi/opds/fbreader-mime-20261005",
+  "mergedLocalBranchDeleted": "fix/fbreader-acquisition-mime",
+  "agentStagingRemoved": "/home/ysi/opds/fbreader-artifact-71ktwicb",
+  "operatorWrapperRemoved": "/home/ysi/opds/fbreader-stage-checks-N4Tri4/artifact.zip",
+  "sanitizedEvidenceRetained": true,
+  "immutableReleasesAndPrivateBackupsRetained": true,
+  "dirtyAndUnmergedWorktreesRetained": true
+}

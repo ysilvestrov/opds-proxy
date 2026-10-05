@@ -4,7 +4,8 @@
 специфікацію з namespace searchfloor; proxy prototype пройшов server acceptance
 2026-10-05 14:19UTC; manual reader session активна, production не активовано.
 **Версія:** 0.4.7. Independent source proxy реалізовано;
-server acceptance passed; FBReader MIME correction approved, device retest pending. **Дата:** 2026-10-05.
+server acceptance passed; c22ac2e installed, owner confirms Download visibility correction.
+Remaining individual device acceptance checks pending. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа

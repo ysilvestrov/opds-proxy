@@ -18,5 +18,6 @@
     "cacheSchemaVersion": 1
   },
   "stage": "/home/ysi/opds/fbreader-artifact-71ktwicb",
-  "status": "verified; operator install pending"
+  "status": "installed; runtime verified; owner Download visibility success",
+  "stageRemovedAfterVerifiedDeployment": true
 }

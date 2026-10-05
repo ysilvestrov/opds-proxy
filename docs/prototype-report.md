@@ -1,3 +1,7 @@
+> Latest: c22ac2e installed and runtime healthy; owner confirms FBReader correction
+> worked. Missing Download resolved; production/timer remain off. Sanitized
+> operator evidence: `fbreader-mime-update-report.md`. Earlier blockers historical.
+
 > Latest: approved FBReader MIME correction merged into feature as c22ac2e;
 > successful feature push CI/artifact verified. Terminal update script prepared;
 > sudo password blocks agent installation. See `fbreader-mime-update-report.md`.

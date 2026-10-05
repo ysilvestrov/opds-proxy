@@ -1,0 +1,39 @@
+{"time": "2026-10-05T15:38:28.645417+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T15:38:28.770940+00:00", "check": "resources", "label": "before", "runtime": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "SubState": "dead"}, "VmRSS": null, "ramAvailableBytes": 6254673920, "diskAvailableBytes": 35397378048, "freeInodes": 2078527, "cacheBytes": {"catalog.sqlite": 53248, "catalog.sqlite-wal": 0, "catalog.sqlite-shm": 0}, "retainedCodeLogicalBytes": {"e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174, "c22ac2e6edafeba1563d88363326b2bd19cbb097": 28859178}}
+{"time": "2026-10-05T15:38:28.887729+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T15:38:29.161442+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T15:38:29.450524+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T15:38:29.724405+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T15:38:30.026287+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T15:38:30.329731+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T15:38:30.620328+00:00", "check": "startup-readiness", "valid": true}
+{"time": "2026-10-05T15:38:30.724054+00:00", "check": "resources", "label": "after-readiness", "runtime": {"MainPID": "2814783", "NRestarts": "0", "MemoryCurrent": "32972800", "MemoryPeak": "33366016", "CPUUsageNSec": "800152000", "ActiveState": "active", "SubState": "running"}, "VmRSS": "82936 kB", "ramAvailableBytes": 6217154560, "diskAvailableBytes": 35397320704, "freeInodes": 2078521, "cacheBytes": {"catalog.sqlite": 53248, "catalog.sqlite-wal": 4152, "catalog.sqlite-shm": 32768}, "retainedCodeLogicalBytes": {"e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174, "c22ac2e6edafeba1563d88363326b2bd19cbb097": 28859178}}
+{"time": "2026-10-05T15:38:30.724124+00:00", "check": "acceptance-transport", "client": "system-curl-default-UA", "automaticFallback": false}
+{"origin": "local", "path": "/health", "check": "health", "status": 200, "bytes": 63, "valid": true}
+{"origin": "local", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"origin": "https", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"time": "2026-10-05T15:38:35.905166+00:00", "check": "fbreader-acquisition-links", "valid": true, "status": 200, "bytes": 12863, "books": 20, "mime": "application/fb2+zip", "bookDownloads": 0}
+{"time": "2026-10-05T15:38:36.019583+00:00", "check": "resources", "label": "during", "runtime": {"MainPID": "2814783", "NRestarts": "0", "MemoryCurrent": "58585088", "MemoryPeak": "59310080", "CPUUsageNSec": "1323668000", "ActiveState": "active", "SubState": "running"}, "VmRSS": "111196 kB", "ramAvailableBytes": 6204461056, "diskAvailableBytes": 35397279744, "freeInodes": 2078521, "cacheBytes": {"catalog.sqlite": 53248, "catalog.sqlite-wal": 37112, "catalog.sqlite-shm": 32768}, "retainedCodeLogicalBytes": {"e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174, "c22ac2e6edafeba1563d88363326b2bd19cbb097": 28859178}}
+{"time": "2026-10-05T15:38:36.054507+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T15:38:36.256939+00:00", "check": "runtime-event", "event": "listening"}
+{"time": "2026-10-05T15:38:36.257093+00:00", "check": "runtime-event", "event": "stopped"}
+{"time": "2026-10-05T15:38:36.407447+00:00", "check": "resources", "label": "after-stop", "runtime": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "SubState": "dead"}, "VmRSS": null, "ramAvailableBytes": 6256218112, "diskAvailableBytes": 35397369856, "freeInodes": 2078527, "cacheBytes": {"catalog.sqlite": 53248, "catalog.sqlite-wal": 0, "catalog.sqlite-shm": 0}, "retainedCodeLogicalBytes": {"e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174, "c22ac2e6edafeba1563d88363326b2bd19cbb097": 28859178}}
+{"time": "2026-10-05T15:38:36.444104+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T15:38:36.507011+00:00", "check": "final-state", "valid": true, "units": {"searchfloor-opds-prototype.service": {"ActiveState": "inactive", "UnitFileState": "static"}, "searchfloor-opds.service": {"ActiveState": "inactive", "UnitFileState": "disabled"}, "searchfloor-opds-deploy.service": {"ActiveState": "inactive", "UnitFileState": "static"}, "searchfloor-opds-deploy.timer": {"ActiveState": "inactive", "UnitFileState": "disabled"}}, "port8787Free": true, "currentSha": "c22ac2e6edafeba1563d88363326b2bd19cbb097"}
+{"time": "2026-10-05T15:38:36.507155+00:00", "check": "acceptance-summary", "valid": true, "prototypeStopped": true, "readerAcceptance": "pending", "bookDownloads": 0, "privateConfigPreserved": true}
