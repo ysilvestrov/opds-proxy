@@ -139,3 +139,12 @@ After successful private input, continue `docs/codex-cli-proxy-prototype-update.
 with the confirmed dashboard scope/cycle/shared remaining bandwidth. The staged
 artifact receipt is in `docs/proxy-prototype-update-artifact.json`. Do not paste
 credentials into chat or Git.
+
+After private input, verify without changing files or making source requests:
+
+```sh
+bash deploy/configure-prototype-proxy.sh --check
+```
+
+This reads protected OPDS config, validates the proxy URL and compares preserved
+settings with its latest private backup. Output contains flags only, no credentials.

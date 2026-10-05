@@ -94,3 +94,10 @@ TTY reproduction showed r+ text open fails before credential input. Prompt strea
 now opens write-only; getpass controls its own hidden input and visible fallback
 is forbidden. Failure reports only stage/type.17 offline tests passed, including
 a controlling-PTY double-input test proving fixture secret is not echoed.
+
+Owner reports private proxy input completed. Agent read-only verification still
+returns `sudo: a password is required` outside sandbox; root config verification
+was not performed by the agent. Added terminal `--check`: validates protected
+config and proxy URL and compares all prior settings to the newest private backup;
+no writes/source requests/start.18 offline tests passed, including secret-free
+output and refusal when prior Basic config differs. Provider budget gate remains.

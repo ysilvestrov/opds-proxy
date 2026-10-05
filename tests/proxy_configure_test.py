@@ -4,6 +4,9 @@ import os
 import pty
 import select
 import time
+from unittest.mock import patch
+import io
+import contextlib
 import subprocess
 import tempfile
 import unittest
@@ -22,6 +25,26 @@ def helpers():
 
 
 class ProxyConfigurationTests(unittest.TestCase):
+    def test_private_check_confirms_preservation_without_printing_values(self):
+        setup = helpers()
+        original = 'OPDS_USERNAME=fixture-user\nOPDS_PASSWORD=fixture-password\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'prototype.env'
+            backup = Path(tmp) / '.prototype.env.before-proxy-fixture'
+            backup.write_text(original)
+            path.write_text(setup['with_proxy'](original, 'http://fixture-secret@proxy.invalid'))
+            output = io.StringIO()
+            # Permission enforcement is already covered by the shared verifier;
+            # exercise comparison/output against actual fixture file bytes.
+            with patch.object(setup['verifier'], 'load_private_config', side_effect=lambda p: setup['parse_systemd_env'](p.read_text())), contextlib.redirect_stdout(output):
+                setup['check_private_config'](path)
+            self.assertIn('configPreserved', output.getvalue())
+            self.assertNotIn('fixture-secret', output.getvalue())
+            self.assertNotIn('fixture-password', output.getvalue())
+            path.write_text(path.read_text().replace('fixture-password', 'changed'))
+            with patch.object(setup['verifier'], 'load_private_config', side_effect=lambda p: setup['parse_systemd_env'](p.read_text())), self.assertRaises(ValueError):
+                setup['check_private_config'](path)
+
     def test_hidden_input_works_with_a_real_controlling_terminal(self):
         # A read/write text open of /dev/tty requires seeking and fails on Linux.
         code = SCRIPT.read_text().split("<<'PY'\n", 1)[1].split('\nPY\n', 1)[0]

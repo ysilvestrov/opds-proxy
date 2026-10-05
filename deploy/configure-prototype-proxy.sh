@@ -4,12 +4,13 @@ set -euo pipefail
 set +x
 umask 077
 if [[ ${1:-} == --help ]]; then
-  echo 'Usage: bash deploy/configure-prototype-proxy.sh'
+  echo 'Usage: bash deploy/configure-prototype-proxy.sh [--check]'
   echo 'Privately add independent OPDS proxy URL, preserving Basic and a 0600 backup.'
   echo 'No artifact install, pointer switch, source request or service start.'
   exit 0
 fi
-[[ $# == 0 && $EUID != 0 && -t 0 && -t 1 ]] || { echo 'STOP: run without sudo in a private interactive terminal.' >&2; exit 1; }
+mode=${1:---configure}
+[[ $# -le 1 && ( $mode == --configure || $mode == --check ) && $EUID != 0 && -t 0 && -t 1 ]] || { echo 'STOP: run without sudo in a private interactive terminal.' >&2; exit 1; }
 base=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$base"
 for unit in searchfloor-opds.service searchfloor-opds-prototype.service searchfloor-opds-deploy.service searchfloor-opds-deploy.timer; do
@@ -21,10 +22,12 @@ echo 'Use only the independent OPDS sub-user, never bot credentials.'
 echo 'Paste an absolute HTTP(S) proxy URL; percent-encode reserved credential characters.'
 echo 'Example format: http://USER:PASSWORD@HOST:PORT (input will be hidden).'
 sudo -v
-sudo /usr/bin/python3 - <<'PY'
+sudo /usr/bin/python3 - "$mode" <<'PY'
 import getpass
 import importlib.util
 import os
+import json
+import sys
 from pathlib import Path
 import tempfile
 import warnings
@@ -84,12 +87,27 @@ def save_private(path, original, updated):
     return Path(backup_name)
 
 
+def check_private_config(path):
+    config = verifier.load_private_config(path)
+    proxy = config.get('OPDS_SOURCE_PROXY_URL')
+    with_proxy('', proxy)  # Same URL validation, no mutation.
+    backups = sorted(path.parent.glob('.prototype.env.before-proxy-*'), key=lambda p: p.stat().st_mtime_ns)
+    if not backups: raise ValueError('Private backup missing')
+    original = verifier.load_private_config(backups[-1])
+    if config != dict(original, OPDS_SOURCE_PROXY_URL=proxy):
+        raise ValueError('Original config changed')
+    print(json.dumps({'check':'private-proxy-config','valid':True,'proxyPresent':True,'configPreserved':True,'backupCompared':True}))
+
+
 def main():
     global stage
     if os.geteuid() != 0: raise ValueError('Root required')
     path = Path('/etc/searchfloor-opds/prototype.env')
     config = verifier.load_private_config(path)
     if path.lstat().st_gid != 0: raise ValueError('Root group required')
+    if sys.argv[1:] == ['--check']:
+        check_private_config(path)
+        return
     if 'OPDS_SOURCE_PROXY_URL' in config:
         raise ValueError('Proxy already configured; inspect privately before changing')
     if any(not config.get(key) for key in ('PUBLIC_BASE_URL', 'PORT', 'CACHE_PATH', 'OPDS_USERNAME', 'OPDS_PASSWORD')):
