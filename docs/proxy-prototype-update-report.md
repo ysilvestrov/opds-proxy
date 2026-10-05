@@ -145,3 +145,22 @@ root or the resolved dedicated deploy account on the two reviewed paths; /opt
 stays root-only, symlink and group/world-write checks stay enforced. No host
 chown/chmod/bootstrap rerun. Guard failures now include safe reason/details;
 --check is read-only.22 offline tests passed. Evidence: proxy-stage-first-attempt.json.
+
+## Dedicated OPDS source GET — passed
+
+Operator executed reviewed staging helper. Fresh immutable application
+e57f0a6d33799593afc594a8adefabfa46ee6341 is root-owned; runtime-user native
+query passed; current/config unchanged and prototype not started. Dedicated
+sub-user source GET returned200,151752 HTML bytes,20 parsed books,next2.
+Sanitized JSONL read directly from operator evidence and committed as
+`proxy-prototype-dedicated-source.jsonl`; no archive transfer.
+
+Prepared `deploy/validate-proxy-prototype.sh` for one bounded operator session:
+atomic prototype pointer switch, readiness/private feeds/completed/search/one
+next page, one full ZIP acquisition in memory, resource snapshots, stop.
+32MiB expanded FB2/64 archive-entry diagnostic caps supplement20MiB ZIP/60s
+deadline. This exercises full-file validation, not server cancellation; local
+cancellation integration remains separate evidence. Failure stops prototype
+and restores pointer/pre-proxy config; no production/timer/bot changes.
+26 offline tests passed, including actual temporary pointer/env rollback after
+live-verifier failure. No activation/download has occurred in the agent session.

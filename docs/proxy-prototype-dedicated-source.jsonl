@@ -1,0 +1,2 @@
+{"check": "immutable-proxy-code-staged", "sha": "e57f0a6d33799593afc594a8adefabfa46ee6341", "valid": true, "rootOwned": true, "runtimeUserNativeQuery": true, "currentUnchanged": true, "configChanged": false, "prototypeStarted": false}
+{"check": "dedicated-source-get", "valid": true, "status": 200, "bytes": 151752, "books": 20, "nextPage": 2}

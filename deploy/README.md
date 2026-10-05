@@ -148,3 +148,17 @@ bash deploy/configure-prototype-proxy.sh --check
 
 This reads protected OPDS config, validates the proxy URL and compares preserved
 settings with its latest private backup. Output contains flags only, no credentials.
+
+After successful dedicated source staging/probe evidence, run from a private
+operator terminal:
+
+```sh
+bash deploy/validate-proxy-prototype.sh
+```
+
+It temporarily activates only the pinned manual prototype, validates private
+feeds and one full ZIP/FB2 in memory, records sanitized JSONL/resource events
+and always stops the prototype. On failure it restores baseline pointer and
+pre-proxy env from its private backup; never rerun the installer. Successful
+server checks leave new prototype/current/config prepared but the unit stopped.
+Device acceptance and provider dashboard usage after remain separate evidence.
