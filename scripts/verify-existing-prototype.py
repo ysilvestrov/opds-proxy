@@ -22,16 +22,58 @@ def emit(row):
     print(json.dumps(row), flush=True)
 
 
+def parse_systemd_env(text):
+    """EnvironmentFile values: no shell evaluation/interpolation of secrets."""
+    if '\0' in text or '\ufeff' in text: raise VerificationError('Invalid OPDS env encoding')
+    config = {}
+    position = 0
+    while position < len(text):
+        end = text.find('\n', position)
+        if end < 0: end = len(text)
+        line = text[position:end].lstrip(' \t\r')
+        if not line or line.startswith(('#', ';')) or '=' not in line:
+            position = end + 1
+            continue
+        equal = text.index('=', position, end)
+        key = text[position:equal].strip(' \t\r')
+        position = equal + 1
+        while position < len(text) and text[position] in ' \t\r': position += 1
+        quote = text[position] if position < len(text) and text[position] in "'\"" else None
+        if quote: position += 1
+        chars = []  # (character, protected against exterior whitespace trimming)
+        while position < len(text):
+            char = text[position]
+            position += 1
+            if quote:
+                if char == quote:
+                    quote = None
+                    continue
+                if char == '\\' and quote == '"' and position < len(text):
+                    following = text[position]
+                    if following in '\\"`$\n':
+                        position += 1
+                        if following != '\n': chars.append((following, True))
+                        continue
+                chars.append((char, True))
+            else:
+                if char == '\n': break
+                if char == '\\' and position < len(text):
+                    following = text[position]
+                    position += 1
+                    if following != '\n': chars.append((following, True))
+                else: chars.append((char, False))
+        if quote: raise VerificationError('Unclosed OPDS env quote')
+        while chars and not chars[-1][1] and chars[-1][0] in ' \t\r': chars.pop()
+        if re.fullmatch(r'[A-Za-z_][A-Za-z_0-9]*', key):
+            config[key] = ''.join(char for char, _ in chars)
+    return config
+
+
 def load_private_config(path=Path('/etc/searchfloor-opds/prototype.env')):
     info = path.lstat()
     if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or stat.S_IMODE(info.st_mode) != 0o600:
         raise VerificationError('Unsafe OPDS configuration permissions')
-    config = {}
-    for line in path.read_text(encoding='utf8').splitlines():
-        if line.strip() and not line.lstrip().startswith('#'):
-            key, value = line.split('=', 1)
-            config[key.strip()] = value.strip().strip('"').strip("'")
-    return config
+    return parse_systemd_env(path.read_bytes().decode('utf8'))
 
 
 def request(url, authorization):

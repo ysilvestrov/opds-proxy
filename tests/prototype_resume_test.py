@@ -5,6 +5,7 @@ import io
 import json
 from pathlib import Path
 import unittest
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 SHA = 'a' * 40
@@ -50,6 +51,34 @@ class ResumeTests(unittest.TestCase):
         self.assertIsNone(error)
         self.assertGreater(len(rows), 5)
         self.assertFalse(any(auth and ('/completed' in u or '/search?' in u) for u, auth in self.calls))
+
+    def test_systemd_credentials_preserve_quotes_escapes_and_comments(self):
+        text = """; comment=ignored
+# comment
+not an assignment
+OPDS_PASSWORD=abc'
+DOUBLE="a\\\"b\\$c\\qd"
+SINGLE=' a\\b
+c '
+UNQUOTED= a\\ b  'literal' 
+CONTINUED=first\\
+second
+OPDS_PASSWORD=final'
+"""
+        config = self.module.parse_systemd_env(text)
+        self.assertEqual(config['OPDS_PASSWORD'], "final'")
+        self.assertEqual(config['DOUBLE'], 'a"b$c\\qd')
+        self.assertEqual(config['SINGLE'], ' a\\b\nc ')
+        self.assertEqual(config['UNQUOTED'], "a b  'literal'")
+        self.assertEqual(config['CONTINUED'], 'firstsecond')
+        self.assertNotIn('; comment', config)
+
+    def test_private_config_keeps_unquoted_trailing_quote(self):
+        class PrivateFixture:
+            def lstat(self): return SimpleNamespace(st_mode=0o100600, st_uid=0)
+            def read_text(self, **_): return "OPDS_PASSWORD=abc'\n"
+            def read_bytes(self): return b"OPDS_PASSWORD=abc'\n"
+        self.assertEqual(self.module.load_private_config(PrivateFixture())['OPDS_PASSWORD'], "abc'")
 
     def test_wrong_sha_stops_before_authenticated_checks(self):
         error, rows = self.run_checks(sha='b'*40)

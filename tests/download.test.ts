@@ -1,4 +1,8 @@
-import { it, expect } from "vitest";
+import { it, expect, vi } from "vitest";
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import type { Server } from "node:http";
+import { inspect } from "node:util";
 import { Downloads } from "../src/api/download.js";
 import type { Book } from "../src/domain/book.js";
 import { SearchfloorClient } from "../src/sources/searchfloor/client.js";
@@ -15,6 +19,24 @@ const book: Book = {
   observedAt: new Date().toISOString(),
 };
 const zip = Uint8Array.from([80, 75, 3, 4, 1, 2, 3]);
+it("post-header proxy disconnect never exposes native socket details in Hono stderr",async()=>{
+  const fixture=await createConnectProxyFixture();const transport=createSourceTransport(fixture.proxyUrl);
+  fixture.respond=(_q,r)=>{r.writeHead(200,{"content-type":"application/zip","content-length":"100"});r.write(zip);setTimeout(()=>r.destroy(),100);};
+  const downloads=new Downloads({catalog:{book:async()=>book},client:{openDownload:(_b,signal)=>transport.fetch(fixture.upstreamUrl,{signal})}});
+  const app=new Hono();app.get("/",c=>downloads.streamBook("1",c.req.raw.signal));
+  const errors:unknown[]=[];const spy=vi.spyOn(console,"error").mockImplementation((...args)=>{errors.push(...args);});
+  let server:Server|undefined;
+  try{
+    server=await new Promise<Server>(resolve=>{const s=serve({fetch:app.fetch,hostname:"127.0.0.1",port:0},()=>resolve(s as Server));});
+    const address=server.address();if(!address||typeof address==="string")throw Error("Fixture address");
+    const response=await fetch(`http://127.0.0.1:${address.port}`);
+    await expect(response.arrayBuffer()).rejects.toThrow();
+    expect(downloads.active).toBe(0);expect(errors.length).toBeGreaterThan(0);
+    const stderr=inspect(errors,{depth:10});
+    expect(stderr).not.toContain("remoteAddress");expect(stderr).not.toContain("remotePort");
+    expect(stderr).not.toContain("private-fixture");
+  }finally{spy.mockRestore();downloads.abortAll();server?.closeAllConnections();if(server)await new Promise<void>(r=>server!.close(()=>r()));await transport.close();await fixture.close();}
+});
 it("real proxy replays ZIP, limits bytes, backpressures and aborts on disconnect/shutdown/deadline",async()=>{
   const fixture=await createConnectProxyFixture();const transport=createSourceTransport(fixture.proxyUrl);
   const client=new SearchfloorClient({spacingMs:0,fetch:(input,init)=>transport.fetch(fixture.upstreamUrl+new URL(input).pathname,init)});
