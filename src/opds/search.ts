@@ -1,0 +1,4 @@
+import { absolute, xml, ACQ } from "./feed.js";
+export function renderOpenSearch(base: string, name: string): string {
+  return `<?xml version="1.0" encoding="UTF-8"?><OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"><ShortName>${xml(name)}</ShortName><Description>Пошук завершених книг</Description><Url type="${xml(ACQ)}" template="${xml(absolute(base, `/opds/${name}/search?q={searchTerms}&page={startPage?}`))}"/><InputEncoding>UTF-8</InputEncoding><OutputEncoding>UTF-8</OutputEncoding></OpenSearchDescription>`;
+}

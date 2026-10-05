@@ -1,0 +1,38 @@
+{
+  "time": "2026-10-05T12:53:33.653912+00:00",
+  "stage": "/home/ysi/opds/proxy-update-e57f0a6-w7ipksvh",
+  "applicationSha": "e57f0a6d33799593afc594a8adefabfa46ee6341",
+  "run": 37311541114,
+  "workflow": 374905819,
+  "jobs": {
+    "test": "success",
+    "build": "success",
+    "typecheck": "success",
+    "package": "success"
+  },
+  "artifact": 11346670844,
+  "expiresAt": "2026-10-19T12:46:23Z",
+  "wrapperBytes": 7360797,
+  "wrapperSha256": "sha256:0c43c34457c1b583413fded05cb1aedd77d080f52ead21e333f40f102eac255b",
+  "tarSha256": "980a6fd419aab2bc914cf208f8492b12301e7972b1487cfbed56ddfe8a011870",
+  "safeExtraction": true,
+  "host": {
+    "arch": "x64",
+    "nodeAbi": "137",
+    "glibcVersion": "2.39"
+  },
+  "nodeVersion": "v24.19.0",
+  "manifest": {
+    "sha": "e57f0a6d33799593afc594a8adefabfa46ee6341",
+    "nodeMajor": 24,
+    "platform": "linux",
+    "arch": "x64",
+    "libc": "glibc",
+    "glibcVersion": "2.39",
+    "nodeAbi": "137",
+    "cacheSchemaVersion": 1
+  },
+  "compatibleManifest": true,
+  "operatorNativeMemoryQuery": true,
+  "runtimeUserNativeQuery": "not run: privileged access unavailable"
+}

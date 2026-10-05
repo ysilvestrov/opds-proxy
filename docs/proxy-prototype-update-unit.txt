@@ -1,0 +1,36 @@
+# /etc/systemd/system/searchfloor-opds-prototype.service
+[Unit]
+Description=Private Searchfloor OPDS reader acceptance prototype
+After=network-online.target
+Wants=network-online.target
+Conflicts=searchfloor-opds.service
+
+[Service]
+Type=simple
+User=searchfloor-opds
+Group=searchfloor-opds
+WorkingDirectory=/opt/searchfloor-opds/prototype/current
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/searchfloor-opds/prototype.env
+ExecStart=/usr/bin/node /opt/searchfloor-opds/prototype/current/dist/index.js
+# Manual test only. No restart loop, timer or boot enablement.
+Restart=no
+TimeoutStopSec=25
+KillSignal=SIGTERM
+UMask=0077
+MemoryHigh=256M
+MemoryMax=384M
+CPUQuota=50%
+TasksMax=64
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/searchfloor-opds/prototype-cache

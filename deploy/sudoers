@@ -1,0 +1,1 @@
+searchfloor-deploy ALL=(root) NOPASSWD: /usr/local/sbin/searchfloor-opds-control restart, /usr/local/sbin/searchfloor-opds-control stop, /usr/local/sbin/searchfloor-opds-control reset-cache

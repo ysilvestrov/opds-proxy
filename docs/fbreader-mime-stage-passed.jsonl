@@ -1,0 +1,2 @@
+{"check": "immutable-proxy-code-staged", "sha": "c22ac2e6edafeba1563d88363326b2bd19cbb097", "valid": true, "rootOwned": true, "runtimeUserNativeQuery": true, "currentUnchanged": true, "configChanged": false, "prototypeStarted": false}
+{"check": "fbreader-acquisition-mime", "valid": true, "sourceRequests": 0, "configChanged": false, "prototypeStarted": false}

@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-05T13:24:54.852461+00:00",
+  "provenance": "Operator supplied terminal output; not independently read by agent",
+  "command": "bash configure-prototype-proxy.sh --check",
+  "result": {
+    "check": "private-proxy-config",
+    "valid": true,
+    "proxyPresent": true,
+    "configPreserved": true,
+    "backupCompared": true
+  },
+  "liveSourceRequests": 0,
+  "activationPerformed": false
+}

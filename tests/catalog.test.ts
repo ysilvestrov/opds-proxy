@@ -1,0 +1,99 @@
+import { it, expect } from "vitest";
+import { Cache } from "../src/storage/cache.js";
+import { Catalog, cacheKey } from "../src/catalog.js";
+import type { Book, SourcePage } from "../src/domain/book.js";
+const book: Book = {
+  sourceName: "searchfloor",
+  id: "1",
+  title: "Тест",
+  authors: ["Автор"],
+  sourceUrl: "https://searchfloor.org/b/1",
+  downloadPath: "/book/1",
+  complete: true,
+  observedAt: new Date(0).toISOString(),
+};
+it("keys separate source names and pages", () => {
+  expect(cacheKey("a", "q", 1)).not.toBe(cacheKey("b", "q", 1));
+  expect(cacheKey("a", "q", 1)).not.toBe(cacheKey("a", "q", 2));
+});
+it("coalesces cold page, preserves next, expires and uses bounded stale", async () => {
+  let now = 0,
+    calls = 0,
+    fail = false;
+  const cache = new Cache(":memory:");
+  const c = new Catalog({
+    cache,
+    now: () => now,
+    client: {
+      list: async () => {
+        calls++;
+        if (fail) throw Error("offline");
+        return {
+          books: [book],
+          nextPage: 2,
+          observedAt: new Date(now).toISOString(),
+        };
+      },
+      getBook: async () => book,
+    },
+  });
+  const results = await Promise.all([
+    c.page("кирилиця", 1),
+    c.page("кирилиця", 1),
+  ]);
+  expect(calls).toBe(1);
+  expect(results[0].nextPage).toBe(2);
+  now = 16 * 60000;
+  fail = true;
+  expect((await c.page("кирилиця", 1)).stale).toBe(true);
+  now = 25 * 3600000;
+  await expect(c.page("кирилиця", 1)).rejects.toThrow();
+  cache.close();
+});
+it("rejects stale completion for Download on outage and does not cache source errors as empty", async () => {
+  let now = 0,
+    fail = false,
+    calls = 0;
+  const cache = new Cache(":memory:");
+  const c = new Catalog({
+    cache,
+    now: () => now,
+    client: {
+      list: async () => {
+        throw Error("offline");
+      },
+      getBook: async () => {
+        calls++;
+        if (fail) throw Error("offline");
+        return { ...book, observedAt: new Date(now).toISOString() };
+      },
+    },
+  });
+  expect(await c.book("1")).toMatchObject({ complete: true });
+  now = 16 * 60000;
+  fail = true;
+  await expect(c.book("1")).rejects.toThrow();
+  await expect(c.page(null, 1)).rejects.toThrow();
+  await expect(c.page(null, 1)).rejects.toThrow();
+  expect(calls).toBe(2);
+  cache.close();
+});
+it("one cancelled coalesced caller does not cancel others", async () => {
+  let resolve!: (p: SourcePage) => void;
+  const cache = new Cache(":memory:");
+  const c = new Catalog({
+    cache,
+    client: {
+      list: () => new Promise((r) => (resolve = r)),
+      getBook: async () => null,
+    },
+  });
+  const abort = new AbortController();
+  const first = c.page(null, 1, abort.signal);
+  const second = c.page(null, 1);
+  abort.abort();
+  await expect(first).rejects.toThrow();
+  resolve({ books: [], nextPage: 2, observedAt: new Date().toISOString() });
+  expect((await second).nextPage).toBe(2);
+  cache.close();
+});

@@ -1,0 +1,45 @@
+{
+  "time": "2026-10-05T14:22:13.467131+00:00",
+  "provenance": "Independent agent read-only host verification",
+  "currentSha": "e57f0a6d33799593afc594a8adefabfa46ee6341",
+  "units": [
+    {
+      "NRestarts": "0",
+      "Id": "warsaw-beer-bot.service",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    {
+      "NRestarts": "0",
+      "Id": "searchfloor-opds-prototype.service",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "static"
+    },
+    {
+      "NRestarts": "0",
+      "Id": "searchfloor-opds.service",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    },
+    {
+      "NRestarts": "0",
+      "Id": "searchfloor-opds-deploy.service",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "static"
+    },
+    {
+      "Id": "searchfloor-opds-deploy.timer",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    }
+  ],
+  "botHealth": {
+    "ok": true
+  },
+  "port8787Free": true
+}

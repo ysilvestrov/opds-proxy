@@ -1,0 +1,11 @@
+{
+  "time": "2026-10-05T14:25:44.909684+00:00",
+  "removedTaskTemporaryStaging": "/home/ysi/opds/proxy-update-e57f0a6-w7ipksvh",
+  "retainedImmutableReleases": [
+    "16cc521448bbb792aa74594cf7c1c1def5ae16f9",
+    "e57f0a6d33799593afc594a8adefabfa46ee6341"
+  ],
+  "operatorEvidenceDirectories": "retained",
+  "dirtyOriginalCheckout": "preserved",
+  "gitBranchesAndCheckout": "unmerged, preserved"
+}

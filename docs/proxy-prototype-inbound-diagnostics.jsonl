@@ -1,0 +1,2 @@
+{"check": "inbound-https-diagnostic", "client": "urllib-direct", "status": 403, "bytes": 17, "headers": {"server": "cloudflare", "content-type": "text/plain; charset=UTF-8", "cf-ray": "a45cf4dc5c7674f3-CDG"}, "errorCode": "1010"}
+{"check": "inbound-https-diagnostic", "client": "system-curl-default-UA", "status": 502, "bytes": 16, "headers": {"server": "cloudflare", "content-type": "text/plain; charset=UTF-8", "cf-ray": "a45cf6274a709ea1-CDG"}, "originState": "prototype stopped after rollback"}

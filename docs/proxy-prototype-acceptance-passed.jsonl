@@ -1,0 +1,41 @@
+{"time": "2026-10-05T14:19:11.377728+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T14:19:11.499071+00:00", "check": "resources", "label": "before", "runtime": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "SubState": "dead"}, "VmRSS": null, "ramAvailableBytes": 6290276352, "diskAvailableBytes": 35464912896, "freeInodes": 2082883, "cacheBytes": {"catalog.sqlite": 12288, "catalog.sqlite-wal": 0, "catalog.sqlite-shm": 0}, "retainedCodeLogicalBytes": {"16cc521448bbb792aa74594cf7c1c1def5ae16f9": 28855828, "e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174}}
+{"time": "2026-10-05T14:19:11.587723+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T14:19:11.882220+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T14:19:12.177647+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T14:19:12.466554+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T14:19:12.741460+00:00", "check": "startup-readiness", "valid": false, "failure": "not-ready"}
+{"time": "2026-10-05T14:19:13.062150+00:00", "check": "startup-readiness", "valid": true}
+{"time": "2026-10-05T14:19:13.222097+00:00", "check": "resources", "label": "after-readiness", "runtime": {"MainPID": "2786184", "NRestarts": "0", "MemoryCurrent": "32722944", "MemoryPeak": "33484800", "CPUUsageNSec": "797411000", "ActiveState": "active", "SubState": "running"}, "VmRSS": "83064 kB", "ramAvailableBytes": 6274371584, "diskAvailableBytes": 35464855552, "freeInodes": 2082877, "cacheBytes": {"catalog.sqlite": 12288, "catalog.sqlite-wal": 4152, "catalog.sqlite-shm": 32768}, "retainedCodeLogicalBytes": {"16cc521448bbb792aa74594cf7c1c1def5ae16f9": 28855828, "e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174}}
+{"time": "2026-10-05T14:19:13.222173+00:00", "check": "acceptance-transport", "client": "system-curl-default-UA", "automaticFallback": false}
+{"origin": "local", "path": "/health", "check": "health", "status": 200, "bytes": 63, "valid": true}
+{"origin": "local", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"origin": "https", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/completed", "check": "feed", "status": 200, "bytes": 12747, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/search", "check": "feed", "status": 200, "bytes": 851, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/completed", "check": "feed", "status": 200, "bytes": 12206, "valid": true}
+{"time": "2026-10-05T14:19:20.180222+00:00", "check": "one-acquisition", "valid": true, "branch": "full-file-validation", "serverCancellationExercised": false, "transport": "system-curl-default-UA", "status": 200, "zipBytes": 435050, "fb2Present": true}
+{"time": "2026-10-05T14:19:20.327120+00:00", "check": "resources", "label": "during", "runtime": {"MainPID": "2786184", "NRestarts": "0", "MemoryCurrent": "57212928", "MemoryPeak": "58699776", "CPUUsageNSec": "1706716000", "ActiveState": "active", "SubState": "running"}, "VmRSS": "109728 kB", "ramAvailableBytes": 6245392384, "diskAvailableBytes": 35464794112, "freeInodes": 2082877, "cacheBytes": {"catalog.sqlite": 45056, "catalog.sqlite-wal": 20632, "catalog.sqlite-shm": 32768}, "retainedCodeLogicalBytes": {"16cc521448bbb792aa74594cf7c1c1def5ae16f9": 28855828, "e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174}}
+{"time": "2026-10-05T14:19:20.393421+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T14:19:20.601565+00:00", "check": "runtime-event", "event": "listening"}
+{"time": "2026-10-05T14:19:20.601795+00:00", "check": "runtime-event", "event": "stopped"}
+{"time": "2026-10-05T14:19:20.751422+00:00", "check": "resources", "label": "after-stop", "runtime": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "SubState": "dead"}, "VmRSS": null, "ramAvailableBytes": 6286921728, "diskAvailableBytes": 35464867840, "freeInodes": 2082883, "cacheBytes": {"catalog.sqlite": 45056, "catalog.sqlite-wal": 0, "catalog.sqlite-shm": 0}, "retainedCodeLogicalBytes": {"16cc521448bbb792aa74594cf7c1c1def5ae16f9": 28855828, "e57f0a6d33799593afc594a8adefabfa46ee6341": 28859174}}
+{"time": "2026-10-05T14:19:20.792543+00:00", "check": "bot-health", "status": 200, "ok": true, "NRestarts": "0", "ActiveState": "active", "SubState": "running"}
+{"time": "2026-10-05T14:19:20.864775+00:00", "check": "final-state", "valid": true, "units": {"searchfloor-opds-prototype.service": {"ActiveState": "inactive", "UnitFileState": "static"}, "searchfloor-opds.service": {"ActiveState": "inactive", "UnitFileState": "disabled"}, "searchfloor-opds-deploy.service": {"ActiveState": "inactive", "UnitFileState": "static"}, "searchfloor-opds-deploy.timer": {"ActiveState": "inactive", "UnitFileState": "disabled"}}, "port8787Free": true, "currentSha": "e57f0a6d33799593afc594a8adefabfa46ee6341"}
+{"time": "2026-10-05T14:19:20.864881+00:00", "check": "acceptance-summary", "valid": true, "prototypeStopped": true, "readerAcceptance": "pending", "providerUsageAfter": "pending dashboard snapshot"}

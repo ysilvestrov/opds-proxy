@@ -1,0 +1,23 @@
+{
+  "applicationSha": "c22ac2e6edafeba1563d88363326b2bd19cbb097",
+  "runId": 37331575252,
+  "runAttempt": 2,
+  "artifactId": 11354194358,
+  "wrapperBytes": 7361261,
+  "wrapperSha256": "fdce84ccea1a89672b2e7ae114c1e7bb93953f239e901917dd2d75d6a0c747a3",
+  "tarSha256": "02c6cf1b01ed98ac2467d79710817d47b9eef9d64e21e400a01b49dc599b3ace",
+  "expiresAt": "2026-10-19T15:19:21Z",
+  "manifest": {
+    "sha": "c22ac2e6edafeba1563d88363326b2bd19cbb097",
+    "nodeMajor": 24,
+    "platform": "linux",
+    "arch": "x64",
+    "libc": "glibc",
+    "glibcVersion": "2.39",
+    "nodeAbi": "137",
+    "cacheSchemaVersion": 1
+  },
+  "stage": "/home/ysi/opds/fbreader-artifact-71ktwicb",
+  "status": "installed; runtime verified; owner Download visibility success",
+  "stageRemovedAfterVerifiedDeployment": true
+}

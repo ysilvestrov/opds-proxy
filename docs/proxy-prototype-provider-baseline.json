@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-05T13:32:28.131454+00:00",
+  "provenance": "Owner supplied dashboard text and scope clarification; no management API used",
+  "scope": "main account",
+  "planLimitDisplay": "1.0 GB",
+  "actualUsageDisplay": "5.41 MB",
+  "projectedUsageDisplay": "14.59 MB",
+  "projectedRemainingDisplay": "1009.41 MB",
+  "cycleStartDisplay": "24 Sep 2026 12:11",
+  "cycleEndDisplay": "24 Oct 2026 12:11",
+  "cycleTimezone": "not supplied",
+  "opdsSubUserUsageBaseline": "not used yet, per owner",
+  "budgetAssessment": "Reported main limit minus actual usage covers one <=20MiB file plus bounded metadata; projected remaining is not actual remaining"
+}

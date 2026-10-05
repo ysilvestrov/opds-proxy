@@ -1,0 +1,35 @@
+{
+  "operatorEvidence": {
+    "check": "immutable-proxy-code-staged",
+    "valid": false,
+    "stage": "guards",
+    "failure": "ValueError",
+    "prototypeStarted": false
+  },
+  "diagnosis": "Guard wrongly required root for parents explicitly assigned to searchfloor-deploy by bootstrap",
+  "hostOwnershipOutsideSandbox": [
+    {
+      "path": "/opt",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0755"
+    },
+    {
+      "path": "/opt/searchfloor-opds",
+      "uid": 993,
+      "gid": 984,
+      "mode": "0755"
+    },
+    {
+      "path": "/opt/searchfloor-opds/prototype",
+      "uid": 993,
+      "gid": 984,
+      "mode": "0755"
+    }
+  ],
+  "deployAccountUid": 993,
+  "baselineCodeAndCurrentRootOwned": true,
+  "candidateDirectoryAbsent": true,
+  "sourceRequests": 0,
+  "prototypeStarted": false
+}
