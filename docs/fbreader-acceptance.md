@@ -73,3 +73,12 @@ reader tests and protected empty-page serving are not yet confirmed.
 
 If MIME needs adjustment, update OPDS-001 and its renderer tests from observed
 evidence. If Basic fails, request one owner decision before any auth fallback.
+
+## Proxy prototype update preparation — 2026-10-05
+
+Exact-SHA e57f0a6 artifact verification/staging and operator native-load check passed.
+Activation was not attempted: outside-sandbox sudo requires an operator password;
+independent protected proxy config and current shared-provider budget are unverified.
+Baseline remains stopped, production timer disabled, bot healthy/NRestarts0.
+New-artifact runtime, dedicated source/Download and device acceptance remain Pending.
+Evidence and continuation stop point: `proxy-prototype-update-report.md`.

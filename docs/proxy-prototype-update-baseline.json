@@ -1,0 +1,144 @@
+{
+  "before": {
+    "time": "2026-10-05T12:53:28.053981+00:00",
+    "units": [
+      {
+        "NRestarts": "0",
+        "Id": "warsaw-beer-bot.service",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-prototype.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-deploy.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "Id": "searchfloor-opds-deploy.timer",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      }
+    ],
+    "botHealth": {
+      "ok": true
+    },
+    "port8787Free": true,
+    "prototypeCurrent": "/opt/searchfloor-opds/prototype/16cc521448bbb792aa74594cf7c1c1def5ae16f9",
+    "manifest": {
+      "sha": "16cc521448bbb792aa74594cf7c1c1def5ae16f9",
+      "nodeMajor": 24,
+      "platform": "linux",
+      "arch": "x64",
+      "libc": "glibc",
+      "glibcVersion": "2.39",
+      "nodeAbi": "137",
+      "cacheSchemaVersion": 1
+    },
+    "memoryBytes": {
+      "MemTotal": 8127746048,
+      "MemAvailable": 6320001024,
+      "SwapFree": 3183800320
+    },
+    "diskAvailableBytes": 35567296512,
+    "freeInodes": 2091238,
+    "ownershipVerification": "Pending privileged inspection; sandbox maps root UID to65534",
+    "privilegedAccess": "sudo -n outside sandbox: a password is required"
+  },
+  "after": {
+    "time": "2026-10-05T12:55:26.800443+00:00",
+    "units": [
+      {
+        "NRestarts": "0",
+        "Id": "warsaw-beer-bot.service",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-prototype.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "NRestarts": "0",
+        "Id": "searchfloor-opds-deploy.service",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "Id": "searchfloor-opds-deploy.timer",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "disabled"
+      }
+    ],
+    "botHealth": {
+      "ok": true
+    },
+    "port8787Free": true,
+    "prototypeCurrent": "/opt/searchfloor-opds/prototype/16cc521448bbb792aa74594cf7c1c1def5ae16f9",
+    "memoryBytes": {
+      "MemTotal": 8127746048,
+      "MemAvailable": 6313639936,
+      "SwapFree": 3184062464
+    },
+    "diskAvailableBytes": 35511615488,
+    "freeInodes": 2087136,
+    "oldCodeLogicalBytes": 28855828,
+    "stagedCodeLogicalBytes": 28859174,
+    "sandboxMetadata": {
+      "/opt/searchfloor-opds/prototype/current": {
+        "mappedUid": 65534,
+        "mappedGid": 65534,
+        "mode": "0o777"
+      },
+      "/opt/searchfloor-opds/prototype/16cc521448bbb792aa74594cf7c1c1def5ae16f9": {
+        "mappedUid": 65534,
+        "mappedGid": 65534,
+        "mode": "0o755"
+      },
+      "/opt/searchfloor-opds/prototype/current/release.json": {
+        "mappedUid": 65534,
+        "mappedGid": 65534,
+        "mode": "0o644"
+      },
+      "/etc/systemd/system/searchfloor-opds-prototype.service": {
+        "mappedUid": 65534,
+        "mappedGid": 65534,
+        "mode": "0o644"
+      }
+    },
+    "rootOwnershipConfirmed": false,
+    "liveSourceRequests": 0,
+    "bookRequests": 0,
+    "prototypeStarted": false
+  }
+}
