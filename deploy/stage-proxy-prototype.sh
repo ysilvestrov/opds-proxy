@@ -4,12 +4,13 @@ set -euo pipefail
 set +x
 umask 077
 if [[ ${1:-} == --help ]]; then
-  echo 'Usage: bash deploy/stage-proxy-prototype.sh'
+  echo 'Usage: bash deploy/stage-proxy-prototype.sh [--check]'
   echo 'Verify pinned CI, copy immutable code, test native module and one source GET.'
   echo 'No current switch/service start. Source failure restores pre-proxy env backup.'
   exit 0
 fi
-[[ $# == 0 && $EUID != 0 && -t 0 && -t 1 ]] || { echo 'STOP: run without sudo in a private interactive terminal.' >&2; exit 1; }
+mode=${1:---apply}
+[[ $# -le 1 && ( $mode == --apply || $mode == --check ) && $EUID != 0 && -t 0 && -t 1 ]] || { echo 'STOP: run without sudo in a private interactive terminal.' >&2; exit 1; }
 base=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$base"
 for unit in searchfloor-opds.service searchfloor-opds-prototype.service searchfloor-opds-deploy.service searchfloor-opds-deploy.timer; do
@@ -36,7 +37,7 @@ CHECK
 evidence=$(mktemp -d /home/ysi/opds/proxy-stage-checks-XXXXXX)
 echo "Sanitized staging checks: $evidence/checks.jsonl"
 sudo -v
-sudo /usr/bin/python3 - <<'PY' | python3 scripts/diagnostics/record-jsonl.py "$evidence/checks.jsonl"
+sudo /usr/bin/python3 - "$mode" <<'PY' | python3 scripts/diagnostics/record-jsonl.py "$evidence/checks.jsonl"
 import hashlib
 import json
 import os
@@ -44,12 +45,26 @@ from pathlib import Path
 import subprocess
 import signal
 import tempfile
+import sys
+import pwd
 
 SHA='e57f0a6d33799593afc594a8adefabfa46ee6341'
 BASELINE='16cc521448bbb792aa74594cf7c1c1def5ae16f9'
 WRAPPER='0c43c34457c1b583413fded05cb1aedd77d080f52ead21e333f40f102eac255b'
 TAR='980a6fd419aab2bc914cf208f8492b12301e7972b1487cfbed56ddfe8a011870'
 stage='guards'
+
+
+class GuardFailure(ValueError):
+    def __init__(self, reason, details=None):
+        self.reason=reason
+        self.details=details or {}
+
+
+def validate_parent(parent, allowed_owners=(0,)):
+    info=parent.lstat()
+    if not parent.is_dir() or parent.is_symlink() or info.st_uid not in allowed_owners or info.st_mode & 0o022:
+        raise GuardFailure('unsafe-code-parent',{'path':str(parent),'uid':info.st_uid,'gid':info.st_gid,'mode':oct(info.st_mode & 0o777)})
 
 
 def verify_digest(path, expected):
@@ -73,27 +88,37 @@ def main():
     global stage
     if os.geteuid()!=0: raise ValueError('Root required')
     root=Path('/opt/searchfloor-opds/prototype')
+    deploy_uid=pwd.getpwnam('searchfloor-deploy').pw_uid
     for parent in [Path('/opt'),Path('/opt/searchfloor-opds'),root]:
-        info=parent.lstat()
-        if not parent.is_dir() or parent.is_symlink() or info.st_uid!=0 or info.st_mode & 0o022:
-            raise ValueError('Unsafe code parent')
+        stage='guard-parent'
+        validate_parent(parent,(0,) if parent==Path('/opt') else (0,deploy_uid))
+    stage='guard-current'
     current=root/'current'
     if not current.is_symlink() or current.resolve()!=root/BASELINE:
-        raise ValueError('Unexpected current pointer')
+        raise GuardFailure('unexpected-current-pointer')
+    stage='guard-baseline'
     if json.loads((current/'release.json').read_text())['sha']!=BASELINE:
-        raise ValueError('Unexpected baseline identity')
+        raise GuardFailure('unexpected-baseline-identity')
+    stage='guard-candidate-directory'
     target=root/SHA
-    if os.path.lexists(target): raise ValueError('Candidate already exists; inspect without replacing')
+    if os.path.lexists(target): raise GuardFailure('candidate-already-exists')
     for unit in ['searchfloor-opds.service','searchfloor-opds-prototype.service','searchfloor-opds-deploy.service','searchfloor-opds-deploy.timer']:
+        stage='guard-unit'
         if subprocess.check_output(['/usr/bin/systemctl','show',unit,'-p','ActiveState','--value'],text=True).strip()!='inactive':
-            raise ValueError('Unit collision')
+            raise GuardFailure('unit-collision',{'unit':unit})
+    stage='guard-timer'
     if subprocess.check_output(['/usr/bin/systemctl','show','searchfloor-opds-deploy.timer','-p','UnitFileState','--value'],text=True).strip()!='disabled':
-        raise ValueError('Timer enabled')
+        raise GuardFailure('timer-enabled')
+    stage='guard-port'
     if len(subprocess.check_output(['/usr/bin/ss','-ltn','sport = :8787'],text=True).splitlines())!=1:
-        raise ValueError('Port collision')
+        raise GuardFailure('port-collision')
+    stage='guard-receipt'
     receipt=json.loads(Path('docs/proxy-prototype-update-artifact.json').read_text())
     if receipt['applicationSha']!=SHA: raise ValueError('Receipt identity')
     source=Path(receipt['stage'])/'artifact.zip'
+    if sys.argv[1:]==['--check']:
+        print(json.dumps({'check':'staging-guards','valid':True,'prototypeStarted':False,'codeCopied':False,'sourceRequests':0}),flush=True)
+        return
     stage='protected-extraction'
     # Copy/hash trusted bytes again under root before executing only stdlib extraction.
     with tempfile.TemporaryDirectory(prefix='.proxy-stage-',dir=root) as temporary:
@@ -186,6 +211,8 @@ finally{console.log(JSON.stringify(row));await transport?.close();}
 if __name__=='__main__':
     try: main()
     except Exception as error:
-        print(json.dumps({'check':'immutable-proxy-code-staged','valid':False,'stage':stage,'failure':type(error).__name__,'prototypeStarted':False}),flush=True)
+        row={'check':'immutable-proxy-code-staged','valid':False,'stage':stage,'failure':type(error).__name__,'prototypeStarted':False}
+        if isinstance(error,GuardFailure):row.update(reason=error.reason,details=error.details)
+        print(json.dumps(row),flush=True)
         raise SystemExit(1) from None
 PY

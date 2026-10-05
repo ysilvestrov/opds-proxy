@@ -133,3 +133,15 @@ Source failure restores protected pre-proxy config backup; candidate/evidence
 remain. Operator JSONL recorder persists sanitized rows at the printed path.
 This script has not executed on /opt or made source requests in the agent session.
 20 offline tests and shell/embedded-Python/embedded-Node syntax checks passed.
+
+## First operator staging attempt — guard mismatch corrected
+
+The operator run failed before copying or source requests. Read-only metadata
+outside sandbox established root /opt, but searchfloor-deploy ownership of
+/opt/searchfloor-opds and prototype (UID993/GID984,0755), exactly as reviewed
+bootstrap.sh specifies. Baseline code/current remain root-owned; candidate absent.
+The helper had incorrectly required root for all parents. It now accepts only
+root or the resolved dedicated deploy account on the two reviewed paths; /opt
+stays root-only, symlink and group/world-write checks stay enforced. No host
+chown/chmod/bootstrap rerun. Guard failures now include safe reason/details;
+--check is read-only.22 offline tests passed. Evidence: proxy-stage-first-attempt.json.
