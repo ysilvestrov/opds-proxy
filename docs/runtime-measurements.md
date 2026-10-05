@@ -1,21 +1,24 @@
-# Runtime measurements — not yet measured on Linux host
+# Proxy prototype resource and budget evidence
 
-Design budgets: runtime MemoryHigh 256M / MemoryMax 384M / CPUQuota 50% /
-TasksMax 64; deployer MemoryMax 768M / CPUQuota 100%. Snapshot server audit is
-not proof of peak capacity. Do not report these limits as observed consumption.
+Status: server measurement pending. Local fixture tests are not capacity evidence.
+Production and deploy timer remain off. Current host beside existing bot;
+migration is a separate project. Authoritative requirements OPS-001/002,
+SOURCE-003, ACCEPT-001 in root spec.md.
 
-Record date/window/release SHA/Node ABI, workload and these measurements on the
-current host, preserving bot health/NRestarts before/after:
+Server agent records UTC time, exact application SHA, before/during/after rows:
 
-| Workload | RSS/MemoryPeak | CPU/latency | DB + WAL + SHM | Current + previous release | Result |
-|---|---|---|---|---|---|
-| Cold catalog/cache rebuild | Pending | Pending | Pending | Pending | Pending |
-| Repeated search/pagination/cache hits | Pending | Pending | Pending | Pending | Pending |
-| Largest permitted streamed transfer/disconnect | Pending | Pending | Pending | Pending | Pending |
-| Successful release and 60s health window | Pending | Pending | Pending | Pending | Pending |
-| Deliberate failed release and rollback | Pending | Pending | Pending | Pending | Pending |
+| Observation | Before | During one bounded session | After stop |
+|---|---|---|---|
+| RAM available / disk / inode headroom | Pending | Pending | Pending |
+| OPDS RSS / CPU / MemoryPeak | Pending | Pending | Pending |
+| OPDS SQLite + WAL + SHM bytes | Pending | Pending | Pending |
+| New + prior retained immutable code bytes | Pending | Pending | Pending |
+| Bot health / NRestarts | Pending | Pending | Pending |
+| Prototype / production / deploy timer states | Pending | Pending | Pending |
+| WebShare scope / billing cycle / shared remaining budget | Pending | Pending | Pending |
+| Dedicated OPDS sub-user measured bytes | Pending | Pending | Pending |
 
-Cache logical cap 128 MiB / 10,000 keys does not equal disk size; include SQLite
-free pages and WAL in measurements against 256 MiB physical target. Checkpoint
-and pruning are implemented. If target is exceeded, change/retest cache policy
-and spec before relying on these capacity assumptions. No cache backups.
+Provider dashboard is billing authority.1GB ceiling is not reserved bandwidth;
+usage screenshot5.41MB/projected14.69MB has unconfirmed scope and does not fill
+this table. No hard app monthly cap, management API key, auto top-up or plan change.
+Do not persist credentials, book/query text, or raw environment in evidence.

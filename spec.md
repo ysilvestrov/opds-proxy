@@ -3,7 +3,8 @@
 **Статус:** APPROVED DESIGN / IMPLEMENTATION IN PROGRESS — власник погодив
 специфікацію з namespace searchfloor та продовження реалізації; prototype
 встановлено й зупинено після upstream 403, production не активовано.
-**Версія:** 0.4.5. Independent source proxy погоджено власником; implementation pending. **Дата:** 2026-10-05.
+**Версія:** 0.4.6. Independent source proxy реалізовано в feature branch;
+server/device acceptance pending. **Дата:** 2026-10-05.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа

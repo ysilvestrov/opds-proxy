@@ -66,5 +66,10 @@ Record OS/version/date and each result, without passwords/book content:
 | ZIP MIME `application/zip`, filename `.fb2.zip`, open FB2 | Pending |
 | Interrupted download permits fresh GET | Pending |
 
+Source proxy integration is prepared on the feature branch; the new exact-SHA
+manual prototype must pass dedicated OPDS proxy/static/live checks before this
+device session. Follow docs/codex-cli-proxy-prototype-update.md; installation,
+reader tests and protected empty-page serving are not yet confirmed.
+
 If MIME needs adjustment, update OPDS-001 and its renderer tests from observed
 evidence. If Basic fails, request one owner decision before any auth fallback.
