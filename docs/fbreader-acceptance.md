@@ -1,7 +1,11 @@
-> Latest owner device evidence, 2026-10-05: catalog/list/book metadata display,
+> Latest: owner approved MIME correction, merged into feature as c22ac2e;
+> exact push CI/artifact verified. Operator installation and device retest pending.
+> Run `deploy/update-fbreader-prototype.sh`; see `fbreader-mime-update-report.md`.
+
+> Owner device evidence, 2026-10-05: catalog/list/book metadata display,
 > but Download is absent in FBReader Premium. Acquisition/open acceptance FAILS
 > at visibility. MIME diagnosis and proposed correction are in
-> `fbreader-download-diagnosis.md`; owner spec/plan review is pending.
+> `fbreader-download-diagnosis.md`; owner spec/plan review is approved.
 > Earlier server acceptance remains valid and does not prove device compatibility.
 
 > Latest14:19UTC: server proxy prototype acceptance passed (e57f0a6), including
@@ -74,7 +78,7 @@ Record OS/version/date and each result, without passwords/book content:
 | Next preserves query | Pending |
 | Empty filtered page with next remains navigable | Pending; use controlled test fixture |
 | Download sends Basic credentials separately | Pending |
-| ZIP MIME `application/zip`, filename `.fb2.zip`, open FB2 | Blocked: Download absent; proposed acquisition MIME correction pending review |
+| ZIP MIME `application/zip`, filename `.fb2.zip`, open FB2 | Blocked on e57f0a6: Download absent; corrected c22ac2e installation/retest pending |
 | Interrupted download permits fresh GET | Pending |
 
 Source proxy integration is prepared on the feature branch; the new exact-SHA

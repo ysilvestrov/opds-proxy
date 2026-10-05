@@ -1,7 +1,9 @@
 # FBReader acquisition MIME correction
 
 Status: owner approved specification delta and implementation plan on 2026-10-05.
-Application correction in progress; installed artifact/device retest pending.
+Application correction merged as c22ac2e; CI/artifact verified.
+Terminal update prepared; installed artifact/device retest pending.
+Results: `docs/fbreader-mime-update-report.md`.
 Evidence: `docs/fbreader-download-diagnosis.md`.
 Requirements: SPEC-001, OPDS-001, DOWNLOAD-001/002, AUTH-001.
 

@@ -1,7 +1,11 @@
-> Latest owner device evidence, 2026-10-05: FBReader shows catalog/books but no
+> Latest: approved FBReader MIME correction merged into feature as c22ac2e;
+> successful feature push CI/artifact verified. Terminal update script prepared;
+> sudo password blocks agent installation. See `fbreader-mime-update-report.md`.
+
+> Owner device evidence, 2026-10-05: FBReader shows catalog/books but no
 > Download. Server acceptance passed; device acceptance is blocked by acquisition
 > visibility. See `fbreader-download-diagnosis.md` and proposed MIME correction
-> plan; application/installed artifact unchanged pending owner spec/plan review.
+> plan; correction approved/merged, installed artifact pending operator update.
 
 > Latest14:19UTC: server proxy prototype acceptance passed (e57f0a6), including
 > private HTTPS feeds and one ZIP/FB2. Prototype stopped; bot healthy/timer off.
