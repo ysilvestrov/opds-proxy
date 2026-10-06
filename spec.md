@@ -7,7 +7,10 @@ same-main noop, lock contention і автоматичний timer підтвер
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.7.1: owner-requested volume-after-annotation layout correction;
 META-02 tags/volume/artwork display confirmed by owner and screenshot2026-10-07
-on3e660df; OPDS-006 now places volume after synopsis. Layout correction pending release.
+on3e660df; OPDS-006 now places volume after synopsis. Layout correction5efa8ef
+installed: public HTTPS health2026-10-07 confirms exact5efa8efd791d028cec159f60ae6c487de1ea9675,
+ready=true; CI/package successful. New position phone result remains pending.
+Evidence: docs/annotation-order-release-evidence.md.
 Approved META-02 genre/text-volume metadata:
 owner selected character count and author sheets to assess work length on2026-10-07.
 OPDS-006 approved by owner aftera979a83; local META-02 implementation verified:
@@ -19,7 +22,7 @@ genre/volume/synopsis/artwork display by screenshot. Follow-up layout position p
 Evidence: docs/genre-volume-release-evidence.md; phone check: docs/genre-volume-acceptance.md.
 Implementation plan docs/superpowers/plans/2026-10-07-genres-text-volume.md
 approved by owner afterbee8baa; native execution in current checkout.
-Production includes0.7.0 genre/volume metadata plus0.6.0 card-resource signed-link design;
+Production includes0.7.1 genre/volume layout plus0.6.0 card-resource signed-link design;
 AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
 Local implementation and independent review complete; 111 Node tests pass,

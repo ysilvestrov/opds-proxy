@@ -164,7 +164,7 @@ local clients supply parsed Book and existing annotation/artwork methods.
 - [x] Create/attach PR identifying OPDS-006 and preserved invariants. Require green
   exact-head test/typecheck/build, merge via approved normal workflow and require
   green exact-main native package. Verify actual health SHA after timer installs.
-- [ ] Ask owner for actual genre/volume display result; close only observed gates,
+- [x] Ask owner for actual genre/volume display result; close only observed gates,
   preserve untested reader edge backlog and installed/proxy traffic evidence limits.
 
 ## Self-review and handoff
@@ -177,6 +177,6 @@ Author-sheet display stays source-derived; no inferred size or pages.
 
 Owner approved written specificationa979a83. Owner approved planbee8baa before execution;
 preserve current-folder/native implementation choice rather than asking again
-for worktree or per-task agents. Code has not started.
+for worktree or per-task agents. Base implementation deployed as3e660df; owner accepted visible fields before the layout amendment below.
 
 Owner2026-10-07 accepted visible genres/volume/artwork via screenshot and explicitly requested volume after synopsis. This bounded layout amendment updates the composition above; rerun existing renderer/API ordering tests RED/GREEN, build/typecheck and Linux CI, then normal release. No parser/cache/auth/source change.
