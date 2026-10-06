@@ -1,12 +1,19 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parsePage } from "../src/sources/searchfloor/parse.js";
+import { parsePage, parseObservedPage } from "../src/sources/searchfloor/parse.js";
 const fixture = (name: string) =>
   readFileSync(
     new URL(`fixtures/searchfloor/${name}.html`, import.meta.url),
     "utf8",
   );
 const at = "2026-10-04T20:00:00Z";
+it('reports rejected IDs internally without exposing them in public pages',()=>{
+  const html='<div id="book1"><p class="fw-medium">Title</p><span data-bs-title="Статус книги">в процессе</span></div>';
+  expect(parseObservedPage(html,1,at).rejectedIds).toEqual(['1']);
+  expect(parsePage(html,1,at)).toEqual({books:[],nextPage:null,observedAt:at});
+  const complete='<div id="book1"><p class="fw-medium">Title</p><span data-bs-title="Статус книги">весь текст</span><button class="download-btn" data-url="/book/1"></button></div>';
+  expect(parseObservedPage(html+complete,1,at).rejectedIds).toEqual([]);
+});
 describe("SOURCE-001 real fixtures", () => {
   it("retains complete books and source identity", () => {
     const p = parsePage(fixture("completed"), 1, at);

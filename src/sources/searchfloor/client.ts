@@ -1,8 +1,8 @@
 import PQueue from "p-queue";
 import { setTimeout as delay } from "node:timers/promises";
-import type { Book, SourcePage, SourceCard, Artwork } from "../../domain/book.js";
+import type { Book, SourceObservation, SourceCard, Artwork } from "../../domain/book.js";
 import { parseAnnotationCard, parseAnnotation, validateArtwork } from './metadata.js';
-import { parsePage, ParseError, hasEmptyResult } from "./parse.js";
+import { parsePage, parseObservedPage, ParseError, hasEmptyResult } from "./parse.js";
 export class SourceError extends Error {
   constructor(
     message: string,
@@ -193,7 +193,7 @@ export class SearchfloorClient {
     query: string | null,
     page: number,
     signal?: AbortSignal,
-  ): Promise<SourcePage> {
+  ): Promise<SourceObservation> {
     const url = new URL(
       query === null ? "/" : "/search",
       "https://searchfloor.org",
@@ -210,7 +210,7 @@ export class SearchfloorClient {
       const html = new TextDecoder().decode(
         await readLimited(r, this.options.htmlLimit ?? 2 * 1024 * 1024, s),
       );
-      const parsed = parsePage(html, page, new Date(this.now()).toISOString());
+      const parsed = parseObservedPage(html, page, new Date(this.now()).toISOString());
       if (r.status === 404 && (!hasEmptyResult(html) || parsed.books.length))
         throw new SourceError("Unexpected source 404", 502);
       return parsed;
