@@ -17,7 +17,10 @@ device acceptance залишається FAILED (docs/metadata-acceptance.md). M
 authenticated HTTPS JPEG для27223/27505; докази в docs/metadata-server-diagnostics.md.
 Після probe власник підтвердив швидкі картки й анонси, але cover досі відсутня.
 META-01 не прийнято; фактичний phone cover request/status ще невідомий.
-Наступний read-only крок: docs/reader-cover-observation-handoff.md. Серверний200
+Read-only observation заблоковано preflight c8a196b: HTTP decoder не встановлено,
+capture не запускався; docs/reader-cover-observation-report.md. Запропоновано
+обмежене default-off логування, дизайн ще не погоджено:
+docs/reader-cover-logging-design-review.md. Серверний200
 не доводить доставку чи показ JPEG на телефоні; production не змінено.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.

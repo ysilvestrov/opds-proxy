@@ -1,5 +1,9 @@
 # Server Claude: observe the actual FBReader cover request
 
+Status2026-10-06: preflight blocked, capture never started (c8a196b).
+Do not rerun the same inventory/window. See reader-cover-observation-report.md
+and proposed reader-cover-logging-design-review.md; the latter awaits approval.
+
 Read root spec.md first. This continues META-01 Task 5 diagnostics under
 OPDS-005, AUTH-001, SOURCE-002/003, ARCH-001 and ACCEPT-001. It authorizes
 bounded read-only observation, not an application fix or deployment change.
