@@ -38,3 +38,9 @@ Application MIME correction: acquisition application/fb2+zip; raw HTTP applicati
 Endpoint: https://opds.ysilvestrov-ai.uk/opds. Використовувати наявні окремі
 Basic credentials без паролів у URL/чаті/reports. Переходячи у production,
 зберегти hostname, credentials і provider transport; cache можна перебудувати.
+
+Production promotion завершено2026-10-06: main d66216c, наявні hostname/Basic/
+незалежний provider proxy збережено. Local/HTTPS auth/static, справжній
+deployment/60s observation, same-main noop/lock і автоматичний timer підтверджено
+в docs/production-rollout-report.md. Це серверні докази; відкладені device
+сценарії вище залишаються pending і не позначаються Pass.

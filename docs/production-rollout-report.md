@@ -1,6 +1,8 @@
 # Production rollout — operator continuation
 
-Status: **operator production cutover passed; automatic timer acceptance pending**.
+Status: **production active; automatic deployment timer verified** (2026-10-06).
+The dated sections below preserve preparation and failure history. Final
+acceptance is recorded in the last section; earlier pending states are superseded.
 Requirements: SPEC-001, SOURCE-003, DEPLOY-001/002, OPS-001/002, ACCEPT-001.
 Clean main checkout: `d66216c134a5a4c085de6f137359bea27abdc597`.
 Results branch: `codex/production-rollout`; no direct main push.
@@ -35,7 +37,7 @@ was not freshly confirmed in chat. Terminal script requests current numbers/cycl
 confirmation and checks ample conservative margin from actual usage/limits.
 Receipt: `production-rollout-provider.json`. No subscription/provider changes.
 
-## Terminal entry point
+## Historical terminal entry point (already executed)
 
 ```bash
 bash /home/ysi/opds/production-rollout/deploy/production-rollout.sh
@@ -173,6 +175,8 @@ timer or enabled it. Healthy production and stopped prototype remain in place.
 
 ## Script checks
 
+These checks were recorded before the initial operator cutover.
+
 Shell syntax/help passed;35 offline Python tests passed. Coverage: private env
 quoting without interpolation, proxy/placeholder guards, exact effective sudo
 policy with broad/extra commands rejected, pending/settled recovery decisions,
@@ -180,3 +184,42 @@ actual competing flock excluded during a mocked fixed-unit attempt. Sequential
 author review per no-subagent instructions; no independent/live root execution
 claimed. Application/CI already verified on main; new operator helper tested
 offline. Root spec unchanged: approved invariants are retained.
+
+## Final production acceptance, 2026-10-06
+
+Operator continuation07:44:34–07:46:46UTC passed. Receipt:
+`production-timer-passed.jsonl`. Only the timer was changed, root:root0644,
+SHA256e46d30a0652e4a7644d509a0e25fbc184669295ac2432b9cfd3e129308268644;
+private backup kept outside Git. Initial OnActiveSec2min triggered a genuine
+automatic same-main noop. Runtime was not restarted. Timer is active/waiting/
+enabled with a finite next event; production active/running/enabled;
+prototype inactive/static; state idle/settledSHA=d66216c.
+
+Fresh exact-main CI and local/public Basic401/authenticated static XML passed.
+Production PID2903006/NRestarts0 and bot PID2320493/NRestarts0/health200 were
+unchanged. Runtime cgroup peak59101184B, current49537024B, RSS102580kB,
+CPU1877736000ns; cache SQLite28672B/WAL32992B/SHM32768B. Main code28859178B;
+availableRAM5784596480B/disk34750722048B/inodes2078445. No extra source
+completed request or book download during timer completion.
+
+Independent read-only follow-up at08:54–08:56UTC confirmed main ready,
+healthy bot, unchanged PIDs/NRestarts, root ownership/hash of installed timer,
+and14 automatic journal results, all noop, with the next event still scheduled.
+Receipt: `production-rollout-final.json`. This establishes ongoing timer
+operation beyond the first tick; it is not a long-term capacity guarantee.
+
+SPEC-001, SOURCE-003, DEPLOY-001/002, OPS-001/002 and initial ACCEPT-001 rollout
+gates are satisfied by the combined preparation/cutover/timer receipts.
+Deliberate failure/rollback/hold was exercised only in the isolated verifier;
+no broken release was injected into production. Accepted reader baseline is
+unchanged; postponed reader edge cases remain in `docs/backlog.md`.
+No production rollout blocker remains. Future green-main pushes are checked
+by the enabled server timer. Basic/provider credentials, bot and Cloudflare
+resources were preserved; no host npm build or manual artifact relay.
+
+Post-deployment cleanup removes only the task's temporary provider confirmation
+file after retaining its confirmed numbers in `production-rollout-cutover.jsonl`.
+Sanitized receipts and private rollback backups are retained. There are no
+clean merged task worktrees to remove: production/diagnostic result branches
+have not been merged, and the original prototype checkout is dirty. All those
+worktrees/branches and unrelated prior-task files are preserved.

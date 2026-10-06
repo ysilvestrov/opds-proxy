@@ -1,12 +1,13 @@
 # OPDS Proxy — OpenSpec
 
-**Статус:** BASELINE ACCEPTED / PRODUCTION ROLLOUT IN PROGRESS.
+**Статус:** BASELINE ACCEPTED / PRODUCTION ACTIVE.
 Власник підтвердив список книг, metadata та завантаження у FBReader на c22ac2e
-і погодив фіналізацію бази та налаштування deployment. Production activation
-і timer ще потребують фактичних operator-доказів.
+і погодив фіналізацію бази та налаштування deployment. Production activation,
+same-main noop, lock contention і автоматичний timer підтверджено operator-
+доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.4.9. Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
-**Дата:** 2026-10-05.
+**Дата:** 2026-10-06.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа

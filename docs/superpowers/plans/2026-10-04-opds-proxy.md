@@ -259,6 +259,14 @@ trigger avoids the observed infinity schedule. Review/install only that timer
 after settled-production/config/CI/HTTP gates; backup privately, daemon-reload,
 then require actual automatic noop and a finite subsequent scheduled event.
 No deployer/runtime/script/state/secret changes or manual stamp deletion.
+2026-10-06 final operator acceptance: corrected root-owned timer triggered
+automatic noop07:46UTC and scheduled the next event. Production d66216c is
+active/enabled; prototype stopped; production/bot PIDs and NRestarts unchanged.
+Independent08:54–08:56UTC check found14 automatic noops and timer waiting/enabled.
+Tasks7–8 production rollout gates are complete; historical unchecked rows below
+describe the original implementation plan. Evidence: production-rollout-report,
+production-timer-passed.jsonl and production-rollout-final.json. Unverified
+reader edge cases remain in backlog, without fabricated device Pass.
 
 **Files:** `.github/workflows/ci.yml`, `scripts/{package-release,autodeploy}.mjs`,
 `tests/deploy.test.ts`, deploy service/timer, `deploy/README.md`.
