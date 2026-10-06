@@ -58,7 +58,8 @@ Then use existing private HTTP verification tooling to check local8787 and
 
 Return sanitized receipts and active SHA through Git. If deployment breaks
 baseline, use the existing reviewed rollback mechanism and record the actual
-result. Schema2 cache is disposable; reverting may rebuild cache without backup.
+result. Cache schema1 remains compatible with the previous runtime; artwork
+membership is auxiliary and recoverable, with orphan cleanup after legacy eviction.
 No readiness/liveness probe performs live source fetching.
 
 ## Owner device check
@@ -78,7 +79,10 @@ mark them passed only if actually tested.
 
 ## Results
 
-- Local: Node build/typecheck and89 tests passed,2 skipped before final review.
+- Local after review fixes: Node build/typecheck and91 tests passed,2 skipped;
+  Python57 offline tests passed. Review Important schema mismatch and Minor
+  cover-first inline synopsis loss reproduced RED and fixed GREEN. Schema1
+  original writes/read interoperate with the extended artwork bookkeeping.
 - Linux CI/native artifact: pending.
 - Actual deployed SHA/server source+private HTTP checks: pending.
 - Device full-card/cover/optional absence/repeat/Download: pending.

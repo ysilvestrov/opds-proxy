@@ -6,8 +6,9 @@
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.5.0. META-01 design, письмова специфікація та implementation plan
-погоджені в чаті. Metadata routes/cache реалізовані локально; independent review,
-Linux CI, server та device acceptance ще pending (docs/metadata-acceptance.md).
+погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
+review виправлені з RED/GREEN доказами; final-head Linux CI, server та device
+acceptance ще pending (docs/metadata-acceptance.md).
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
@@ -531,6 +532,16 @@ Cover values SHALL мати окремий LRU бюджет64MiB serialized valu
 DB+WAL target256MiB не збільшується. Одна cover decoded<=2MiB. Cache reset
 та rollback SHALL працювати за CACHE-002; несумісний кеш перебудовується.
 Evicted cover MAY бути отримана на вимогу без збагачення списку.
+
+SQLite user_version SHALL залишатися1; початкова п'ятиколонкова `cache`
+таблиця сумісна зі старим runtime. Artwork membership SHALL зберігатися в
+auxiliary таблиці з pruning orphan keys; бюджети рахують лише live cache rows.
+Package manifest cacheSchemaVersion залишається1 і відповідає runtime.
+Evidence/reason: review META-01 виявив, що схема2 суперечила manifest1 та
+installed deployer, який приймає лише1. Це сумісне розширення дозволяє
+ordinary app update/rollback без ручної зміни deployer. Validated inline
+annotation при card lookup SHALL зберігатися в resource cache навіть коли
+перший запит був cover; наступна картка не губить анонс через API404.
 
 Успішні empty annotation і source404 optional ресурсу SHALL кешуватися як
 явна відсутність на15min, окремо від неперевіреного ресурсу. Timeout/403/429/

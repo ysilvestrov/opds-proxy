@@ -3,18 +3,40 @@ import { Cache } from '../src/storage/cache.js';
 import { Catalog } from '../src/catalog.js';
 import type { Book } from '../src/domain/book.js';
 const base: Book = { sourceName: 'searchfloor', id: '1', title: 'Book', authors: ['Author'], sourceUrl: 'https://searchfloor.org/b/1', downloadPath: '/book/1', complete: true, observedAt: new Date(0).toISOString() };
+it('retains inline synopsis when cover loads the source card first', async () => {
+    const s = setup();
+    s.client.getCard = async () => ({ book: base, annotation: { api: false, inline: 'Inline synopsis' } });
+    await s.c.cover('1');
+    expect((await s.c.details('1'))?.details.summary).toBe('Inline synopsis');
+    expect(s.counts()).toEqual([0, 1]);
+    s.cache.close();
+});
 function setup() {
     let now = 0, annotations = 0, covers = 0, fail = false, absent = false, incomplete = false;
     const cache = new Cache(':memory:');
     const client = { list: async () => ({ books: incomplete ? [] : [{ ...base, observedAt: new Date(now).toISOString() }], rejectedIds: incomplete ? ['1'] : [], nextPage: null, observedAt: new Date(now).toISOString() }),
-        getBook: async () => { if (fail)
-            throw Error('offline'); return incomplete ? null : { ...base, observedAt: new Date(now).toISOString() }; },
-        getCard: async () => { if (fail)
-            throw Error('offline'); return incomplete ? null : { book: { ...base, observedAt: new Date(now).toISOString() }, annotation: { api: true } }; },
-        getAnnotation: async (): Promise<string | null> => { annotations++; if (fail)
-            throw Error('offline'); return absent ? null : 'Synopsis'; },
-        getCover: async () => { covers++; if (fail)
-            throw Error('offline'); return absent ? null : { mime: 'image/jpeg' as const, bytes: new Uint8Array([255, 216, 255, 224]), observedAt: new Date(now).toISOString() }; } };
+        getBook: async () => {
+            if (fail)
+                throw Error('offline');
+            return incomplete ? null : { ...base, observedAt: new Date(now).toISOString() };
+        },
+        getCard: async () => {
+            if (fail)
+                throw Error('offline');
+            return incomplete ? null : { book: { ...base, observedAt: new Date(now).toISOString() }, annotation: { api: true } };
+        },
+        getAnnotation: async (): Promise<string | null> => {
+            annotations++;
+            if (fail)
+                throw Error('offline');
+            return absent ? null : 'Synopsis';
+        },
+        getCover: async () => {
+            covers++;
+            if (fail)
+                throw Error('offline');
+            return absent ? null : { mime: 'image/jpeg' as const, bytes: new Uint8Array([255, 216, 255, 224]), observedAt: new Date(now).toISOString() };
+        } };
     const c = new Catalog({ cache, client, now: () => now });
     return { c, cache, client, setTime: (n: number) => now = n, setFail: (v: boolean) => fail = v, setAbsent: (v: boolean) => absent = v, setIncomplete: () => incomplete = true, counts: () => [annotations, covers] };
 }

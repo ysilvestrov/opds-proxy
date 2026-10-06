@@ -142,6 +142,13 @@ export class Catalog {
                 return null;
             }
             this.deps.cache.set(`book:${this.source}:${id}`, card.book, this.now() + day);
+            if (!card.annotation.invalid && !card.annotation.api) {
+                const observedAt = card.book.observedAt;
+                const annotation: RecordValue<string> = card.annotation.inline
+                    ? { state: 'present', observedAt, value: card.annotation.inline }
+                    : { state: 'absent', observedAt };
+                this.deps.cache.set(this.resourceKey(id, 'annotation'), annotation, this.now() + (card.annotation.inline ? day : 15 * 60000));
+            }
             return card;
         });
     }

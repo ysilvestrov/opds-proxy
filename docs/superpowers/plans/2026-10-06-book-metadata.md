@@ -1,6 +1,6 @@
 # Book metadata Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Показати анонс і обкладинку вибраної завершеної Searchfloor книги у FBReader Android3.8.31.
 
@@ -84,20 +84,20 @@ tests/metadata.test.ts (new), client.test.ts, fixtures/searchfloor/metadata-*.ht
 
 **Interfaces:** Produces the domain types and pure parser/client methods above.
 
-- [ ] Write failing fixture tests: `inline_preserves_paragraphs` -> two `<p>`
+- [x] Write failing fixture tests: `inline_preserves_paragraphs` -> two `<p>`
   become two text paragraphs without script/style; `api_path_is_fixed` -> external
   data-url rejected, never followed; `empty_is_not_site_description` -> null.
-- [ ] Write failing transport tests: 404->null; empty annotation->null;
+- [x] Write failing transport tests: 404->null; empty annotation->null;
   malformed UTF-8/wrong MIME->502; 403->503; JPEG/PNG/GIF accepted only matching
   signature/MIME; HTML as JPEG/SVG rejected; no Content-Length cap+1 rejected
   and body canceled; cap exactly accepted;15s timeout/cancellation/shutdown bounded.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/metadata.test.ts tests/client.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/metadata.test.ts tests/client.test.ts`;
   confirm assertion/import failures for missing feature, not unrelated setup errors.
-- [ ] Implement pure functions and transport using existing `run/request/readLimited`.
+- [x] Implement pure functions and transport using existing `run/request/readLimited`.
   Parameterize Accept per resource; fixed paths, same source dispatcher/queue.
   Strict TextDecoder; do not execute JS or use generic description. If inline
   extraction reuses card, retain it without duplicate `/b/{id}` lookup.
-- [ ] Rerun focused tests, existing transport.test.ts and typecheck; commit files
+- [x] Rerun focused tests, existing transport.test.ts and typecheck; commit files
   explicitly with `feat: fetch bounded Searchfloor annotations and covers`.
 
 ## Task 2: Artwork budget in disposable SQLite
@@ -106,16 +106,18 @@ tests/metadata.test.ts (new), client.test.ts, fixtures/searchfloor/metadata-*.ht
 
 **Interfaces:** Produces delete and artwork group set; get JSON contract unchanged.
 
-- [ ] Write `artwork_budget_includes_base64_overhead`: small injected cover/global
+- [x] Write `artwork_budget_includes_base64_overhead`: small injected cover/global
   budgets; eviction keeps serialized artwork<=group cap and all values<=global cap.
   `global_key_limit_includes_artwork` -> all kinds count; `overwrite_updates_group`
   -> totals correct; `reset_rollback_rebuilds` -> unsupported schema resets only OPDS DB.
-- [ ] Run cache.test.ts and confirm new assertions fail.
-- [ ] Add group accounting to table, use schema2 with existing incompatible reset
-  behavior; LRU evicts artwork within64MiB then all rows within128MiB/10,000keys.
+- [x] Run cache.test.ts and confirm new assertions fail.
+- [x] Add group accounting in an auxiliary membership table, retain schema1
+  and original five-column cache table for manifest/installed deployer/rollback
+  compatibility; prune orphan membership rows. LRU evicts artwork within64MiB
+  then all rows within128MiB/10,000keys.
   Options permit reduced test limits; defaults remain spec values. Do not create
   a second DB. Include decoded2MiB validation before persisted base64.
-- [ ] Run cache.test.ts, typecheck and existing runtime.test.ts; commit
+- [x] Run cache.test.ts, typecheck and existing runtime.test.ts; commit
   `feat: bound recoverable artwork within the existing cache`.
 
 ## Task 3: Lazy metadata orchestration and independent freshness
@@ -127,17 +129,17 @@ Keys: `details:v1:{source}:{id}:annotation`, `details:v1:{source}:{id}:cover`.
 Values discriminate `{state:'present',observedAt,value}` vs `{state:'absent',observedAt}`;
 failed/unrequested resources have no successful cache value.
 
-- [ ] Write `list_does_not_fetch_details` and `list_refresh_preserves_enrichment`;
+- [x] Write `list_does_not_fetch_details` and `list_refresh_preserves_enrichment`;
   client counters remain0 on page, previous summary/cover timestamps retained.
   `optional_refresh_does_not_allow_old_download` -> completion older15min still
   needs source confirmation, failure rejects Download.
-- [ ] Write `absence_expires_after_15min`, `failure_is_not_absence`,
+- [x] Write `absence_expires_after_15min`, `failure_is_not_absence`,
   `expired_detail_is_not_served_after_24h`, `duplicate_reads_coalesce`,
   `cancel_one_keeps_other`, `incomplete_invalidates_details`.
   Cover eviction refills only cover; cold invalid/unknown/incomplete IDs never
   fetch annotation/cover. Basic cached base can survive optional failure.
-- [ ] Run catalog.test.ts and confirm failures for these new behaviors.
-- [ ] Implement details/cover via shared pending resource operations. Reuse base
+- [x] Run catalog.test.ts and confirm failures for these new behaviors.
+- [x] Implement details/cover via shared pending resource operations. Reuse base
   metadata <=24h for display, look up unknown/expired base; preserve existing
   book()15min Download check. Null/changed completion invalidates all resource keys;
   list-observed incomplete books invalidate too before completed filtering loses them.
@@ -145,11 +147,11 @@ failed/unrequested resources have no successful cache value.
   duplicates of an accepted ID from rejectedIds. Never include incomplete books
   in public SourcePage. Client.list/Catalog Client signatures carry the observation;
   fixtures/mocks supply rejectedIds (empty when none).
-- [ ] Fetch annotation then cover for selected detail only; optional errors omitted,
+- [x] Fetch annotation then cover for selected detail only; optional errors omitted,
   never cached as absence; transient cover-only request propagates appropriate error.
   Cover link emitted only for available verified cached artwork. List hydration uses
   only existing valid details, no image links. Stale base labels remain explicit.
-- [ ] Run catalog/parse/download/cache tests and typecheck; commit
+- [x] Run catalog/parse/download/cache tests and typecheck; commit
   `feat: resolve book metadata on demand without extending download freshness`.
 
 ## Task 4: Private Atom entries and artwork API
@@ -158,20 +160,20 @@ failed/unrequested resources have no successful cache value.
 
 **Interfaces:** Consumes Catalog.details/cover; produces renderBookEntry and routes.
 
-- [ ] Write XML tests: same urn; Atom alternate MIME; original HTML/acquisition
+- [x] Write XML tests: same urn; Atom alternate MIME; original HTML/acquisition
   retained; summary/content escaped and paragraphs preserved; both image relations
   with actual MIME/private absolute URL; unknown optional fields omitted;
   empty summary no generic description; stale warning; PUBLIC_BASE_URL beats Host.
-- [ ] Write HTTP tests: unauthenticated entry/cover401 with existing challenge;
+- [x] Write HTTP tests: unauthenticated entry/cover401 with existing challenge;
   unknown source404 and invalid new route id400 before Catalog; missing book404;
   cover absent404/transient503/invalid502; correct bytes and MIME/nosniff/private
   headers; no-store full entry; list calls no details/cover. Regression: Download
   still authenticates and uses unchanged ZIP MIME, root/health remain source-independent.
-- [ ] Run feed/app tests and confirm new assertions fail.
-- [ ] Implement shared pure rendering, standalone entry namespace/self/start;
+- [x] Run feed/app tests and confirm new assertions fail.
+- [x] Implement shared pure rendering, standalone entry namespace/self/start;
   routes under existing auth/source guard; response bytes via Uint8Array without
   HTML fallback; sanitized errors unchanged. Adapt mock Deps explicitly.
-- [ ] Run feed/app/auth/download tests plus typecheck; commit
+- [x] Run feed/app/auth/download tests plus typecheck; commit
   `feat: expose private complete OPDS entries and book artwork`.
 
 ## Task 5: Whole-change verification, release and reader acceptance
@@ -185,7 +187,8 @@ docs/metadata-acceptance.md (new operator/device checklist and evidence).
   Required result: exit0, no failures; no live source traffic from CI.
 - [ ] Request one independent read-only whole-branch review against requirement IDs;
   fix blockers, rerun affected tests. Create/attach PR; require green exact-head
-  CI and Linux native artifact before main merge.
+  Linux CI/native tests before main merge. Existing workflow packages only on
+  main push: require its exact-SHA native-load/artifact job before deployment.
 - [ ] Prepare operator bounded probe using full URLs
   `https://searchfloor.org/api/annotation/27047` and `https://searchfloor.org/cover/27047`
   through existing independent OPDS proxy; validate status/MIME/caps/signature
@@ -210,6 +213,6 @@ Coverage: SOURCE-004 ->Task1; CACHE-001/002/003 ->Task2/3;
 SOURCE-001/002/003 ->Task1/3; OPDS-001/003/005 and AUTH-001 ->Task4;
 ARCH-001/ACCEPT-001 ->Task5. Five Review Focus cases assigned above.
 No new billing/config/server resource decisions. Spec46a6d4c approved in chat;
-plan review and execution selection remain pending. Recommend native execution
+plan reviewed and native execution selected by owner. Native execution
 in this session: five tasks share client/cache/Catalog interfaces, one whole-branch
 independent reviewer before merge. Existing branch choice remains unchanged.
