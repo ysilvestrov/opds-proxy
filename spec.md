@@ -5,11 +5,13 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.7.0 PROPOSED for META-02 genre/text-volume metadata;
+**Версія:** 0.7.0 for approved META-02 genre/text-volume metadata;
 owner selected character count and author sheets to assess work length on2026-10-07.
-OPDS-006 approved by owner aftera979a83; no META-02 product implementation yet.
+OPDS-006 approved by owner aftera979a83; local META-02 implementation verified:
+133 Node tests pass (2 Windows-only skips),57 WSL Python tests pass;
+build/typecheck pass. Installed META-02 and reader display remain pending.
 Implementation plan docs/superpowers/plans/2026-10-07-genres-text-volume.md
-awaits owner review; preserved execution method is native in current checkout.
+approved by owner afterbee8baa; native execution in current checkout.
 Approved production behavior remains0.6.0: card-resource signed-link design;
 AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
