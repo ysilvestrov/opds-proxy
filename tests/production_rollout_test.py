@@ -21,6 +21,73 @@ def helper():
 
 
 class ProductionRolloutTests(unittest.TestCase):
+    def test_repeated_apply_preserves_timer(self):
+        module = helper()
+        now = module.datetime.datetime.now()
+        provider = dict(operatorConfirmed=True, mainLimit='1 GB', mainActualUsageMB='6.29',
+                        opdsLimit='1 GB', opdsActualUsageKB='18.55', sharedPool=True,
+                        cycleStart=(now-module.datetime.timedelta(days=1)).isoformat(),
+                        cycleEnd=(now+module.datetime.timedelta(days=1)).isoformat(),
+                        cycleTimezone='operator-confirmed', remainingBudgetAssessment='ample')
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'provider.json'
+            path.write_text(json.dumps(provider))
+            with patch.object(module.os, 'geteuid', return_value=0), \
+                 patch.object(module, 'show', return_value={'ActiveState':'active','UnitFileState':'enabled'}), \
+                 patch.object(module, 'control') as control, patch.object(module, 'emit'):
+                with self.assertRaises(ValueError): module.apply(path)
+            control.assert_not_called()
+
+    def test_safe_restore_keeps_lock_until_prototype_started(self):
+        module = helper()
+        with tempfile.TemporaryDirectory() as directory:
+            module.LOCK = Path(directory)/'lock'
+            module.LOCK.touch()
+            calls = []
+            def control(action, unit):
+                with module.LOCK.open('r+') as competing:
+                    with self.assertRaises(BlockingIOError):
+                        fcntl.flock(competing, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                calls.append((action, unit))
+            with patch.object(module, 'show', return_value={'ActiveState':'inactive'}), \
+                 patch.object(module, 'state', return_value={'phase':'idle','settledSHA':None}), \
+                 patch.object(module, 'free_port', return_value=True), patch.object(module, 'control', side_effect=control):
+                action, _ = module.recover_cutover()
+            self.assertEqual(action, 'restore-prototype-after-stop')
+            self.assertEqual(calls, [('stop',module.UNIT),('start',module.PROTO)])
+
+    def test_restore_refuses_a_busy_deployment_lock(self):
+        module = helper()
+        with tempfile.TemporaryDirectory() as directory:
+            module.LOCK = Path(directory)/'lock'
+            module.LOCK.touch()
+            with module.LOCK.open('r+') as held:
+                fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                with patch.object(module, 'control') as control:
+                    action, _ = module.recover_cutover()
+                self.assertEqual(action, 'preserve-inflight-deployment')
+                control.assert_not_called()
+
+    def test_restore_refuses_active_deployer_even_with_idle_state(self):
+        module = helper()
+        with tempfile.TemporaryDirectory() as directory:
+            module.LOCK = Path(directory)/'lock'
+            module.LOCK.touch()
+            with patch.object(module, 'show', return_value={'ActiveState':'activating'}), \
+                 patch.object(module, 'state', return_value={'phase':'idle','settledSHA':None}), \
+                 patch.object(module, 'control') as control:
+                action, _ = module.recover_cutover()
+            self.assertEqual(action, 'preserve-inflight-deployment')
+            control.assert_not_called()
+
+    def test_rerun_guard_rejects_settled_production_before_timer_changes(self):
+        module = helper()
+        with patch.object(module, 'show', return_value={'ActiveState':'active','UnitFileState':'enabled'}), \
+             patch.object(module, 'control') as control:
+            with self.assertRaises(ValueError):
+                module.initial_rollout_guard()
+        control.assert_not_called()
+
     def test_timer_schedules_initial_check_after_every_activation(self):
         timer = (ROOT/'deploy/searchfloor-opds-deploy.timer').read_text()
         self.assertIn('\nOnActiveSec=2min\n', timer)

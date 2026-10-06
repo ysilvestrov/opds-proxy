@@ -223,3 +223,7 @@ Sanitized receipts and private rollback backups are retained. There are no
 clean merged task worktrees to remove: production/diagnostic result branches
 have not been merged, and the original prototype checkout is dirty. All those
 worktrees/branches and unrelated prior-task files are preserved.
+
+## Desktop integration review, 2026-10-06
+
+Independent review accepted the production receipts and found two operator-only recovery guards to strengthen before integrating this branch. The initial helper now refuses active/settled/pending production before changing its timer. Prototype restoration requires the actual deployment lock and inactive deploy-service; its state/port/start decision stays under that lock. Killing a systemctl client is never treated as stopping its service. DEPLOY-002 scenarios in spec0.4.10 record these requirements. Local WSL offline suite: 47 tests passed, including busy lock, active deployer, repeated apply and lock-held restoration. These fixes were not executed on the live host; they do not alter the historical receipts or production acceptance. Do not rerun historical rollout helpers against settled production.

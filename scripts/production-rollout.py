@@ -431,6 +431,35 @@ def finish_timer(evidence_file):
         raise
 
 
+def initial_rollout_guard():
+    """Refuse settled/pending production before changing its timer."""
+    for unit in [UNIT, DEPLOY]:
+        require(show(unit)['ActiveState'] == 'inactive')
+    require(show(UNIT)['UnitFileState'] == 'disabled')
+    require(state().get('phase') == 'idle' and state().get('settledSHA') is None and not os.path.lexists(ROOT/'current'))
+
+
+def recover_cutover():
+    """An interrupted systemctl client does not imply an idle systemd deployer."""
+    with LOCK.open('r+') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return 'preserve-inflight-deployment', None
+        try:
+            if show(DEPLOY)['ActiveState'] != 'inactive':
+                return 'preserve-inflight-deployment', None
+            current = state()
+            action = recovery_action(current)
+            if action == 'restore-prototype-after-stop':
+                control('stop', UNIT)
+                require(free_port())
+                control('start', PROTO)
+            return action, current
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
 def apply(provider_file):
     global phase
     require(os.geteuid() == 0)
@@ -445,6 +474,7 @@ def apply(provider_file):
     require(datetime.datetime.fromisoformat(provider['cycleStart']) <= datetime.datetime.now() < datetime.datetime.fromisoformat(provider['cycleEnd']))
     emit('provider-budget', operatorConfirmed=True, mainActualUsageMB=provider['mainActualUsageMB'], opdsActualUsageKB=provider['opdsActualUsageKB'],
          mainLimit='1 GB', opdsLimit='1 GB', cycleStart=provider['cycleStart'], cycleEnd=provider['cycleEnd'], sharedPool=True)
+    initial_rollout_guard()
     before = bot_health()
     cutover = False
     try:
@@ -452,10 +482,7 @@ def apply(provider_file):
         if show(TIMER)['ActiveState'] == 'active':
             control('stop', TIMER)
         control('disable', TIMER)
-        for unit in [UNIT, DEPLOY]:
-            require(show(unit)['ActiveState'] == 'inactive')
-        require(show(UNIT)['UnitFileState'] == 'disabled')
-        require(state().get('phase') == 'idle' and state().get('settledSHA') is None and not os.path.lexists(ROOT/'current'))
+        initial_rollout_guard()
         node = json.loads(run(['/usr/bin/node','-p','JSON.stringify({node:process.versions.node,abi:process.versions.modules,arch:process.arch,glibc:process.report.getReport().header.glibcVersionRuntime})']).stdout)
         require(node == {'node':'24.19.0','abi':'137','arch':'x64','glibc':'2.39'})
         require('VERSION_ID="24.04"' in Path('/etc/os-release').read_text())
@@ -525,12 +552,7 @@ def apply(provider_file):
         control('stop', TIMER)
         control('disable', TIMER)
         if cutover:
-            current = state()
-            action = recovery_action(current)
-            if action == 'restore-prototype-after-stop':
-                control('stop', UNIT)
-                require(free_port())
-                control('start', PROTO)
+            action, current = recover_cutover()
             emit('recovery', action=action, state=current, timerDisabled=True)
         raise
 

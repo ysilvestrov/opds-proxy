@@ -5,7 +5,7 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.4.9. Independent source proxy та базовий reader flow прийнято;
+**Версія:** 0.4.10. Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
@@ -496,6 +496,15 @@ Deployer SHALL прибирати failed/orphaned releases після persisted 
 - **WHEN** candidate не проходить startup/health window
 - **THEN** попередній settled release відновлюється, failed SHA записується окремо
 - **AND** бот не змінюється, а старий код працює з придатним чи новим порожнім кешем.
+
+#### Scenario: Operator repeats completed or pending initial rollout
+- **WHEN** production active/settled або deployment pending
+- **THEN** initial rollout helper refuses before mutating the existing timer.
+
+#### Scenario: Operator interrupts the systemctl deployment client
+- **WHEN** the client stops but its deploy-service may still be running
+- **THEN** prototype restoration requires a nonblocking deploy lock and inactive deploy-service
+- **AND** the state/port decision and restoration remain under that lock; busy/active deployment is preserved.
 
 ### Requirement: OPS-002 — Reviewed one-time host bootstrap
 
