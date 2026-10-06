@@ -6,7 +6,8 @@
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.6.0 PROPOSED: owner-approved card-resource signed-link design;
-AUTH-003 written requirements await owner review before implementation plan/code.
+AUTH-003 written requirements9c619ff approved by owner. Implementation plan
+docs/superpowers/plans/2026-10-06-signed-card-access.md awaits review before code.
 Installed production remains f76bfac8 with Basic-only card resources.
 META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
