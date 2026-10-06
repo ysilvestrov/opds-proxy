@@ -7,7 +7,9 @@ same-main noop, lock contention і автоматичний timer підтвер
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.7.0 PROPOSED for META-02 genre/text-volume metadata;
 owner selected character count and author sheets to assess work length on2026-10-07.
-OPDS-006 below awaits written-spec review; no META-02 product implementation yet.
+OPDS-006 approved by owner aftera979a83; no META-02 product implementation yet.
+Implementation plan docs/superpowers/plans/2026-10-07-genres-text-volume.md
+awaits owner review; preserved execution method is native in current checkout.
 Approved production behavior remains0.6.0: card-resource signed-link design;
 AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
