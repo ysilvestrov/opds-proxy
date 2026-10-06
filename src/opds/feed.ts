@@ -1,6 +1,7 @@
-import type { SourcePage } from "../domain/book.js";
+import type { SourcePage, Book, BookDetails } from "../domain/book.js";
 export const NAV = "application/atom+xml;profile=opds-catalog;kind=navigation";
 export const ACQ = "application/atom+xml;profile=opds-catalog;kind=acquisition";
+export const ENTRY = 'application/atom+xml;type=entry;profile=opds-catalog';
 export const xml = (value: string) =>
   value
     .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "")
@@ -30,6 +31,17 @@ const discovery = (base: string, name: string) =>
   );
 const entry = (id: string, title: string, href: string, type: string) =>
   `<entry><id>${xml(id)}</id><title>${xml(title)}</title><updated>${stamp}</updated>${link("subsection", href, type)}<content type="text">${xml(title)}</content></entry>`;
+const bookPath = (book:Book) => `/opds/${book.sourceName}/books/${book.id}`;
+const bookMetadata = (b:Book) => `<id>urn:opds:${xml(b.sourceName)}:book:${xml(b.id)}</id><title>${xml(b.title)}</title><updated>${xml(b.observedAt)}</updated>${b.authors.map(a=>`<author><name>${xml(a)}</name></author>`).join('')}${b.series ? `<category scheme="urn:opds:series" term="${xml(b.series)}" label="${xml(b.series + (b.seriesPosition ? ' #'+b.seriesPosition : ''))}"/>` : ''}`;
+const bookAcquisition = (b:Book,base:string) => link('http://opds-spec.org/acquisition',absolute(base,bookPath(b)+'/download.fb2.zip'),'application/fb2+zip');
+export function renderBookEntry(book:Book, details:BookDetails, baseUrl:string, stale:boolean):string {
+  let body=bookMetadata(book)+link('self',absolute(baseUrl,bookPath(book)),ENTRY)+link('start',absolute(baseUrl,'/opds'))+link('alternate',book.sourceUrl,'text/html')+bookAcquisition(book,baseUrl);
+  if(details.summary)body+=`<summary type="text">${xml(details.summary)}</summary>`;
+  const content=[stale?'Збережені metadata (stale): джерело тимчасово недоступне':null,details.summary].filter(Boolean).join('\n\n');
+  if(content)body+=`<content type="text">${xml(content)}</content>`;
+  if(details.cover)for(const rel of ['http://opds-spec.org/image','http://opds-spec.org/image/thumbnail']) body+=link(rel,absolute(baseUrl,bookPath(book)+'/cover'),details.cover.mime);
+  return `<?xml version="1.0" encoding="UTF-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">${body}</entry>`;
+}
 export function renderRoot(
   base: string,
   sources: { name: string; title: string }[],
@@ -103,7 +115,7 @@ export function renderFeed(
   body += data.books
     .map(
       (b) =>
-        `<entry><id>urn:opds:${xml(b.sourceName)}:book:${xml(b.id)}</id><title>${xml(b.title)}</title><updated>${xml(b.observedAt)}</updated>${b.authors.map((a) => `<author><name>${xml(a)}</name></author>`).join("")}${b.summary ? `<summary type="text">${xml(b.summary)}</summary>` : ""}${b.series ? `<category scheme="urn:opds:series" term="${xml(b.series)}" label="${xml(b.series + (b.seriesPosition ? " #" + b.seriesPosition : ""))}"/>` : ""}${link("alternate", b.sourceUrl, "text/html")}${link("http://opds-spec.org/acquisition", absolute(c.baseUrl, `/opds/${c.sourceName}/books/${b.id}/download.fb2.zip`), "application/fb2+zip")}</entry>`,
+        `<entry>${bookMetadata(b)}${b.summary ? `<summary type="text">${xml(b.summary)}</summary>` : ''}${link('alternate',absolute(c.baseUrl,bookPath(b)),ENTRY)}${link('alternate',b.sourceUrl,'text/html')}${bookAcquisition(b,c.baseUrl)}</entry>`,
     )
     .join("");
   return frame(
