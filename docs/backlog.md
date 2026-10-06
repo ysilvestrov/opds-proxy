@@ -8,7 +8,7 @@
 | ID | Пріоритет | Робота | Критерій готовності |
 |---|---|---|---|
 | DEP-01 | Завершено 2026-10-06 | Baseline, main release та production автодеплой | Exact-SHA d66216c; deployment/rollback/lock evidence; timer enabled, 14 automatic noop без runtime/bot рестартів; docs/production-rollout-report.md |
-| AUTH-02 | P1 першим | FBReader повторно запитує пароль | Відтворити на Android3.8.31, дослідити scope/realm/redirects та збереження credentials; узгодити рішення без послаблення приватного доступу |
+| AUTH-02 | P1 першим | Задати власні Basic логін/пароль, зручні для введення на телефоні | Owner: prompt лише після restart; прийнятний. Private operator customization для єдиного користувача, узгоджені runtime/deployer credentials, перевірки та rollback; docs/fbreader-auth-diagnostics.md |
 | META-01 | P1 після auth | Анонс і обкладинка з картки книги | Bounded source evidence/fixture, mapping OPDS summary/image, cache/traffic policy у spec; реальна картка у FBReader |
 | META-02 | P2 | Жанри та розмір книги | Перевірити доступність/семантику upstream; не плутати розмір ZIP, тексту та кількість сторінок; OPDS/device mapping і unknown handling |
 | LINKS-01 | P2 | Related links на автора та серію | Перевірити upstream URL/IDs і відображення у FBReader; вирішити web-links чи OPDS navigation до реалізації; не вдавати готовий author/series catalog |

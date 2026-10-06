@@ -19,6 +19,7 @@ jobs:
       - run: npm test
       - run: python3 -m unittest discover -s tests -p '*_test.py'
       - run: bash -n deploy/bootstrap.sh && bash -n deploy/restart-helper.sh
+      - run: bash -n deploy/change-opds-credentials.sh
       # setup-node installs in the runner tool cache; audited host uses /usr/bin/node.
       - name: Match audited host Node path for unit validation
         run: test -e /usr/bin/node || sudo ln -s "$(command -v node)" /usr/bin/node
