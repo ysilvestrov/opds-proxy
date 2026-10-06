@@ -129,3 +129,29 @@ remains explicitly unconfirmed; production service health is not confused with
 metadata feature acceptance. Probe already removed its extracted temporary
 script. Sanitized receipts retained; no raw native errors/images/content/secrets
 committed. Result worktree/branch remain unmerged and are preserved.
+
+## Owner follow-up after the server probe
+
+Owner reports: no delay, annotation present, cover still not displayed in
+FBReader. This confirms recovery of entry latency/annotation in this follow-up,
+not resolution of cover display or proof of why earlier source requests failed.
+META-01 artwork device acceptance remains FAILED; no image auth, format or
+rendering root cause is claimed.
+
+The failing segment is between an available authenticated HTTPS JPEG and its
+display in FBReader. Further diagnosis requires an actual phone cover request
+and response, or a controlled observation that no cover request was made.
+Existing instrumentation cannot supply that evidence: `src/api/app.ts` has no
+successful-request access log; private auth rejection returns directly;
+`onError` logs only status/event without route or reader identity. Existing
+logs cannot establish a phone-specific cover200/401 or absence of a request.
+An operator's generic401 must not be attributed to the reader.
+
+Precise blocker: actual reader cover-route request/status evidence is missing.
+Next measurement needs bounded passive observation of only loopback OPDS
+port8787 while the owner opens these same cards, emitting only fixed book ID,
+entry-or-cover, request/response status and timing. No raw packet files, Basic
+headers/values, response bodies, images, other ports or bot traffic may be
+retained. This needs operator root, unavailable to the agent without a sudo
+prompt. No production logging patch, auth change, eager listing covers or
+speculative renderer fix was applied.
