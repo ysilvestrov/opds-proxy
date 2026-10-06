@@ -17,4 +17,8 @@ Independent read-only review: no actionable findings/blockers. Reviewer inspecte
 spec/plan/code/tests and independently probed concurrent201/202/503 statuses and
 aborted outcome. Its Vitest run hit sandbox EPERM before collection; the passing
 full-suite result above is from the coordinator's escalated run.
-Exact-head Linux CI is pending.
+Integration PR: https://github.com/ysilvestrov/opds-proxy/pull/7.
+Exact-head Linux CI is pending. Initial head8f89b7f has zero check runs and no
+Actions run observed; workflow374905819 is active, Actions enabled and PR
+mergeable=true. The reason for the missing trigger is not established. Do not
+merge based on an old green run or substitute local tests for required CI.
