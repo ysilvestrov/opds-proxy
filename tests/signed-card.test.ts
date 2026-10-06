@@ -46,7 +46,11 @@ it('emits signed self and image links and authorizes them without Basic', async 
     expect((await s.app.request(href, { method: 'HEAD' })).status).toBe(200);
   }
   for (const rel of ['start', 'alternate', 'http://opds-spec.org/acquisition']) expect($('link[rel="' + rel + '"]').attr('href')).not.toContain('sig=');
+  const detailCalls = s.catalog.details.mock.calls.length;
+  const coverCalls = s.catalog.cover.mock.calls.length;
   const listing = load(await (await s.app.request('/opds/searchfloor/completed', { headers: { authorization: s.authorization } })).text(), { xmlMode: true });
+  expect(s.catalog.details.mock.calls.length).toBe(detailCalls);
+  expect(s.catalog.cover.mock.calls.length).toBe(coverCalls);
   expect(listing('link[type*="type=entry"]').attr('href')).not.toContain('sig=');
   expect(listing('link[rel="http://opds-spec.org/image"]').length).toBe(0);
   expect(JSON.stringify(s.rows)).not.toContain(sig);
@@ -96,13 +100,19 @@ it('uses the same Catalog on cold, warm, expired and recreated caches', async ()
       const catalog = new Catalog({ cache, client, now: () => now });
       const app = createApp({ config: s.config, catalog, log: pino({ enabled: false }) });
       const before = client.getCard.mock.calls.length;
+      const annotationBefore = client.getAnnotation.mock.calls.length;
+      const coverBefore = client.getCover.mock.calls.length;
       expect((await app.request(path + '?sig=' + sig)).status).toBe(200);
       expect(client.getCard.mock.calls.length).toBe(before + 1);
+      expect(client.getAnnotation.mock.calls.length).toBe(annotationBefore + 1);
+      expect(client.getCover.mock.calls.length).toBe(coverBefore + 1);
       expect((await app.request(path + '/cover?sig=' + sig)).status).toBe(200);
       expect(client.getCard.mock.calls.length).toBe(before + 1);
       now += 25 * 3600000;
       expect((await app.request(path + '?sig=' + sig)).status).toBe(200);
       expect(client.getCard.mock.calls.length).toBe(before + 2);
+      expect(client.getAnnotation.mock.calls.length).toBe(annotationBefore + 2);
+      expect(client.getCover.mock.calls.length).toBe(coverBefore + 2);
       expect((await app.request(path + '/download.fb2.zip?sig=' + sig)).status).toBe(401);
     } finally { cache.close(); }
   }

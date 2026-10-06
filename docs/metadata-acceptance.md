@@ -1,5 +1,10 @@
 # META-01 acceptance — deployed, device check failed
 
+Latest continuation:40436fc proved18 cover401 before handler, entries401→200.
+Owner approved AUTH-003 password-revoked signed access including normal cache
+misses. New implementation/device checklist: docs/signed-card-acceptance.md.
+This does not mark artwork accepted or supersede Basic for catalogue/Download.
+
 Spec: OPDS-005/SOURCE-004/CACHE-003, AUTH-001, SOURCE-001/002/003,
 CACHE-001/002, ARCH-001, ACCEPT-001. Local implementation is in
 PR6/main a553346; production HTTPS health reports that SHA and ready=true,

@@ -6,8 +6,11 @@
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.6.0 PROPOSED: owner-approved card-resource signed-link design;
-AUTH-003 written requirements9c619ff approved by owner. Implementation plan
-docs/superpowers/plans/2026-10-06-signed-card-access.md awaits review before code.
+AUTH-003 written requirements9c619ff and implementation plan
+docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
+Local implementation and independent review complete; 111 Node tests pass,
+2 Windows-only skips, 57 WSL Python tests pass, build/typecheck pass.
+Linux CI, release and device acceptance remain pending.
 Installed production remains f76bfac8 with Basic-only card resources.
 META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
@@ -32,7 +35,7 @@ Verified boundary: Basic rejection перед cover handler; відсутні/н
 credentials журнали не розрізняють. Власник погодив signed links та розширив їх
 на всю картку/опис/cover: мета контролю доступу — використання OPDS/proxy traffic,
 а не секретність доступних на Searchfloor metadata. AUTH-003 нижче описує
-запропоновану норму; реалізація ще не виконана. Серверний200
+погоджену норму; локальна реалізація перевірена, deployment ще не підтверджено. Серверний200
 не доводить доставку чи показ JPEG на телефоні; production не змінено.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.

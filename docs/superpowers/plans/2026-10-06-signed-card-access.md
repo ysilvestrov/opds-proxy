@@ -15,7 +15,7 @@ Pino, SQLite and Vitest; no new dependency, env secret, session or unit.
 
 **Spec:** root spec.md v0.6.0, approved by owner after9c619ff; AUTH-003,
 AUTH-001/002, OPDS-005, SOURCE-001/002/003/004, CACHE-001/002/003,
-OPS-001, DEPLOY-001, ARCH-001 and ACCEPT-001. This plan is awaiting review.
+OPS-001, DEPLOY-001, ARCH-001 and ACCEPT-001. Owner approved the plan; native implementation and independent review complete.
 
 ## Global constraints
 
@@ -71,7 +71,7 @@ isSignedBookCardRequest(request:Request,signer:BookCardSigner):boolean.
 Signer exposes no key/password. sign rejects invalid source/ID with fixed error;
 verify/authorizer return false for malformed input rather than arbitrary errors.
 
-- [ ] Write failing tests with synthetic password and independently computed
+- [x] Write failing tests with synthetic password and independently computed
   expected HMAC: key=createHmac('sha256',password).update('opds-book-card-key-v1').digest();
   message=JSON.stringify([1,'book-card','searchfloor','27223']); output base64url.
   Assert43 characters, same value across signer instances and time changes,
@@ -85,19 +85,19 @@ verify/authorizer return false for malformed input rather than arbitrary errors.
   expect(signer.verify('searchfloor', '27223', sig)).toBe(true);
   expect(createBookCardSigner('changed').verify('searchfloor', '27223', sig)).toBe(false);
   ```
-- [ ] Test empty/oversized/padded/non-base64 signatures and an alternate final
+- [x] Test empty/oversized/padded/non-base64 signatures and an alternate final
   base64url character with unchanged decoded bytes. Assert reject despite
   Buffer equality for that alternate; test leading-zero/zero/21-digit IDs.
-- [ ] Test request matrix: entry/cover GET/HEAD accepted, download/root/list/search,
+- [x] Test request matrix: entry/cover GET/HEAD accepted, download/root/list/search,
   authors/genres, other sources/IDs, suffix/trailing slash, encoded `%31` ID,
   POST and duplicate `sig` (including `%73ig`) rejected. No token returns false.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/card-grant.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/card-grant.test.ts`;
   observe RED for missing module/behavior.
-- [ ] Implement interfaces with node:crypto. Verify43-character alphabet, decoded
+- [x] Implement interfaces with node:crypto. Verify43-character alphabet, decoded
   length32 and exact base64url re-encoding before timingSafeEqual. Parse URL once,
   use literal pathname exact regex and searchParams.getAll('sig').length===1;
   do not echo parser errors. Do not use input origin/Referer/UA for authorization.
-- [ ] Run focused tests plus `node node_modules/typescript/bin/tsc --noEmit`;
+- [x] Run focused tests plus `node node_modules/typescript/bin/tsc --noEmit`;
   require GREEN/exit0. Commit `feat: sign password-revoked book-card grants`.
 
 ## Task 2: Authorization, signed Atom links and cache-miss integration
@@ -115,7 +115,7 @@ legacy pure renderer callers may omit links, but production always supplies
 signed URLs for canonical source books. Signed link construction lives in app,
 not domain data/cache; renderer remains pure XML escaping.
 
-- [ ] Write failing HTTP tests: unsigned401; Basic entry200; extract self/image/
+- [x] Write failing HTTP tests: unsigned401; Basic entry200; extract self/image/
   thumbnail URLs from XML with Cheerio; same `sig`, same source/ID, no password
   or expiry. Follow signed entry/cover without Authorization and expect200;
   verify summary and actual image MIME/bytes, HEAD200, no challenge on success.
@@ -127,36 +127,36 @@ not domain data/cache; renderer remains pure XML escaping.
   expect((await app.request('/opds/searchfloor/search?q=x&sig=' + sig)).status).toBe(401);
   expect((await app.request('/opds/searchfloor/books/27223/download.fb2.zip?sig=' + sig)).status).toBe(401);
   ```
-- [ ] Assert root/start/list/search/OpenSearch/Download cannot be accessed using
+- [x] Assert root/start/list/search/OpenSearch/Download cannot be accessed using
   this token alone; no unauthorized Catalog/download call. Valid Basic with bad
   token remains accepted. Invalid/malformed Basic with valid token is accepted
   only on exact allowed route; invalid both401 with unchanged challenge.
-- [ ] Assert POST, duplicate query, wrong-source/wrong-book token, encoded path,
+- [x] Assert POST, duplicate query, wrong-source/wrong-book token, encoded path,
   overlong/zero-padded ID and tampered token reject before dependency calls.
   Existing Basic invalid-id/unknown-source behavior is preserved.
-- [ ] Write local integration with real Catalog and Cache(':memory:') plus
+- [x] Write local integration with real Catalog and Cache(':memory:') plus
   counting source mock: signed cold entry invokes normal getCard/annotation/cover,
   warm repeat does not refetch; new empty Cache with same password still accepts
   old token and refills one book. No extra listing hydration. Advance controllable
   clock beyond24h to prove token remains valid while expired resources refresh.
   Reuse existing Download freshness regression and assert token does not authorize
   its route or change eligibility. Close each test cache in finally.
-- [ ] Test unknown/incomplete404 and source-error503/502/no-leaked-message with a
+- [x] Test unknown/incomplete404 and source-error503/502/no-leaked-message with a
   valid token; preserve optional/stale behavior. New app with changed password
   rejects old token; username-only change accepts it; original password restores
   it. Test actual emitted access/warn output lacks token, Basic, query and body.
-- [ ] Assert full entry private,no-store and Referrer-Policy:no-referrer; covers
+- [x] Assert full entry private,no-store and Referrer-Policy:no-referrer; covers
   retain private cache/nosniff headers. Self/image hrefs use PUBLIC_BASE_URL;
   acquisition/start/HTML alternate remain unsigned; listing alternate remains
   unsigned and listing has no image links/details/source hydration.
-- [ ] Run focused tests and observe RED, then implement optional authorization
+- [x] Run focused tests and observe RED, then implement optional authorization
   fallback only when existing constant-time Basic check fails. Keep accessLog
   first, source guard next, and unchanged Catalog calls. No public cover bypass.
-- [ ] Supply signed self/cover links from app using `?sig=` plus canonical signer
+- [x] Supply signed self/cover links from app using `?sig=` plus canonical signer
   output; renderer escapes the full href. Add referrer header only to full entry.
   Unsupported noncanonical returned Book IDs must not gain grant permission;
   retain Basic-only legacy rendering for those instead of issuing an invalid grant.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/card-grant.test.ts tests/auth.test.ts tests/signed-card.test.ts tests/metadata-api.test.ts tests/access-log.test.ts tests/details.test.ts tests/download.test.ts`
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/card-grant.test.ts tests/auth.test.ts tests/signed-card.test.ts tests/metadata-api.test.ts tests/access-log.test.ts tests/details.test.ts tests/download.test.ts`
   and typecheck; require all PASS. Commit `feat: authorize signed card resources and artwork`.
 
 ## Task 3: Bounded operator probe, whole-change review and device gate
@@ -172,25 +172,25 @@ from the actual installed release dependencies (createRequire at installed
 package.json); validates config with installed dist/config.js. No direct source
 client/proxy calls; URLs/auth stay in memory. Fixed IDs27223/27505, <=2 IDs.
 
-- [ ] Write probe tests: mock authenticated entry supplies signed self/image;
+- [x] Write probe tests: mock authenticated entry supplies signed self/image;
   next GETs omit Authorization. Emit only fixed ID/stage/status/allowlisted MIME/
   elapsedMs/byte count/summary or link presence, never token/URL/header/XML/body
   or exception. Failed/no image is reported honestly, not synthesized.
-- [ ] Test malicious XML link host/path/source/ID, redirect, fake token in
+- [x] Test malicious XML link host/path/source/ID, redirect, fake token in
   exception/body, stalled body and oversized response. Reject unexpected links
   before follow: exact configured HTTPS origin/entry or cover for current ID,
   one canonical sig, no userinfo/hash. No attacker-directed requests. No book URL.
-- [ ] Run new tests RED; implement <=240s total,65s per-request,2MiB body limit,
+- [x] Run new tests RED; implement <=240s total,65s per-request,2MiB body limit,
   manual redirect policy and cancellation including stalled read. Per ID only
   Basic entry, signed entry and signed cover; do not run the former direct-source
   diagnostic matrix. Optional one bounded tamper401 check stays outside the phone
   window. Probe status200 is not image display acceptance. Run GREEN and syntax check.
-- [ ] Write concrete operator commands to fetch/extract the probe from Git and
+- [x] Write concrete operator commands to fetch/extract the probe from Git and
   run `sudo /usr/bin/node --env-file=/etc/searchfloor-opds/runtime.env <probe>`.
   Paths contain no secret; private root workspace/receipt review; no bot env.
   Record expected SHA/health, OPDS/bot PID/restarts before/after; timer/env/unit
   unchanged. No installed-code claim from merely preparing the probe.
-- [ ] Run build, typecheck, full Vitest and existing WSL Python suite; require
+- [x] Run build, typecheck, full Vitest and existing WSL Python suite; require
   exit0 and no failures. Tests stay offline. Request one independent read-only
   whole-change review of AUTH-003 boundary/privacy/cache integration; fix blockers
   and rerun affected tests. No per-task implementation agents unless owner changes
@@ -225,6 +225,7 @@ This prevents the new signer from breaking a previously valid Basic-only respons
 If source fixtures show canonicalization differs, reconcile it with root spec
 before implementation rather than silently widening signed scope.
 
-Owner has approved written spec9c619ff. This new plan needs owner review before
-code. Existing current-folder/native execution choice remains in effect; do not
+Owner has approved written spec9c619ff. Owner approved this plan before code. Existing current-folder/native execution choice remains in effect; do not
 ask again to create a worktree or choose implementers.
+
+Execution evidence: commits636103f/536d772; final local validation111 Node passed,2 Windows skips,57 WSL Python passed, typecheck/build/syntax/diff checks passed. Read-only reviewer findings on mandatory global deadline and malicious-link test reachability resolved with regression evidence. Release/operator/device gates below remain open.

@@ -9,7 +9,7 @@
 |---|---|---|---|
 | DEP-01 | Завершено 2026-10-06 | Baseline, main release та production автодеплой | Exact-SHA d66216c; deployment/rollback/lock evidence; timer enabled, 14 automatic noop без runtime/bot рестартів; docs/production-rollout-report.md |
 | AUTH-02 | Завершено 2026-10-06 | Власні Basic логін/пароль, зручні для введення на телефоні | Rotation і FBReader login прийнято; timer restored, бот без рестартів; docs/change-opds-credentials-report.md, eaf3837. Restart prompt лишається прийнятним |
-| META-01 | P1; cover device FAILED; written auth spec review | Анонс і обкладинка з картки книги | OPDS-005/AUTH-001/003;40436fc:18 covers401; owner approved signed card/description/cover scope, root spec.md v0.6.0 awaiting written review; not implemented/accepted |
+| META-01 | P1; cover device FAILED; release/device gate pending | Анонс і обкладинка з картки книги | OPDS-005/AUTH-001/003;40436fc:18 covers401; approved signed card/description/cover implemented and independently reviewed; 111 Node/57 Python tests pass; docs/signed-card-acceptance.md; artwork not yet accepted |
 | META-02 | P2 | Жанри та розмір книги | Перевірити доступність/семантику upstream; не плутати розмір ZIP, тексту та кількість сторінок; OPDS/device mapping і unknown handling |
 | LINKS-01 | P2 | Related links на автора та серію | Перевірити upstream URL/IDs і відображення у FBReader; вирішити web-links чи OPDS navigation до реалізації; не вдавати готовий author/series catalog |
 | READ-01 | P1 | Пошук і query-preserving next у FBReader | Реальні device результати search/next, без повного crawl |
