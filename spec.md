@@ -5,7 +5,7 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.4.10. Independent source proxy та базовий reader flow прийнято;
+**Версія:** 0.4.11. Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
@@ -337,6 +337,42 @@ Fallback auth не впроваджується без окремого ріше
 - **WHEN** користувач запускає Download після успішного перегляду каталогу
 - **THEN** Download також проходить auth
 - **AND** acceptance підтверджує передавання credentials конкретною версією FBReader.
+
+### Requirement: AUTH-002 — Owner-selected single-user credentials
+
+Власник SHALL мати приватну інтерактивну operator-команду для зміни логіна
+й пароля єдиного Basic користувача. Це не реєстрація додаткових акаунтів
+і не зміна протоколу AUTH-001. Пароль вводиться приховано двічі; credentials
+MUST NOT передаватися через argv/URL/чат чи потрапляти в stdout/logs/Git.
+Логін/пароль відповідають чинним CONFIG-001 межам; control characters не
+приймаються через формат EnvironmentFile. Запам'ятовування credentials між
+перезапусками FBReader не гарантується сервером; власник прийняв restart prompt.
+
+Operator SHALL змінювати лише OPDS_USERNAME/OPDS_PASSWORD у root-only
+mode0600 runtime.env та deploy.env, зберігаючи інші значення (зокрема proxy/token).
+Зміна SHALL вимагати idle settled production, inactive deploy-service і deploy
+lock; конфігурація не змінюється під час pending deployment/recovery.
+Таймер зупиняється й persistently disables до завершення; попередній enabled/
+active стан повертається після успіху або перевіреного rollback. Лише OPDS
+перезапускається. Readiness/static Basic XML перевіряються locally/HTTPS без
+upstream/book requests; старі credentials після успіху SHALL давати401.
+
+До запису SHALL створюватися приватна root-only резервна копія обох файлів
+і маркер pending. При помилці обидва файли відновлюються, OPDS перезапускається
+та перевіряється зі старими credentials. Невдалий rollback залишає таймер
+вимкненим і backup/marker для оператора. Hard crash не обіцяє automatic recovery;
+повторна ротація з pending marker MUST бути відхилена до operator recovery.
+Deployment state/current/cache, prototype credentials, бот і Cloudflare не змінюються.
+
+#### Scenario: New credentials work while provider/deploy secrets stay unchanged
+- **WHEN** власник вводить власні Basic username/password у приватному терміналі
+- **THEN** runtime/deploy Basic пара узгоджена, новий login працює, старий відхиляється
+- **AND** proxy/token та інша конфігурація зберігаються; timer повертається до попереднього стану.
+
+#### Scenario: Second config write or post-restart check fails
+- **WHEN** конфіги частково записано або новий login не проходить перевірку
+- **THEN** обидва початкові файли відновлюються й старий login перевіряється
+- **AND** timer відновлюється лише після успішного rollback; pending deployment не переривається.
 
 ### Requirement: DOWNLOAD-001 — Validate before streaming
 
