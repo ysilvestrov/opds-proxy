@@ -7,7 +7,7 @@
 
 | ID | Пріоритет | Робота | Критерій готовності |
 |---|---|---|---|
-| DEP-01 | P0 зараз | Фіналізувати baseline, main release та production автодеплой | Green exact-SHA main artifact; one-time activation; timer enabled після deployment/rollback evidence |
+| DEP-01 | Завершено 2026-10-06 | Baseline, main release та production автодеплой | Exact-SHA d66216c; deployment/rollback/lock evidence; timer enabled, 14 automatic noop без runtime/bot рестартів; docs/production-rollout-report.md |
 | AUTH-02 | P1 першим | FBReader повторно запитує пароль | Відтворити на Android3.8.31, дослідити scope/realm/redirects та збереження credentials; узгодити рішення без послаблення приватного доступу |
 | META-01 | P1 після auth | Анонс і обкладинка з картки книги | Bounded source evidence/fixture, mapping OPDS summary/image, cache/traffic policy у spec; реальна картка у FBReader |
 | META-02 | P2 | Жанри та розмір книги | Перевірити доступність/семантику upstream; не плутати розмір ZIP, тексту та кількість сторінок; OPDS/device mapping і unknown handling |
@@ -22,12 +22,14 @@
 | OPS-02 | P2 | Розрізняти безпечні abort/timeout diagnostics | Зберегти sanitization; не пропускати native socket/endpoint causes |
 | DOC-01 | P2 | Скоротити HTML fixtures та історичні reports | Зберегти contract cases й provenance, не переписувати artifact history |
 
-P0 — завершення поточного етапу. P1 — наступна надійність/приймання.
+DEP-01 закрито за operator receipts 725051f. P1 — наступна надійність/приймання.
 P2 — невеликі покращення, які не блокують погоджену базу.
 AUTH-02/META-01/META-02/LINKS-01 записані зі слів власника 2026-10-05;
 причини та джерело полів ще не перевірені. Пропонований порядок після DEP-01:
 AUTH-02, META-01, META-02, LINKS-01; edge checks READ-01–04 виконувати поряд
 із відповідними змінами. Це план обговорення, не підтвердження причин проблем.
+Власник підтвердив, що зазначені metadata/related fields відображаються на
+Флібусті: це reader reference для OPDS mapping, а не доказ полів Searchfloor.
 Автори/жанри зарезервовані в архітектурі, але автоматично не додаються до
 scope наступного релізу. Нові джерела та спільний переїзд VPS — окремі рішення.
 
