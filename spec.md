@@ -7,13 +7,18 @@ same-main noop, lock contention і автоматичний timer підтвер
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.5.0. META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
-review виправлені з RED/GREEN доказами; final-head Linux CI, server та device
-acceptance ще pending (docs/metadata-acceptance.md). Main a553346 CI/package
+review виправлені з RED/GREEN доказами; Linux CI та server probe пройшли,
+device acceptance залишається FAILED (docs/metadata-acceptance.md). Main a553346 CI/package
 та production HTTPS health підтверджено; owner META-01 device check FAILED:
 десятки секунд на картку, частково відсутній анонс, жодної cover у10 картках.
 Скріншоти27223/27505 показують stale, тобто повна Atom-картка відкривається,
 але є optional-resource error. Це evidence, не нова норма чи доведена причина;
-доступ через server proxy діагностується за docs/metadata-diagnostics-handoff.md.
+Серверний probe 2026-10-06 на a553346 підтвердив анонси, image links та
+authenticated HTTPS JPEG для27223/27505; докази в docs/metadata-server-diagnostics.md.
+Після probe власник підтвердив швидкі картки й анонси, але cover досі відсутня.
+META-01 не прийнято; фактичний phone cover request/status ще невідомий.
+Наступний read-only крок: docs/reader-cover-observation-handoff.md. Серверний200
+не доводить доставку чи показ JPEG на телефоні; production не змінено.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
