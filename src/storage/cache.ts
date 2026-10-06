@@ -5,6 +5,7 @@ interface Options {
   schema?: number;
   maxKeys?: number;
   maxBytes?: number;
+  maxArtworkBytes?: number;
   onReset?: (reason: string) => void;
 }
 export class Cache {
@@ -14,7 +15,7 @@ export class Cache {
     path: string,
     private options: Options = {},
   ) {
-    const schema = options.schema ?? 1;
+    const schema = options.schema ?? 2;
     const memory = path === ":memory:";
     const file = memory ? path : resolve(path);
     if (!memory) {
@@ -69,7 +70,7 @@ export class Cache {
     this.db.pragma("journal_mode = WAL");
     this.db.pragma(`user_version = ${schema}`);
     this.db.exec(
-      "CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY,value TEXT NOT NULL,expires INTEGER NOT NULL,bytes INTEGER NOT NULL,rank INTEGER NOT NULL)",
+      "CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY,value TEXT NOT NULL,expires INTEGER NOT NULL,bytes INTEGER NOT NULL,rank INTEGER NOT NULL,kind TEXT NOT NULL)",
     );
     this.rank = Number(
       (
@@ -102,15 +103,20 @@ export class Cache {
       return null;
     }
   }
-  set<T>(key: string, value: T, expiresAt: number) {
+  delete(key: string) { this.db.prepare('DELETE FROM cache WHERE key=?').run(key); }
+  set<T>(key: string, value: T, expiresAt: number, group?: 'artwork') {
     const json = JSON.stringify(value);
     const bytes = Buffer.byteLength(json);
     const max = this.options.maxBytes ?? 128 * 1024 * 1024;
     if (bytes > max) return;
+    const artworkMax = this.options.maxArtworkBytes ?? 64 * 1024 * 1024;
+    if (group === 'artwork' && bytes > artworkMax) return;
     this.db.transaction(() => {
       this.db
-        .prepare("INSERT OR REPLACE INTO cache VALUES(?,?,?,?,?)")
-        .run(key, json, expiresAt, bytes, ++this.rank);
+        .prepare("INSERT OR REPLACE INTO cache VALUES(?,?,?,?,?,?)")
+        .run(key, json, expiresAt, bytes, ++this.rank, group ?? 'metadata');
+      while (Number((this.db.prepare("SELECT COALESCE(SUM(bytes),0) n FROM cache WHERE kind='artwork'").get() as {n:number}).n) > artworkMax)
+        this.db.prepare("DELETE FROM cache WHERE key=(SELECT key FROM cache WHERE kind='artwork' ORDER BY rank LIMIT 1)").run();
       while (true) {
         const size = this.db
           .prepare("SELECT COUNT(*) n,COALESCE(SUM(bytes),0) bytes FROM cache")

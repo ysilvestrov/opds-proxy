@@ -32,7 +32,7 @@ it("rebuilds corrupt and incompatible caches, retaining only owned files", () =>
     const c = new Cache(path);
     c.set("x", 1, 100);
     c.close();
-    const newer = new Cache(path, { schema: 2 });
+    const newer = new Cache(path, { schema: 3 });
     expect(newer.get("x", 1)).toBeNull();
     newer.close();
     const old = new Cache(path);
@@ -49,4 +49,15 @@ it("retains stale pages when storing metadata with a longer TTL", () => {
   c.set("book", {}, 16 * 60000 + 24 * 3600000);
   expect(c.get("page", 16 * 60000, true)).not.toBeNull();
   c.close();
+});
+it('bounds serialized artwork separately while retaining shared global limits',()=>{
+  const c=new Cache(':memory:',{maxBytes:100,maxArtworkBytes:25,maxKeys:3});
+  c.set('meta',{title:'kept'},100);
+  c.set('a',{base64:'aaaa'},100,'artwork');
+  c.set('b',{base64:'bbbb'},100,'artwork');
+  expect(c.get('a',0)).toBeNull(); expect(c.get('b',0)).not.toBeNull(); expect(c.get('meta',0)).not.toBeNull();
+  c.set('b',{title:'normal'},100); c.set('c',{base64:'cccc'},100,'artwork');
+  expect(c.get('b',0)).not.toBeNull(); expect(c.get('c',0)).not.toBeNull();
+  c.set('d',1,100); expect(c.get('meta',0)).toBeNull();
+  c.delete('c'); expect(c.get('c',0)).toBeNull(); c.close();
 });
