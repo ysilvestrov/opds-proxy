@@ -1,9 +1,19 @@
-# META-01 acceptance — deployed, device check failed
+# META-01 acceptance — covers confirmed by owner
+
+Latest owner evidence after signed-card release1a3781a: “наразі обкладинки
+працюють”, followed by “Так, завантажується”. Visible/loading artwork in
+FBReader is confirmed; the previous cover display defect is resolved.
+Owner did not run the server brief. No separate signed-request HTTP status,
+service identity or individually described restart/cold-cache result is claimed.
+The brief is retained for a regression, not mandatory extra source traffic.
+Other unobserved META/reader edge scenarios remain open. Earlier sections below
+preserve the failure and diagnostic history, not the current artwork result.
 
 Latest continuation:40436fc proved18 cover401 before handler, entries401→200.
 Owner approved AUTH-003 password-revoked signed access including normal cache
 misses. New implementation/device checklist: docs/signed-card-acceptance.md.
-This does not mark artwork accepted or supersede Basic for catalogue/Download.
+Basic for catalogue/Download is unchanged. This historical diagnostic finding
+is superseded for visible artwork by the owner confirmation above.
 
 Spec: OPDS-005/SOURCE-004/CACHE-003, AUTH-001, SOURCE-001/002/003,
 CACHE-001/002, ARCH-001, ACCEPT-001. Local implementation is in

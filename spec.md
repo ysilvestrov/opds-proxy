@@ -5,17 +5,32 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.6.0 PROPOSED: owner-approved card-resource signed-link design;
+**Версія:** 0.7.0 for approved META-02 genre/text-volume metadata;
+owner selected character count and author sheets to assess work length on2026-10-07.
+OPDS-006 approved by owner aftera979a83; local META-02 implementation verified:
+133 Node tests pass (2 Windows-only skips),57 WSL Python tests pass;
+build/typecheck pass. Installed META-02 and reader display remain pending.
+Implementation plan docs/superpowers/plans/2026-10-07-genres-text-volume.md
+approved by owner afterbee8baa; native execution in current checkout.
+Approved production behavior remains0.6.0: card-resource signed-link design;
 AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
 Local implementation and independent review complete; 111 Node tests pass,
 2 Windows-only skips, 57 WSL Python tests pass, build/typecheck pass.
-Linux CI, release and device acceptance remain pending.
-Installed production remains f76bfac8 with Basic-only card resources.
+PR8 merged as1a3781a; exact-head Linux CI and exact-main native package passed.
+Public HTTPS health confirmed installed1a3781a, ready=true at2026-10-06T18:29:19+02:00.
+Owner confirmed visible, loading covers in FBReader after this release.
+The cover display defect is resolved by owner observation; separate signed HTTP
+status receipts and service-identity checks were not collected. Restart/cold-cache
+actions were not individually described, so production edge coverage is not inferred.
+docs/signed-card-release-handoff.md records release evidence and operator steps.
+Previous production f76bfac8 used Basic-only card resources; current public health
+reports signed-card release1a3781a. Owner-visible artwork is confirmed in chat.
 META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
 review виправлені з RED/GREEN доказами; Linux CI та server probe пройшли,
-device acceptance залишається FAILED (docs/metadata-acceptance.md). Main a553346 CI/package
+Історичні невдалі device checks збережено в docs/metadata-acceptance.md; після
+1a3781a власник підтвердив показ обкладинок. Main a553346 CI/package
 та production HTTPS health підтверджено; owner META-01 device check FAILED:
 десятки секунд на картку, частково відсутній анонс, жодної cover у10 картках.
 Скріншоти27223/27505 показують stale, тобто повна Atom-картка відкривається,
@@ -23,7 +38,7 @@ device acceptance залишається FAILED (docs/metadata-acceptance.md). M
 Серверний probe 2026-10-06 на a553346 підтвердив анонси, image links та
 authenticated HTTPS JPEG для27223/27505; докази в docs/metadata-server-diagnostics.md.
 Після probe власник підтвердив швидкі картки й анонси, але cover досі відсутня.
-META-01 не прийнято; фактичний phone cover request/status ще невідомий.
+На цьому історичному етапі META-01 не прийнято; phone cover status ще невідомий.
 Read-only observation заблоковано preflight c8a196b: HTTP decoder не встановлено,
 capture не запускався; docs/reader-cover-observation-report.md. Запропоновано
 Власник погодив постійний sanitized OPDS access log із journal rotation;
@@ -35,8 +50,8 @@ Verified boundary: Basic rejection перед cover handler; відсутні/н
 credentials журнали не розрізняють. Власник погодив signed links та розширив їх
 на всю картку/опис/cover: мета контролю доступу — використання OPDS/proxy traffic,
 а не секретність доступних на Searchfloor metadata. AUTH-003 нижче описує
-погоджену норму; локальна реалізація перевірена, deployment ще не підтверджено. Серверний200
-не доводить доставку чи показ JPEG на телефоні; production не змінено.
+погоджену норму; реалізація1a3781a встановлена та показ artwork підтверджено власником.
+Сам по собі серверний200 не доводить показ JPEG на телефоні.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
@@ -128,13 +143,15 @@ HTTP 404 search SHALL трактуватися як порожній резул�
 Card title може бути plain text без `/b/` link; див. docs/source-contract.md.
 
 Модель `Book`: `sourceName`, `id`, `title`, `authors[]`, optional `summary`, `series`,
-`seriesPosition`, `authorRefs[]`, `genres[]`; `sourceUrl`, `downloadPath`,
+`seriesPosition`, `authorRefs[]`, `genres[]`, optional `characterCount`,
+`authorSheets`; `sourceUrl`, `downloadPath`,
 `complete`, `observedAt`. META-01 додає окрему модель `BookDetails`:
 sourceName/id, optional plain-text summary, optional cover reference з MIME,
 `observedAt` для деталей; вона не замінює completion evidence у `Book`.
 `EntityRef` має `name` та optional source-local `id`;
-authorRefs/genres зарезервовані для майбутнього парсингу, їх наповнення у v1
-не обов'язкове. Відсутні поля означають невідомі metadata, не відсутність автора/жанру.
+authorRefs зарезервовані для майбутнього парсингу. META-02 SHALL наповнювати
+genres та обсяг тексту за OPDS-006, коли вони доступні в отриманому HTML.
+Відсутні поля означають невідомі metadata, не відсутність автора/жанру чи нульовий обсяг.
 ID — числовий ідентифікатор джерела як string, не назва.
 `SourcePage`: `books[]`, `nextPage: number|null`, `observedAt`.
 `CatalogPage`: SourcePage + `stale: boolean`; observedAt не змінюється на cache hit.
@@ -368,6 +385,93 @@ SHALL явно позначатися в plain-text content і не подовж
 #### Scenario: Invalid or unknown source-specific metadata request
 - **WHEN** source name невідомий або id не відповідає numeric book ID
 - **THEN** API повертає404/400 відповідно без довільного URL чи upstream-запиту.
+
+### Requirement: OPDS-006 — Genre metadata and text volume
+
+META-02 SHALL показувати жанри та обсяг тексту, щоб власник міг оцінити
+довжину твору (наприклад, роман чи оповідь). Сервіс SHALL NOT автоматично
+класифікувати твір як роман/оповідання за довільним порогом.
+Owner2026-10-07 обрав знаки та авторські аркуші; ZIP bytes і приблизні сторінки
+не входять до цієї зміни. Evidence: existing book27047 fixture містить
+511195 знаків,12.78 авторських аркушів та жанри76/28/39. Це приклад контракту,
+не доказ актуальних значень усіх книг або відображення полів reader.
+
+Searchfloor parser SHALL отримувати optional metadata з того самого book card
+контейнера у вже завантажених list/search/full-card HTML, включно з pagination
+fragments. Додаткові source/HEAD/Download запити для цих полів заборонені.
+Genres SHALL містити source-local numeric id та непорожній trimmed name із
+same-origin `/popular?include_genres={id}` links; foreign/malformed/multi-ID
+links SHALL ігноруватися. Повтори id SHALL дедуплікуватися зі збереженням
+порядку першого валідного входження. Поля інших book containers SHALL NOT
+потрапляти в metadata цієї книги.
+
+`characterCount` SHALL бути додатним safe integer із badge з точним
+`data-bs-title="Размер книги"` та одиницею `зн.`. Парсер SHALL підтримувати
+групування цифр звичайним, non-breaking та narrow non-breaking пробілом;
+довільні одиниці, часткові numeric matches, zero/negative/unsafe значення
+SHALL ігноруватися. `authorSheets` SHALL бути додатним скінченним числом із
+badge з точним `data-bs-title="Размер книги в авторских листах"` та одиницею
+`а.л.`, з десятковою крапкою або комою і не більш ніж двома десятковими знаками.
+Неоднозначні дублікати badge SHALL пропускати лише відповідне поле.
+Значення SHALL NOT обчислюватися одне з іншого: сервіс передає дані джерела.
+
+List та full Atom entries SHALL видавати доступні genres як `atom:category`
+із scheme `urn:opds:searchfloor:genre`, term source id і label name. Наявна
+series category SHALL залишатися окремою із попередньою семантикою.
+Genre discovery/routes OPDS-004 залишаються reserved/disabled; genre metadata
+не SHALL створювати неробочі navigation links або розширювати AUTH-003 scope.
+
+Full entry SHALL містити один plain-text рядок обсягу перед анонсом у
+`summary` і `content`: наприклад,
+`Обсяг: 511.2К знаків · 12,78 авторських аркушів`.
+За уточненням власника2026-10-07 кількість знаків SHALL відображатися у
+десяткових тисячах (1К =1000 знаків), округлених до одного знака після
+десяткової крапки, із кириличною `К` без пробілу після числа:
+10500 -> `10.5К знаків`,10000 -> `10.0К знаків`,511195 -> `511.2К знаків`.
+Правило SHALL діяти також для кількості менше1000; нульовий результат
+округлення SHALL NOT означати невідоме поле. Точний positive integer
+`characterCount` SHALL залишатися незмінним у моделі/кеші; rounding SHALL
+виконуватися лише під час rendering, а не source parsing.
+Якщо відома лише одна величина, SHALL показуватися лише вона. Рядок MAY
+відображатися навіть за відсутності анонсу; наявний анонс/абзаци та stale
+позначка SHALL зберігатися. List summary SHALL NOT синтезувати анонс або
+запускати hydration для обсягу. Усі зовнішні names/text SHALL XML-escape.
+Native file-size `atom:link length` SHALL NOT містити знаки чи авторські аркуші.
+
+Optional поля SHALL зберігатися в існуючому JSON Book cache без DB migration,
+нового resource cache чи примусового rebuild. Старі cache records без полів
+залишаються валідними й збагачуються при звичайному refresh; CACHE-001/002/003
+TTL, observedAt та SOURCE-001 Download eligibility не змінюються. Відсутнє або
+некоректне optional поле SHALL NOT ламати книгу, pagination, анонс чи cover.
+Нових env/dependencies/units, bot або Cloudflare змін не потрібно.
+
+#### Scenario: Complete card has genres and text volume
+- **WHEN** отриманий HTML complete book містить валідні genre links та обидва badges
+- **THEN** list/full entries містять genre categories, full entry містить рядок
+  обсягу й наявний анонс; series та signed image/acquisition links збережені
+- **AND** upstream request count не збільшується заради цих metadata.
+
+#### Scenario: Character count uses compact decimal thousands
+- **WHEN** source characterCount дорівнює10500,10000 або511195
+- **THEN** картка показує відповідно `10.5К знаків`, `10.0К знаків` або
+  `511.2К знаків`, з одним десятковим знаком та крапкою
+- **AND** cache/model зберігають точну вихідну кількість знаків.
+
+#### Scenario: Source data is missing or malformed
+- **WHEN** genre/volume поле відсутнє, некоректне або неоднозначне
+- **THEN** воно пропускається без нульових значень і без вигаданих оцінок
+- **AND** інші валідні поля та базовий book flow залишаються доступними.
+
+#### Scenario: Existing cache predates META-02
+- **WHEN** book metadata із старого кешу не містять genres/volume
+- **THEN** картка віддається без них, без додаткового fetch лише для збагачення
+- **AND** звичайний source refresh може додати поля без зміни cache/completion TTL.
+
+#### Scenario: Reader displays the richer card
+- **WHEN** власник відкриває картку з валідними metadata у FBReader Android3.8.31
+- **THEN** жанри та читабельний обсяг перевіряються на телефоні окремо від XML tests
+- **AND** їх native placement не виводиться лише з валідності OPDS; якщо category
+  не показується, reader evidence збирається перед зміною mapping/spec.
 
 ### Requirement: SOURCE-004 — Bounded annotation and cover transport
 
