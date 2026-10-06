@@ -12,6 +12,8 @@ export interface Book {
     seriesPosition?: number;
     authorRefs?: EntityRef[];
     genres?: EntityRef[];
+    characterCount?: number;
+    authorSheets?: number;
     sourceUrl: string;
     downloadPath: string;
     complete: boolean;
