@@ -1,0 +1,55 @@
+{
+  "time": "2026-10-06T15:07:40.170098+00:00",
+  "configurationFiles": [
+    {
+      "path": "/etc/systemd/journald.conf",
+      "sha256": "6af661145728f9aa26b8f83a2fb21f6e0ccb871f28dc6250eb13b47d97ccf270",
+      "mtime": "2024-02-27T17:26:04+00:00"
+    },
+    {
+      "path": "/usr/lib/systemd/journald.conf.d/syslog.conf",
+      "sha256": "ee200674b7f89baf8f543ec2a6df954395577b8724a99ab6a99acf3c11ddc344",
+      "mtime": "2026-03-24T13:45:53+00:00"
+    }
+  ],
+  "explicitAssignments": {
+    "ForwardToSyslog": {
+      "value": "yes",
+      "source": "/usr/lib/systemd/journald.conf.d/syslog.conf"
+    }
+  },
+  "storage": {
+    "/var/log/journal": {
+      "files": 101,
+      "logicalBytes": 4269801472,
+      "allocatedBytes": 3505225728,
+      "filesystemBytes": 80307429376,
+      "freeBytes": 34374344704
+    },
+    "/run/log/journal": {
+      "files": 0,
+      "logicalBytes": 0,
+      "allocatedBytes": 0,
+      "filesystemBytes": 812777472,
+      "freeBytes": 811864064
+    }
+  },
+  "documentedDefaults": {
+    "Storage": "auto",
+    "SystemMaxUse": "min(10% filesystem, 4 GiB)",
+    "RuntimeMaxUse": "min(10% filesystem, 4 GiB)",
+    "SystemKeepFree": "min(15% filesystem, 4 GiB)",
+    "RuntimeKeepFree": "min(15% filesystem, 4 GiB)",
+    "SystemMaxFiles": 100,
+    "RuntimeMaxFiles": 100,
+    "MaxFileSec": "1 month",
+    "MaxRetentionSec": 0,
+    "RateLimitIntervalSec": "30 s",
+    "RateLimitBurst": 10000,
+    "note": "Unset values inferred from systemd255 documentation; rate-limit burst may be multiplied by free-space factor. Active files can exceed retention limits."
+  },
+  "limitsSource": "https://github.com/systemd/systemd/blob/v255/man/journald.conf.xml",
+  "storageObserved": "persistent files present; runtime files0",
+  "sharedWithOtherServices": true,
+  "modified": false
+}

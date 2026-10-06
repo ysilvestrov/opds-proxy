@@ -1,0 +1,68 @@
+{
+  "time": "2026-10-06T15:13:06.621878+00:00",
+  "health": {
+    "ready": true,
+    "sha": "f76bfac8b64a602f3d0a61df89da93b3d313297f"
+  },
+  "units": {
+    "searchfloor-opds.service": {
+      "MainPID": "3970253",
+      "NRestarts": "0",
+      "StandardOutput": "journal",
+      "StandardError": "inherit",
+      "LogRateLimitIntervalUSec": "0",
+      "LogRateLimitBurst": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "DropInPaths": "",
+      "UnitFileState": "enabled"
+    },
+    "warsaw-beer-bot.service": {
+      "MainPID": "3963165",
+      "NRestarts": "0",
+      "StandardOutput": "journal",
+      "StandardError": "journal",
+      "LogRateLimitIntervalUSec": "0",
+      "LogRateLimitBurst": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "DropInPaths": "",
+      "UnitFileState": "enabled"
+    },
+    "searchfloor-opds-deploy.timer": {
+      "ActiveState": "active",
+      "SubState": "waiting",
+      "DropInPaths": "",
+      "UnitFileState": "enabled"
+    }
+  },
+  "ci": {
+    "id": 37482560755,
+    "workflow_id": 374905819,
+    "head_sha": "f76bfac8b64a602f3d0a61df89da93b3d313297f",
+    "head_branch": "main",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 11421816711,
+    "name": "opds-release-f76bfac8b64a602f3d0a61df89da93b3d313297f",
+    "digest": "sha256:9b4e46b43b9214343b7c9a8ea6c50f7d1699e8ce3c0b15506fd902854835b29a",
+    "size_in_bytes": 7362535,
+    "expired": false,
+    "expires_at": "2026-10-20T14:53:02Z"
+  },
+  "existingAccessEventCounters": {
+    "rowsSeen": 39,
+    "matchedEvents": 0,
+    "invalidAccessEvents": 0,
+    "oversizedRows": 0,
+    "rateLimitNotices": 0,
+    "truncated": false,
+    "journalReadOk": true
+  },
+  "existingTargetEvents": [],
+  "operatorAuthCheckPending": true,
+  "coordinatedWindowStarted": false
+}

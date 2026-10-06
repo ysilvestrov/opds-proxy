@@ -34,12 +34,12 @@ const entry = (id: string, title: string, href: string, type: string) =>
 const bookPath = (book:Book) => `/opds/${book.sourceName}/books/${book.id}`;
 const bookMetadata = (b:Book) => `<id>urn:opds:${xml(b.sourceName)}:book:${xml(b.id)}</id><title>${xml(b.title)}</title><updated>${xml(b.observedAt)}</updated>${b.authors.map(a=>`<author><name>${xml(a)}</name></author>`).join('')}${b.series ? `<category scheme="urn:opds:series" term="${xml(b.series)}" label="${xml(b.series + (b.seriesPosition ? ' #'+b.seriesPosition : ''))}"/>` : ''}`;
 const bookAcquisition = (b:Book,base:string) => link('http://opds-spec.org/acquisition',absolute(base,bookPath(b)+'/download.fb2.zip'),'application/fb2+zip');
-export function renderBookEntry(book:Book, details:BookDetails, baseUrl:string, stale:boolean):string {
-  let body=bookMetadata(book)+link('self',absolute(baseUrl,bookPath(book)),ENTRY)+link('start',absolute(baseUrl,'/opds'))+link('alternate',book.sourceUrl,'text/html')+bookAcquisition(book,baseUrl);
+export function renderBookEntry(book:Book, details:BookDetails, baseUrl:string, stale:boolean, links?:{self:string;cover:string}):string {
+  let body=bookMetadata(book)+link('self',links?.self??absolute(baseUrl,bookPath(book)),ENTRY)+link('start',absolute(baseUrl,'/opds'))+link('alternate',book.sourceUrl,'text/html')+bookAcquisition(book,baseUrl);
   if(details.summary)body+=`<summary type="text">${xml(details.summary)}</summary>`;
   const content=[stale?'Збережені metadata (stale): джерело тимчасово недоступне':null,details.summary].filter(Boolean).join('\n\n');
   if(content)body+=`<content type="text">${xml(content)}</content>`;
-  if(details.cover)for(const rel of ['http://opds-spec.org/image','http://opds-spec.org/image/thumbnail']) body+=link(rel,absolute(baseUrl,bookPath(book)+'/cover'),details.cover.mime);
+  if(details.cover)for(const rel of ['http://opds-spec.org/image','http://opds-spec.org/image/thumbnail']) body+=link(rel,links?.cover??absolute(baseUrl,bookPath(book)+'/cover'),details.cover.mime);
   return `<?xml version="1.0" encoding="UTF-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">${body}</entry>`;
 }
 export function renderRoot(
