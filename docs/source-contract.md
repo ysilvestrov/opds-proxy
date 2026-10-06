@@ -26,3 +26,23 @@ script не є challenge: сайт має Cloudflare scripts на нормаль
 Fixtures очищені від script/style/iframe і inline JS/tracking attributes.
 Вони містять публічні metadata, без сесій, credentials чи тексту книги.
 Повторні live-запити для tests не потрібні.
+
+## META-01 discovery, 2026-10-06 — evidence only
+
+Один відомий completed ID27047 перевірено з ПК прямими bounded read-only
+запитами, без JS execution, proxy secrets, завантаження книг або crawl.
+Картка `https://searchfloor.org/b/27047` повернула200; `#annotation` містить
+`data-url="/api/annotation/27047"`. Public `book-info-1.5.js` читає endpoint
+як текст, розбиває на абзаци. Inline script картки встановлює
+`bookCoverImage.src = "/cover/27047"`; сам `img` не має `src` в HTML.
+`root-1.5.9.js` прочитано, але його FB2/EPUB conversion код не виконувався.
+
+- GET `https://searchfloor.org/api/annotation/27047`:200,
+  `text/plain; charset=utf-8`,745 bytes. Анонс і текст книги тут не зберігаються.
+- HEAD `https://searchfloor.org/cover/27047`:200, `image/jpeg`,
+  Content-Length46924; без redirect. Body/signature не перевірялися.
+
+Не доведено: доступ через production OPDS proxy, інші MIME/ID, absence cases,
+Atom complete-entry navigation та cover Basic forwarding у FBReader3.8.31.
+Нормативний дизайн — лише root spec.md OPDS-005/SOURCE-004/CACHE-003;
+цей розділ не підміняє fixture/mock або device acceptance.

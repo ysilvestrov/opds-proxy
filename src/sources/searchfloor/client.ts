@@ -1,7 +1,8 @@
 import PQueue from "p-queue";
 import { setTimeout as delay } from "node:timers/promises";
-import type { Book, SourcePage } from "../../domain/book.js";
-import { parsePage, ParseError, hasEmptyResult } from "./parse.js";
+import type { Book, SourceObservation, SourceCard, Artwork } from "../../domain/book.js";
+import { parseAnnotationCard, parseAnnotation, validateArtwork } from './metadata.js';
+import { parsePage, parseObservedPage, ParseError, hasEmptyResult } from "./parse.js";
 export class SourceError extends Error {
   constructor(
     message: string,
@@ -122,7 +123,7 @@ export class SearchfloorClient {
       clearTimeout(timer);
     }
   }
-  private async request(path: string, signal: AbortSignal): Promise<Response> {
+  private async request(path: string, signal: AbortSignal, accept = 'text/html,application/zip'): Promise<Response> {
     if (this.now() < this.cooldown) throw new SourceError("Source cooldown");
     for (let attempt = 0; attempt < 2; attempt++) {
       let url = new URL(path, "https://searchfloor.org");
@@ -138,7 +139,7 @@ export class SearchfloorClient {
             redirect: "manual",
             headers: {
               "User-Agent": "opds-proxy/0.1",
-              Accept: "text/html,application/zip",
+              Accept: accept,
             },
           }),
           signal,
@@ -192,7 +193,7 @@ export class SearchfloorClient {
     query: string | null,
     page: number,
     signal?: AbortSignal,
-  ): Promise<SourcePage> {
+  ): Promise<SourceObservation> {
     const url = new URL(
       query === null ? "/" : "/search",
       "https://searchfloor.org",
@@ -209,13 +210,16 @@ export class SearchfloorClient {
       const html = new TextDecoder().decode(
         await readLimited(r, this.options.htmlLimit ?? 2 * 1024 * 1024, s),
       );
-      const parsed = parsePage(html, page, new Date(this.now()).toISOString());
+      const parsed = parseObservedPage(html, page, new Date(this.now()).toISOString());
       if (r.status === 404 && (!hasEmptyResult(html) || parsed.books.length))
         throw new SourceError("Unexpected source 404", 502);
       return parsed;
     }, signal);
   }
   async getBook(id: string, signal?: AbortSignal): Promise<Book | null> {
+    return (await this.getCard(id, signal))?.book ?? null;
+  }
+  async getCard(id: string, signal?: AbortSignal): Promise<SourceCard | null> {
     if (!/^\d+$/.test(id)) return null;
     return this.run(async (s) => {
       const r = await this.request(`/b/${id}`, s);
@@ -227,12 +231,35 @@ export class SearchfloorClient {
       const html = new TextDecoder().decode(
         await readLimited(r, this.options.htmlLimit ?? 2 * 1024 * 1024, s),
       );
-      return (
-        parsePage(html, 1, new Date(this.now()).toISOString()).books.find(
+      const book = parsePage(html, 1, new Date(this.now()).toISOString()).books.find(
           (b) => b.id === id,
-        ) ?? null
-      );
+        );
+      return book ? {book, annotation:parseAnnotationCard(html,id)} : null;
     }, signal);
+  }
+  async getAnnotation(id: string, signal?: AbortSignal): Promise<string|null> {
+    if (!/^\d+$/.test(id)) return null;
+    return this.run(async s => {
+      const r = await this.request(`/api/annotation/${id}`,s,'text/plain');
+      if (r.status===404) { await r.body?.cancel(); return null; }
+      if (!r.ok) { await r.body?.cancel(); throw new SourceError('Annotation unavailable'); }
+      if (r.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'text/plain') {
+        await r.body?.cancel(); throw new SourceError('Invalid annotation',502);
+      }
+      const bytes=await readLimited(r,65536,s);
+      try { return parseAnnotation(bytes); } catch { throw new SourceError('Invalid annotation',502); }
+    },signal);
+  }
+  async getCover(id: string, signal?: AbortSignal): Promise<Artwork|null> {
+    if (!/^\d+$/.test(id)) return null;
+    return this.run(async s => {
+      const r=await this.request(`/cover/${id}`,s,'image/jpeg,image/png,image/gif');
+      if (r.status===404) { await r.body?.cancel(); return null; }
+      if (!r.ok) { await r.body?.cancel(); throw new SourceError('Artwork unavailable'); }
+      const bytes=await readLimited(r,2*1024*1024,s);
+      try { return {mime:validateArtwork(bytes,r.headers.get('content-type')??''),bytes,observedAt:new Date(this.now()).toISOString()}; }
+      catch { throw new SourceError('Invalid artwork',502); }
+    },signal);
   }
   async openDownload(book: Book, signal: AbortSignal): Promise<Response> {
     if (

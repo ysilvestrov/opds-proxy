@@ -8,12 +8,13 @@ import {
   renderSourceRoot,
   NAV,
   ACQ,
+  ENTRY, renderBookEntry,
 } from "../opds/feed.js";
 import { renderOpenSearch } from "../opds/search.js";
 import { privateAuth } from "./auth.js";
 import { SourceError } from "../sources/searchfloor/client.js";
 interface Deps {
-  catalog: Pick<Catalog, "page" | "book">;
+  catalog: Pick<Catalog, "page" | "book"> & Partial<Pick<Catalog,'details'|'cover'>>;
   config: Config;
   log: Logger;
   download?: (id: string, signal: AbortSignal) => Promise<Response>;
@@ -95,6 +96,18 @@ export function createApp(d: Deps): Hono {
     const id = c.req.param("id");
     if (!/^\d+$/.test(id) || !d.download) return c.notFound();
     return d.download(id, c.req.raw.signal);
+  });
+  app.get('/opds/:name/books/:id',async c=>{
+    const id=c.req.param('id');if(!/^\d+$/.test(id))return c.text('Invalid book ID',400);
+    if(!d.catalog.details)return c.notFound();
+    const value=await d.catalog.details(id,c.req.raw.signal);if(!value)return c.notFound();
+    return response(renderBookEntry(value.book,value.details,d.config.PUBLIC_BASE_URL,value.stale),ENTRY);
+  });
+  app.get('/opds/:name/books/:id/cover',async c=>{
+    const id=c.req.param('id');if(!/^\d+$/.test(id))return c.text('Invalid book ID',400);
+    if(!d.catalog.cover)return c.notFound();
+    const value=await d.catalog.cover(id,c.req.raw.signal);if(!value)return c.notFound();
+    return new Response(new Uint8Array(value.bytes),{headers:{'Content-Type':value.mime,'X-Content-Type-Options':'nosniff','Cache-Control':'private, max-age=0, must-revalidate'}});
   });
   app.onError((error, c) => {
     const status = error instanceof SourceError ? error.status : 500;
