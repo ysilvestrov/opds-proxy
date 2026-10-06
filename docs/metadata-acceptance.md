@@ -1,8 +1,12 @@
-# META-01 acceptance — prepared, not deployed
+# META-01 acceptance — deployed, device check failed
 
 Spec: OPDS-005/SOURCE-004/CACHE-003, AUTH-001, SOURCE-001/002/003,
 CACHE-001/002, ARCH-001, ACCEPT-001. Local implementation is in
-`codex/book-metadata`; server-proxy and FBReader results remain pending.
+PR6/main a553346; production HTTPS health reports that SHA and ready=true,
+new routes return401 without Basic. Owner device check failed2026-10-06:
+slow cards, partial annotations, no covers in10 cards. Screenshots for27223
+and27505 show stale warning. See docs/metadata-diagnostics-handoff.md;
+server-proxy root cause is pending, and META-01 is not accepted.
 
 ## Server Claude brief
 

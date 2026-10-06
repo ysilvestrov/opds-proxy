@@ -8,7 +8,12 @@ same-main noop, lock contention і автоматичний timer підтвер
 **Версія:** 0.5.0. META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
 review виправлені з RED/GREEN доказами; final-head Linux CI, server та device
-acceptance ще pending (docs/metadata-acceptance.md).
+acceptance ще pending (docs/metadata-acceptance.md). Main a553346 CI/package
+та production HTTPS health підтверджено; owner META-01 device check FAILED:
+десятки секунд на картку, частково відсутній анонс, жодної cover у10 картках.
+Скріншоти27223/27505 показують stale, тобто повна Atom-картка відкривається,
+але є optional-resource error. Це evidence, не нова норма чи доведена причина;
+доступ через server proxy діагностується за docs/metadata-diagnostics-handoff.md.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
