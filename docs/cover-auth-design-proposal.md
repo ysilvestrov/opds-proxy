@@ -2,11 +2,13 @@
 
 OWNER DESIGN APPROVED AND EXPANDED2026-10-06: purpose is to control gateway/
 proxy traffic, not conceal publicly available Searchfloor metadata. Signed
-access covers the full cached card/description and artwork for one book.
+access covers the full card/description and artwork for one book.
 Root spec.md v0.6.0 AUTH-003 now contains the written requirements awaiting
 owner review; the implementation plan comes after that review. Basic-authorized
-first entry hydrates cache; grant-only entry/cover never fetches upstream or
-renews expiry. Description stays inline; no annotation endpoint is added.
+first entry issues signed links. Owner subsequently simplified the design:
+no time expiry; links work until password changes. Valid grants can populate
+cache through the same bounded Catalog flow as Basic. Description stays inline;
+no annotation endpoint is added. The24h/cache-only restrictions are superseded.
 The original cover-only proposal below is historical, not current guidance.
 
 Status: DESIGN PROPOSAL, awaiting owner decision. Normative AUTH-001 currently

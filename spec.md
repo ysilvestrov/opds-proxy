@@ -328,7 +328,7 @@ Listing entry SHALL посилатися на нього через `rel="altern
 image/thumbnail links з тим самим book-card grant. Опис уже включений у
 summary/content; окремий HTTP endpoint анонсу в цій зміні не додається.
 Listing full-entry alternate SHALL залишатися без grant та вимагати Basic:
-перше відкриття готує metadata/cache, не віддаючи signed cold-fetch доступ.
+перше відкриття видає signed links без eager hydration решти списку.
 Acquisition, start і решта links SHALL залишатися без metadata grant.
 Одна source обкладинка MAY використовуватися для обох relations без resizing;
 це не твердження про окрему upstream thumbnail. Cover route SHALL віддавати
@@ -336,7 +336,8 @@ JPEG/PNG/GIF з фактичним Content-Type, `X-Content-Type-Options: nosnif
 і `Cache-Control: private, max-age=0, must-revalidate`; public/shared HTTP
 кешування авторизованих відповідей заборонене. Кеш сервісу визначає CACHE-003.
 
-Для Basic-authorized numeric id, відсутнього в базовому кеші, SHALL виконуватися bounded lookup
+Для authorized numeric id (Basic або AUTH-003 grant), відсутнього в базовому кеші,
+SHALL виконуватися bounded lookup
 картки. Unknown/incomplete/no-Download книга SHALL давати404 без анонсу/cover.
 Відомі complete metadata не старші24h MAY використовуватися для відображення;
 це не дозвіл завантажити книгу без свіжої перевірки за SOURCE-001.
@@ -469,7 +470,7 @@ Cloudflare browser-login не SHALL вважатися сумісним без �
 - **THEN** Download також проходить auth
 - **AND** acceptance підтверджує передавання credentials конкретною версією FBReader.
 
-### Requirement: AUTH-003 — Scoped signed access to cached book-card resources
+### Requirement: AUTH-003 — Password-revoked signed access to book-card resources
 
 Full-entry та cover GET/HEAD SHALL підтримувати signed grant без HTTP Basic.
 Grant scope SHALL бути одна книга конкретного source та лише exact paths
@@ -479,35 +480,43 @@ Grant scope SHALL бути одна книга конкретного source т�
 Grant SHALL NOT авторизувати root/feed/search/OpenSearch/Download, іншу книгу,
 інший source, довільний URL чи майбутній resource route автоматично.
 
-Авторизований Basic full-entry response SHALL видавати grant на24h від issuance.
-Grant SHALL містити absolute expiry Unix seconds та HMAC-SHA256 signature
-versioned, unambiguous tuple `[1,"book-card",source,id,expiry]`. Signing key
-SHALL бути domain-separated від Basic credential comparison та derived через
-HMAC-SHA256 із unambiguous encoded username/password і fixed purpose label;
-нова env-secret/dependency не потрібна. Signature SHALL перевірятися constant-time
-за fixed-length bytes. Приймаються лише canonical bounded expiry/signature,
-по одному query параметру; malformed/duplicate/tampered/expired/future>24h
-grant SHALL відхилятися до доступу до ресурсів. Exact query names/canonical
-encoding SHALL бути зафіксовані в reviewed implementation plan.
+Авторизований Basic full-entry response SHALL видавати grant без time expiry.
+Grant SHALL бути HMAC-SHA256 signature versioned, unambiguous tuple
+`[1,"book-card",source,id]`. Signing key SHALL бути domain-separated від Basic
+credential comparison та derived як HMAC-SHA256(current password UTF-8,
+fixed purpose label `opds-book-card-key-v1`). Нова env-secret/dependency не потрібна.
+HTTPS URL SHALL мати один `sig` query parameter: canonical unpadded base64url
+32-byte signature (43 characters). Duplicate/malformed/noncanonical/tampered
+signature SHALL відхилятися до доступу до ресурсів; порівняння fixed-length
+signature bytes SHALL бути constant-time. Expiry/issuance parameters та
+server-side grant/session storage не потрібні.
 
 Валідний Basic зберігає current bounded lookup/resource-fetch behavior.
 Без валідного Basic валідний grant SHALL працювати навіть за наявності
-невірного Basic header, але SHALL читати лише вже кешовані придатні metadata
-та artwork. Grant-only full-entry SHALL включати наявний кешований опис у
-summary/content без додаткового auth; metadata TTL<=24h та artwork budgets
-CACHE-003 залишаються чинними. No cache hit/expiry/eviction/incomplete observation
-SHALL давати404 або пропускати відсутнє optional поле; grant-only requests
-MUST NOT робити upstream request, queue a refresh чи відновлювати кеш із source.
-Це застосовується і за source outage, і за warm/cold cache.
+невірного Basic header. Grant-authorized requests SHALL використовувати той
+самий Catalog/details/cover flow, cache freshness, completion validation,
+bounded upstream fetch/retry/concurrency/queue/cooldown/proxy та resource budgets,
+що й Basic-authorized requests за SOURCE-001/002/003/004 і CACHE-001/002/003.
+Cache miss/expiry/eviction MAY отримувати ресурси тільки цієї книги із джерела;
+це не authorization для crawl/search/list чи довільного URL. Опис SHALL бути
+включений у full-entry summary/content без додаткового Basic. Unknown/incomplete
+book, optional absence та source errors SHALL мати звичайні OPDS-005 status/
+stale semantics; cache miss сам по собі не SHALL давати404 або вимагати Basic
+для відновлення кешу. Signing validity не змінює metadata TTL<=24h чи budget.
 
-Grant-only response SHALL зберігати original expiry та signature у self/image
-links, без issuance/renewal. Restart SHALL не подовжувати й не анулювати grant
-за незмінних credentials; username/password rotation SHALL анулювати старі grants.
+Full-entry SHALL використовувати поточний book-card signature у self/image links.
+Grant SHALL працювати без часу expiry до зміни password; restart, cache clear
+чи username-only change за незмінного password SHALL не анулювати його.
+Password change SHALL анулювати всі попередні grants після runtime activation
+нового password, без окремого списку revoked links. Повернення до старого
+password відновлює відповідні старі signatures — це deterministic password-
+derived design без окремого generation secret; operator rollback не приховує це.
 Валідний grant не SHALL змінювати book completion/Download freshness.
-Повторне Basic відкриття картки MAY заповнити bounded cache та видати новий grant.
+Basic та valid grant відкриття картки MAY заповнити bounded cache. Невалідний
+grant після password change потребує fresh Basic відкриття для нових links.
 
 Basic password MUST NOT бути в URL. Signed URLs є scoped bearer permission,
-і доступ отримувача посилання до цієї картки до expiry прийнятий власником.
+і доступ отримувача посилання до цієї картки до password change прийнятий власником.
 Grant/raw query MUST NOT потрапляти в app logs, errors, Git, receipts чи cache;
 cache зберігає ресурси, а не serialized signed responses. Full-entry SHALL
 мати private,no-store та Referrer-Policy:no-referrer; image headers OPDS-005
@@ -517,25 +526,29 @@ cache зберігає ресурси, а не serialized signed responses. Full
 #### Scenario: Reader image client fails to authenticate with Basic
 - **WHEN** FBReader відкриває Basic-authorized card та запитує її signed cover
   без валідного Basic credentials
-- **THEN** valid grant і cached eligible cover дають200 без Basic challenge
-- **AND** source запити не виконуються; device artwork display перевіряється окремо.
+- **THEN** valid grant авторизує cover handler без Basic challenge і може
+  отримати missing cover через звичайний bounded Catalog flow
+- **AND** device artwork display перевіряється окремо від HTTP200.
 
 #### Scenario: A shared card URL includes its description and artwork
 - **WHEN** GET/HEAD full-entry містить valid book-card grant без Basic
-- **THEN** доступні cached card metadata/summary та signed image links видаються
-- **AND** expiry не подовжується; Download/root/search не авторизуються цим grant.
+- **THEN** card metadata/summary та signed image links видаються через Catalog flow
+- **AND** Download/root/search не авторизуються цим grant; time expiry немає.
 
 #### Scenario: A signed resource was evicted from cache
-- **WHEN** grant-only request має valid signature, але required base expired/evicted
-  або запитувана cover expired/evicted
-- **THEN** full-entry без eligible base чи cover без eligible artwork дає404
-  без upstream traffic; full-entry з eligible base пропускає відсутні optional fields
-- **AND** Basic-authorized повторне відкриття може bounded fetch та renew grant.
+- **WHEN** request має valid signature, але card/artwork ще не cached або expired/evicted
+- **THEN** Catalog виконує bounded lookup/resource fetch для цієї книги без Basic
+- **AND** source outage/unknown/incomplete/optional absence зберігає OPDS-005 semantics.
 
-#### Scenario: Credentials rotate or a grant is changed
-- **WHEN** expiry/signature/book/source змінено, expiry минув або credentials rotated
+#### Scenario: Password rotates or a grant is changed
+- **WHEN** signature/book/source змінено або password changed і activated
 - **THEN** без independently valid Basic request отримує401 до resource access
-- **AND** незмінні credentials після restart зберігають original valid expiry.
+- **AND** restart/username-only change за незмінного password зберігають grant validity.
+
+#### Scenario: An old password is restored during rollback
+- **WHEN** operator активує попередній password замість нового
+- **THEN** signatures цього password знову valid за deterministic key derivation
+- **AND** post-change permanent revocation потребує нового password, а не rollback.
 
 ### Requirement: AUTH-002 — Owner-selected single-user credentials
 
