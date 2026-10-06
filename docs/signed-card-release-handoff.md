@@ -22,6 +22,13 @@ release1a3781a2f9db8df3a270f4a923b6db777f224f63 after normal timer polling.
 No manual server operation occurred here. Private HTTP, service identity and
 device acceptance still require operator/owner evidence.
 
+Owner follow-up: brief was not run, but covers now display and load in FBReader.
+The visible artwork defect is resolved. Retain the operator steps below for
+regression diagnosis; no additional server probe is requested at this point.
+Separate signed HTTP statuses/service identities were not collected; individual
+restart/cold-cache actions were not stated. Do not infer those checks from this
+confirmation or close unrelated reader edge scenarios.
+
 ## Operator task
 
 1. Fetch main preserving local changes. Confirm normal timer installed exact
