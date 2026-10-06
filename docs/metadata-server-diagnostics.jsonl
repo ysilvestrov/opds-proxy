@@ -1,0 +1,20 @@
+{"time": "2026-10-06T13:02:58.759060+00:00", "stage": "before", "valid": true, "sha": "a55334694d3eff8fcac6a489d965c5fe3de05ab3", "units": {"searchfloor-opds.service": {"MainPID": "3711018", "NRestarts": "0", "ActiveState": "active"}, "warsaw-beer-bot.service": {"MainPID": "2320493", "NRestarts": "0", "ActiveState": "active"}}}
+{"stage": "source_http_headers", "path": "/b/27223", "status": 200, "mime": "text/html", "elapsedMs": 979, "hasRedirect": false}
+{"id": "27223", "stage": "source_card", "ok": true, "elapsedMs": 1072, "complete": true, "annotationApi": true, "inlineAnnotation": false}
+{"stage": "source_http_headers", "path": "/api/annotation/27223", "status": 200, "mime": "text/plain", "elapsedMs": 172, "hasRedirect": false}
+{"id": "27223", "stage": "source_annotation", "ok": true, "elapsedMs": 181, "bytes": 550, "absent": false}
+{"stage": "source_http_headers", "path": "/cover/27223", "status": 200, "mime": "image/jpeg", "elapsedMs": 185, "hasRedirect": false}
+{"id": "27223", "stage": "source_cover", "ok": true, "elapsedMs": 9806, "bytes": 70852, "mime": "image/jpeg", "absent": false}
+{"id": "27223", "stage": "entry_local", "ok": true, "elapsedMs": 1101, "status": 200, "mime": "application/atom+xml", "bytes": 2402, "summary": true, "imageLinks": 2, "stale": false}
+{"id": "27223", "stage": "entry_https", "ok": true, "elapsedMs": 137, "status": 200, "mime": "application/atom+xml", "bytes": 2402, "summary": true, "imageLinks": 2, "stale": false}
+{"id": "27223", "stage": "cover_https", "ok": true, "elapsedMs": 116, "status": 200, "mime": "image/jpeg", "bytes": 70852}
+{"stage": "source_http_headers", "path": "/b/27505", "status": 200, "mime": "text/html", "elapsedMs": 182, "hasRedirect": false}
+{"id": "27505", "stage": "source_card", "ok": true, "elapsedMs": 206, "complete": true, "annotationApi": true, "inlineAnnotation": false}
+{"stage": "source_http_headers", "path": "/api/annotation/27505", "status": 200, "mime": "text/plain", "elapsedMs": 172, "hasRedirect": false}
+{"id": "27505", "stage": "source_annotation", "ok": true, "elapsedMs": 970, "bytes": 764, "absent": false}
+{"stage": "source_http_headers", "path": "/cover/27505", "status": 200, "mime": "image/jpeg", "elapsedMs": 244, "hasRedirect": false}
+{"id": "27505", "stage": "source_cover", "ok": true, "elapsedMs": 1143, "bytes": 29334, "mime": "image/jpeg", "absent": false}
+{"id": "27505", "stage": "entry_local", "ok": true, "elapsedMs": 211, "status": 200, "mime": "application/atom+xml", "bytes": 2859, "summary": true, "imageLinks": 2, "stale": false}
+{"id": "27505", "stage": "entry_https", "ok": true, "elapsedMs": 59, "status": 200, "mime": "application/atom+xml", "bytes": 2859, "summary": true, "imageLinks": 2, "stale": false}
+{"id": "27505", "stage": "cover_https", "ok": true, "elapsedMs": 44, "status": 200, "mime": "image/jpeg", "bytes": 29334}
+{"time": "2026-10-06T13:03:14.385438+00:00", "stage": "after", "valid": true, "sha": "a55334694d3eff8fcac6a489d965c5fe3de05ab3", "units": {"searchfloor-opds.service": {"MainPID": "3711018", "NRestarts": "0", "ActiveState": "active"}, "warsaw-beer-bot.service": {"MainPID": "2320493", "NRestarts": "0", "ActiveState": "active"}}}
