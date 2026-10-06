@@ -1,8 +1,10 @@
 # AUTH-02 — repeated password prompts: investigation
 
-Date: 2026-10-06. Status: trigger clarified; private credential rotation prepared.
+Date: 2026-10-06. Status: owner-selected credentials and FBReader login accepted.
+Server/device evidence: `docs/change-opds-credentials-report.md`, eaf3837.
 Owner approved bounded design; root spec AUTH-002 and docs/change-opds-credentials.md
-describe the implementation. No application auth protocol or live config changed.
+describe the implementation. Operator changed the Basic pair; the protocol
+remains unchanged. Restart prompts remain accepted, not reported as eliminated.
 Root `spec.md` AUTH-001, CONFIG-001, OPS-001/002 and ACCEPT-001 govern
 the investigation. This document is evidence, not a second specification.
 
@@ -60,8 +62,8 @@ evidence requiring a server challenge change. Proposed next step: a private
 interactive operator workflow to customize the existing single user's Basic
 credentials, preserving runtime/deployer credential agreement, proxy/token
 configuration and deployment serialization. Short bounded design approval is
-granted on 2026-10-06; the operator command is now prepared and tested, while
-actual private configuration change remains an operator step.
+granted on 2026-10-06; the tested operator command was subsequently executed
+and the owner accepted device login (see the final report linked above).
 
 After the owner identifies the trigger, record a short device sequence:
 initial login → navigate → return to catalog → acquire → reopen → force-stop
@@ -79,4 +81,5 @@ test reader persistence before altering an otherwise stable Basic challenge.
 
 Server protocol changes, cookies, token URLs or fallback auth are not approved
 solutions. AUTH-001 requires separate owner decision for fallback auth; passwords
-in URLs remain prohibited. No production changes have been made in this task.
+in URLs remain prohibited. The auth protocol is unchanged; only the operator
+Basic pair was rotated, as recorded in the accepted server report.

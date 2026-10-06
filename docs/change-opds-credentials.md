@@ -1,8 +1,12 @@
 # Власний логін і пароль OPDS
 
+**Виконано та прийнято 2026-10-06:** owner-selected credentials і вхід у FBReader
+підтверджено в `change-opds-credentials-report.md` (eaf3837). Нижче — процедура
+для майбутньої свідомої ротації; повторний запуск зараз не потрібен.
+
 AUTH-001/002, CONFIG-001, DEPLOY-002, OPS-002. Погоджений bounded design:
-2026-10-06. Команда підготовлена в Git; фактична зміна credentials потребує
-запуску оператором на сервері. WebShare/GitHub token не змінюються.
+2026-10-06. Зміна credentials виконується оператором у приватному терміналі
+сервера. WebShare/GitHub token не змінюються.
 
 Серверний Claude/Codex: отримати reviewed main у чистому OPDS checkout;
 не скидати dirty checkout, не повторювати bootstrap/rollout. Перевірити hash

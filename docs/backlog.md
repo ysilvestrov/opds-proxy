@@ -8,7 +8,7 @@
 | ID | Пріоритет | Робота | Критерій готовності |
 |---|---|---|---|
 | DEP-01 | Завершено 2026-10-06 | Baseline, main release та production автодеплой | Exact-SHA d66216c; deployment/rollback/lock evidence; timer enabled, 14 automatic noop без runtime/bot рестартів; docs/production-rollout-report.md |
-| AUTH-02 | P1 першим | Задати власні Basic логін/пароль, зручні для введення на телефоні | Owner: prompt лише після restart; прийнятний. Private operator customization для єдиного користувача, узгоджені runtime/deployer credentials, перевірки та rollback; docs/fbreader-auth-diagnostics.md |
+| AUTH-02 | Завершено 2026-10-06 | Власні Basic логін/пароль, зручні для введення на телефоні | Rotation і FBReader login прийнято; timer restored, бот без рестартів; docs/change-opds-credentials-report.md, eaf3837. Restart prompt лишається прийнятним |
 | META-01 | P1 після auth | Анонс і обкладинка з картки книги | Bounded source evidence/fixture, mapping OPDS summary/image, cache/traffic policy у spec; реальна картка у FBReader |
 | META-02 | P2 | Жанри та розмір книги | Перевірити доступність/семантику upstream; не плутати розмір ZIP, тексту та кількість сторінок; OPDS/device mapping і unknown handling |
 | LINKS-01 | P2 | Related links на автора та серію | Перевірити upstream URL/IDs і відображення у FBReader; вирішити web-links чи OPDS navigation до реалізації; не вдавати готовий author/series catalog |
@@ -26,7 +26,7 @@ DEP-01 закрито за operator receipts 725051f. P1 — наступна н
 P2 — невеликі покращення, які не блокують погоджену базу.
 AUTH-02/META-01/META-02/LINKS-01 записані зі слів власника 2026-10-05;
 причини та джерело полів ще не перевірені. Пропонований порядок після DEP-01:
-AUTH-02, META-01, META-02, LINKS-01; edge checks READ-01–04 виконувати поряд
+META-01, META-02, LINKS-01 (AUTH-02 завершено); edge checks READ-01–04 виконувати поряд
 із відповідними змінами. Це план обговорення, не підтвердження причин проблем.
 Власник підтвердив, що зазначені metadata/related fields відображаються на
 Флібусті: це reader reference для OPDS mapping, а не доказ полів Searchfloor.
