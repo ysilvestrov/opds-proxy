@@ -21,8 +21,12 @@ Read-only observation заблоковано preflight c8a196b: HTTP decoder н�
 capture не запускався; docs/reader-cover-observation-report.md. Запропоновано
 Власник погодив постійний sanitized OPDS access log із journal rotation;
 попередній default-off180s дизайн замінено цим рішенням (OPS-001).
-Access log реалізовано й перевірено локально; exact-head Linux CI, server journal
-retention та phone observation ще pending. Серверний200
+Access log f76bfac8 встановлено; Linux CI, journal persistence/size-bounded
+rotation та phone observation підтверджено operator evidence40436fc.
+Картки27223/27505:401→200; усі18 cover requests:401 без200 retry.
+Verified boundary: Basic rejection перед cover handler; відсутні/неправильні
+credentials журнали не розрізняють. AUTH-001 залишається чинним; signed-cover
+дизайн docs/cover-auth-design-proposal.md ще НЕ погоджено. Серверний200
 не доводить доставку чи показ JPEG на телефоні; production не змінено.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
