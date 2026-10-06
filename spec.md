@@ -7,8 +7,23 @@ same-main noop, lock contention і автоматичний timer підтвер
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.5.0. META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
-review виправлені з RED/GREEN доказами; final-head Linux CI, server та device
-acceptance ще pending (docs/metadata-acceptance.md).
+review виправлені з RED/GREEN доказами; Linux CI та server probe пройшли,
+device acceptance залишається FAILED (docs/metadata-acceptance.md). Main a553346 CI/package
+та production HTTPS health підтверджено; owner META-01 device check FAILED:
+десятки секунд на картку, частково відсутній анонс, жодної cover у10 картках.
+Скріншоти27223/27505 показують stale, тобто повна Atom-картка відкривається,
+але є optional-resource error. Це evidence, не нова норма чи доведена причина;
+Серверний probe 2026-10-06 на a553346 підтвердив анонси, image links та
+authenticated HTTPS JPEG для27223/27505; докази в docs/metadata-server-diagnostics.md.
+Після probe власник підтвердив швидкі картки й анонси, але cover досі відсутня.
+META-01 не прийнято; фактичний phone cover request/status ще невідомий.
+Read-only observation заблоковано preflight c8a196b: HTTP decoder не встановлено,
+capture не запускався; docs/reader-cover-observation-report.md. Запропоновано
+Власник погодив постійний sanitized OPDS access log із journal rotation;
+попередній default-off180s дизайн замінено цим рішенням (OPS-001).
+Access log реалізовано й перевірено локально; exact-head Linux CI, server journal
+retention та phone observation ще pending. Серверний200
+не доводить доставку чи показ JPEG на телефоні; production не змінено.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
@@ -607,6 +622,35 @@ Timeout/size/cache значення цього spec є defaults, зміна їх
 відкритий writable cache та готовий HTTP; upstream outage не робить процес
 несправним. Logs SHALL бути structured stdout/journald із redaction auth,
 password/cookies; query text та повні source responses за замовчуванням не логуються.
+Кожен OPDS request SHALL створювати один structured access event після
+завершення application handler, включно з Basic401,404 та error responses.
+Event SHALL містити лише фіксовану назву, allowlisted method/route, numeric
+book ID довжиною<=20 за наявності, HTTP status, elapsed milliseconds та
+outcome response_created/aborted. Невідомі routes/methods SHALL використовувати
+фіксовані unknown/OTHER, а не raw strings. Pino timestamp додає час події.
+Headers, URLs/query, usernames/IP/User-Agent, arbitrary exceptions та payloads
+MUST NOT логуватися. Handler timing/status не SHALL означати завершення
+передавання body або отримання/показ image на телефоні. Request logging SHALL
+бути постійним без activation flag, packet capture або нових dependencies.
+Storage/rotation SHALL використовувати наявний stdout/journald; оператор MUST
+перевірити фактичні retention/disk limits та persistence. Глобальні journal
+settings, vacuum й ресурси/логи бота MUST NOT змінюватися в рамках цього кроку.
+Непідтверджені journal limits SHALL залишатися явним operator-pending gate.
+
+#### Scenario: Reader artwork receives an authentication challenge
+- **WHEN** cover request отримує401, а retry отримує200
+- **THEN** кожна відповідь має окремий access event з тим самим book ID/route
+- **AND** жодні credentials/headers/image bytes не записані.
+
+#### Scenario: Request contains sensitive or unrecognised input
+- **WHEN** query, header, method чи path містить довільний приватний текст
+- **THEN** access event містить лише allowlisted fields і fixed fallback labels
+- **AND** raw input і exception messages не потрапляють у logs.
+
+#### Scenario: Origin responds but reader still does not show artwork
+- **WHEN** cover access event має status200 та outcome response_created
+- **THEN** підтверджено відповідь application handler, а не body delivery/decoding
+- **AND** phone attribution потребує узгодженого owner-only observation window.
 SIGTERM SHALL stop accepting, cancel queued work, drain active transfers
 до 15 s, потім abort і close SQLite; TimeoutStopSec — 25 s.
 

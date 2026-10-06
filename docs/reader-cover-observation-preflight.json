@@ -1,0 +1,32 @@
+{
+  "time": "2026-10-06T14:28:40.907072+00:00",
+  "check": "reader-observer-preflight",
+  "handoffSha": "ee02a11f82b46cc14fa4ec4c8a944827b1fc0754",
+  "commands": {
+    "tshark": null,
+    "dumpcap": null,
+    "tcpflow": null,
+    "ngrep": null,
+    "httpry": null,
+    "tcpdump": "/usr/bin/tcpdump"
+  },
+  "pythonModules": {
+    "scapy": false,
+    "dpkt": false,
+    "pyshark": false
+  },
+  "units": {
+    "searchfloor-opds.service": {
+      "MainPID": "3711018",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "warsaw-beer-bot.service": {
+      "MainPID": "3950811",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    }
+  },
+  "captureStarted": false,
+  "productionChanged": false
+}

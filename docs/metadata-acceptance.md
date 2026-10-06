@@ -1,8 +1,16 @@
-# META-01 acceptance — prepared, not deployed
+# META-01 acceptance — deployed, device check failed
 
 Spec: OPDS-005/SOURCE-004/CACHE-003, AUTH-001, SOURCE-001/002/003,
 CACHE-001/002, ARCH-001, ACCEPT-001. Local implementation is in
-`codex/book-metadata`; server-proxy and FBReader results remain pending.
+PR6/main a553346; production HTTPS health reports that SHA and ready=true,
+new routes return401 without Basic. Owner device check failed2026-10-06:
+slow cards, partial annotations, no covers in10 cards. Screenshots for27223
+and27505 show stale warning. See docs/metadata-diagnostics-handoff.md;
+Original source failure remains unconfirmed. Server probe on2026-10-06 passed
+for27223/27505; owner follow-up confirms fast cards and annotations, but covers
+still absent. Actual reader cover request/status is unknown. META-01 is not
+accepted. See docs/metadata-server-diagnostics.md and the next bounded check
+in docs/reader-cover-observation-handoff.md.
 
 ## Server Claude brief
 
@@ -83,6 +91,10 @@ mark them passed only if actually tested.
   Python57 offline tests passed. Review Important schema mismatch and Minor
   cover-first inline synopsis loss reproduced RED and fixed GREEN. Schema1
   original writes/read interoperate with the extended artwork bookkeeping.
-- Linux CI/native artifact: pending.
-- Actual deployed SHA/server source+private HTTP checks: pending.
-- Device full-card/cover/optional absence/repeat/Download: pending.
+- Linux CI/native artifact: passed for main a553346, run37461983210.
+- Actual deployed SHA/server source+private HTTP checks: passed2026-10-06
+  for27223/27505;20 sanitized rows in docs/metadata-server-diagnostics.jsonl.
+  OPDS and bot PIDs/restart counts unchanged. Not a controlled cold/warm test.
+- Device follow-up: cards fast, annotation present, cover still absent (FAILED).
+  Actual reader image request/status, optional absence/repeat/Download remain
+  unverified for META-01; baseline Download acceptance is separate.

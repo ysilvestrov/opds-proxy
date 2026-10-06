@@ -178,6 +178,24 @@ failed/unrequested resources have no successful cache value.
 
 ## Task 5: Whole-change verification, release and reader acceptance
 
+### Approved diagnostic continuation, 2026-10-06
+
+Owner replaced the180s/default-off proposal with permanent sanitized OPDS
+access logging through existing Pino stdout/journald. OPS-001 governs this
+change; AUTH-001/ARCH-001 remain unchanged. No extra config or dependency.
+
+1. Add failing tests using real Pino output for401/retry200, entry/cover,
+  404, errors, unrelated paths, malicious query/header/path/method privacy.
+2. Implement allowlisted route/method classification and middleware before
+   Basic. Log final handler status/duration once; explicitly distinguish
+   handler response from full-body delivery. No source or renderer change.
+3. Run focused/full tests, build/typecheck; independent read-only review.
+4. Prepare server brief: check existing journal persistence/retention/usage
+   without changing shared settings or vacuuming; normal reviewed artifact
+   release, then coordinated owner-only entry/cover observation via journal.
+   Record actual deployed SHA and before/after OPDS/bot state. No raw journal
+   export; emit allowlisted access-event fields only. Return evidence via Git.
+
 **Files:** docs/fbreader-acceptance.md, docs/backlog.md, spec.md status;
 docs/metadata-acceptance.md (new operator/device checklist and evidence).
 
