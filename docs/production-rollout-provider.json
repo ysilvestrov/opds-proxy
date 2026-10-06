@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T22:07:19.180285+00:00",
+  "source": "owner dashboard text in this session",
+  "main": {
+    "limit": "1.0 GB",
+    "actualUsage": "6.29 MB",
+    "projectedUsage": "16.42 MB",
+    "projectedRemaining": "1007.58 MB"
+  },
+  "opdsSubUser": {
+    "name": "opds",
+    "providerId": 114684,
+    "limit": "1 GB",
+    "bandwidthUsed": "18.55 KB",
+    "rowDates": [
+      "2026-10-05 13:33",
+      "2026-10-05 15:42"
+    ]
+  },
+  "billingCycle": {
+    "start": "2026-09-24 12:11",
+    "end": "2026-10-24 12:11",
+    "source": "earlier owner main-dashboard snapshot; not freshly reconfirmed",
+    "timezone": "not supplied"
+  },
+  "remainingAllowance": "limits and actual usage supplied; exact actual remaining values not independently shown",
+  "sharedPool": true,
+  "subscriptionChanged": false,
+  "payloadBytesUsedAsBilling": false
+}

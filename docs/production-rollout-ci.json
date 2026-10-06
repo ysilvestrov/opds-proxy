@@ -1,0 +1,43 @@
+{
+  "time": "2026-10-05T22:07:19.179783+00:00",
+  "mainSha": "d66216c134a5a4c085de6f137359bea27abdc597",
+  "workflowId": 374905819,
+  "runId": 37377050484,
+  "runAttempt": 1,
+  "event": "push",
+  "branch": "main",
+  "jobs": [
+    {
+      "name": "typecheck",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "test",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "package",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifact": {
+    "id": 11372062331,
+    "name": "opds-release-d66216c134a5a4c085de6f137359bea27abdc597",
+    "digest": "sha256:296b9a5e23cc93dbe6f0dbe9865378e2508649c320336b17bcdf7216235fd4ef",
+    "size_in_bytes": 7358282,
+    "expired": false,
+    "expires_at": "2026-10-19T21:37:59Z"
+  },
+  "apiIdentityVerified": true,
+  "downloadedByAgent": false,
+  "deploymentStateSeeded": false,
+  "deployerArchiveAndNativeValidation": "pending operator/systemd"
+}

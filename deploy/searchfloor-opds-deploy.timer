@@ -2,7 +2,7 @@
 Description=Check OPDS main CI release every five minutes
 
 [Timer]
-OnBootSec=2min
+OnActiveSec=2min
 OnUnitInactiveSec=5min
 RandomizedDelaySec=15s
 Persistent=true

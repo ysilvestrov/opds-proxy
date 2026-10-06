@@ -1,5 +1,9 @@
 # Production rollout — server Claude/Codex brief
 
+**Executed and accepted 2026-10-06.** See `production-rollout-report.md` and
+its receipts. Production/timer are active; do not repeat this cutover against
+settled production. The procedure below preserves the original rollout context.
+
 Read root `spec.md` first (SPEC-001, SOURCE-003, DEPLOY-001/002, OPS-001/002,
 ACCEPT-001). Owner accepted FBReader list, metadata and download on c22ac2e
 on 2026-10-05. This brief continues Tasks 7–8 of the reviewed plan.
@@ -45,7 +49,7 @@ without archives or secrets. Do not push directly to main or message other chats
    Keep private backups outside Git. Check runtime/deployer ownership and narrow
    sudoers rights without dumping secrets. Keep prototype runnable until cutover.
 4. Run the verifier against the preserved, previously validated c22ac2e prototype
-   release at `/opt/searchfloor-opds/prototype/releases/c22ac2e6edafeba1563d88363326b2bd19cbb097`.
+   release at `/opt/searchfloor-opds/prototype/c22ac2e6edafeba1563d88363326b2bd19cbb097`.
    Check its identity and immutable file permissions first. It serves only as
    the isolated runtime fixture, never as a production candidate. Main CI also
    runs the same regression on its freshly built runtime. Production artifact
@@ -53,7 +57,7 @@ without archives or secrets. Do not push directly to main or message other chats
    Do not launch `run-deploy.mjs` directly or fabricate settled state. Run:
 
    ```bash
-   node scripts/verify-deploy-isolation.mjs --artifact-dir /opt/searchfloor-opds/prototype/releases/c22ac2e6edafeba1563d88363326b2bd19cbb097
+   node scripts/verify-deploy-isolation.mjs --artifact-dir /opt/searchfloor-opds/prototype/c22ac2e6edafeba1563d88363326b2bd19cbb097
    ```
 
    This launches a real runtime/native SQLite in a fresh temporary directory and

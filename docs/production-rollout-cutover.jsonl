@@ -1,0 +1,51 @@
+{"time": "2026-10-05T22:24:17.082968+00:00", "check": "provider-budget", "operatorConfirmed": true, "mainActualUsageMB": "6.29", "opdsActualUsageKB": "18.55", "mainLimit": "1 GB", "opdsLimit": "1 GB", "cycleStart": "2026-09-24 12:11", "cycleEnd": "2026-10-24 12:11", "sharedPool": true}
+{"time": "2026-10-05T22:24:17.105016+00:00", "check": "bot-health", "valid": true, "status": 200, "MainPID": "2320493", "NRestarts": "0", "ActiveState": "active", "SubState": "running", "UnitFileState": "enabled"}
+{"time": "2026-10-05T22:24:17.659073+00:00", "check": "infrastructure-file", "path": "/usr/local/lib/searchfloor-opds/autodeploy.mjs", "uid": 0, "mode": "0o644", "sha256": "4e734d343b502956428c77d8690e1475e54f4346867629f149c74205e88615ce", "changed": false}
+{"time": "2026-10-05T22:24:17.659274+00:00", "check": "infrastructure-file", "path": "/usr/local/lib/searchfloor-opds/artifact.mjs", "uid": 0, "mode": "0o644", "sha256": "d67c4d7a94f0faa464f7bf944bb6316b3f8e4729f1de1c361096cb14420c2ec5", "changed": false}
+{"time": "2026-10-05T22:24:17.659409+00:00", "check": "infrastructure-file", "path": "/usr/local/lib/searchfloor-opds/observe.mjs", "uid": 0, "mode": "0o644", "sha256": "4b35bff9034bc971605b66a77a9b6caef2561ab95c0092be42a4604b0b15f9c2", "changed": false}
+{"time": "2026-10-05T22:24:17.659601+00:00", "check": "infrastructure-file", "path": "/usr/local/lib/searchfloor-opds/run-deploy.mjs", "uid": 0, "mode": "0o644", "sha256": "3e2713592cb4fd33a95d5e8c0adb7430cda3b4102569e11543a49cd3a5bb9c54", "changed": false}
+{"time": "2026-10-05T22:24:17.659733+00:00", "check": "infrastructure-file", "path": "/usr/local/lib/searchfloor-opds/safe-extract.py", "uid": 0, "mode": "0o644", "sha256": "2baf603ef446de359b12f2a8d755dfb411bacd0cd8fc9a23f09e7a22b455e924", "changed": false}
+{"time": "2026-10-05T22:24:17.659871+00:00", "check": "infrastructure-file", "path": "/usr/local/sbin/searchfloor-opds-control", "uid": 0, "mode": "0o755", "sha256": "e946eac7413017dc96142be12fff62baca03371bb6358ea1cfffd4b7f6ce62a9", "changed": false}
+{"time": "2026-10-05T22:24:17.659989+00:00", "check": "infrastructure-file", "path": "/etc/sudoers.d/searchfloor-opds", "uid": 0, "mode": "0o440", "sha256": "5b3085e8bfa8536bee23d2c239a58ce263727ec0ede9d47ab202777fc1335860", "changed": false}
+{"time": "2026-10-05T22:24:17.660107+00:00", "check": "infrastructure-file", "path": "/etc/systemd/system/searchfloor-opds.service", "uid": 0, "mode": "0o644", "sha256": "f8d778aa9e02ee52b216c747544609b1403e10655832ddee730e8d0d5c350ad7", "changed": false}
+{"time": "2026-10-05T22:24:17.660221+00:00", "check": "infrastructure-file", "path": "/etc/systemd/system/searchfloor-opds-deploy.service", "uid": 0, "mode": "0o644", "sha256": "3a57114fa131d23e08d4568c15ba1c8e1aad7b46261d468f8600bd55e7fbbc2e", "changed": false}
+{"time": "2026-10-05T22:24:17.660332+00:00", "check": "infrastructure-file", "path": "/etc/systemd/system/searchfloor-opds-deploy.timer", "uid": 0, "mode": "0o644", "sha256": "5696a7e298c54d4a69cad72a6879f5a551d39fe4c79f1d902fa421b8776ebbba", "changed": false}
+{"time": "2026-10-05T22:24:17.660444+00:00", "check": "infrastructure-file", "path": "/etc/systemd/system/searchfloor-opds-prototype.service", "uid": 0, "mode": "0o644", "sha256": "b6676a2489796908007a788067677e58bac7d5df5c7427420c7260c822fdc2b6", "changed": false}
+{"time": "2026-10-05T22:24:17.677279+00:00", "check": "effective-privileges", "valid": true, "fixedActions": ["restart", "stop", "reset-cache"]}
+{"time": "2026-10-05T22:32:05.734280+00:00", "check": "main-ci", "valid": true, "sha": "d66216c134a5a4c085de6f137359bea27abdc597", "run": 37377050484, "artifact": 11372062331}
+{"time": "2026-10-05T22:32:05.746574+00:00", "check": "private-production-config", "valid": true, "proxyPreserved": true, "basicPreserved": true, "workflow": 374905819, "cachePath": "/var/lib/searchfloor-opds/cache/catalog.sqlite"}
+{"time": "2026-10-05T22:32:07.161094+00:00", "check": "isolated-verifier", "valid": true, "artifactSha": "c22ac2e6edafeba1563d88363326b2bd19cbb097", "successfulRelease": "deployed", "failedRelease": "rolled-back", "failedRetry": "held", "rollbackHealth": true, "noop": "noop"}
+{"time": "2026-10-05T22:32:08.583459+00:00", "check": "main-ci", "valid": true, "sha": "d66216c134a5a4c085de6f137359bea27abdc597", "run": 37377050484, "artifact": 11372062331}
+{"time": "2026-10-05T22:32:08.612721+00:00", "check": "bot-health", "valid": true, "status": 200, "MainPID": "2320493", "NRestarts": "0", "ActiveState": "active", "SubState": "running", "UnitFileState": "enabled"}
+{"time": "2026-10-05T22:32:08.642014+00:00", "check": "resources", "label": "before-cutover", "units": {"searchfloor-opds.service": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "VmRSS": null}, "searchfloor-opds-deploy.service": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "VmRSS": null}}, "cacheBytes": {}, "diskAvailableBytes": 34841448448, "freeInodes": 2082625, "ramAvailableBytes": 5719048192, "codeLogicalBytes": {}}
+{"time": "2026-10-05T22:32:08.837055+00:00", "check": "deploy-progress", "elapsedSeconds": 0}
+{"time": "2026-10-05T22:32:39.212347+00:00", "check": "deploy-progress", "elapsedSeconds": 30}
+{"time": "2026-10-05T22:33:09.579603+00:00", "check": "deploy-progress", "elapsedSeconds": 60}
+{"time": "2026-10-05T22:33:19.039934+00:00", "check": "fixed-unit-deployment", "valid": true, "result": "deployed", "elapsedSeconds": 70.22733736038208, "deployerPeakBytes": 115810304, "startupBudgetSeconds": 15, "stableObservationSeconds": 60, "state": {"settledSHA": "d66216c134a5a4c085de6f137359bea27abdc597", "previousSHA": null, "failedSHA": null, "phase": "idle"}}
+{"origin": "local", "path": "/health", "check": "health", "status": 200, "bytes": 63, "valid": true}
+{"origin": "local", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"origin": "https", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"time": "2026-10-05T22:33:23.313214+00:00", "check": "one-completed-feed", "valid": true, "status": 200, "bytes": 12410, "books": 20, "bookDownloads": 0}
+{"time": "2026-10-05T22:33:23.347000+00:00", "check": "deploy-progress", "elapsedSeconds": 0}
+{"time": "2026-10-05T22:33:24.371434+00:00", "check": "fixed-unit-deployment", "valid": true, "result": "noop", "elapsedSeconds": 1.0459415912628174, "deployerPeakBytes": 0, "startupBudgetSeconds": 15, "stableObservationSeconds": 60, "state": {"settledSHA": "d66216c134a5a4c085de6f137359bea27abdc597", "previousSHA": null, "failedSHA": null, "phase": "idle"}}
+{"time": "2026-10-05T22:33:24.504681+00:00", "check": "fixed-unit-lock-contention", "valid": true, "concurrentDeploymentPrevented": true}
+{"time": "2026-10-05T22:33:24.526086+00:00", "check": "bot-health", "valid": true, "status": 200, "MainPID": "2320493", "NRestarts": "0", "ActiveState": "active", "SubState": "running", "UnitFileState": "enabled"}
+{"time": "2026-10-05T22:33:24.626316+00:00", "check": "resources", "label": "production", "units": {"searchfloor-opds.service": {"MainPID": "2903006", "NRestarts": "0", "MemoryCurrent": "52637696", "MemoryPeak": "59101184", "CPUUsageNSec": "1489260000", "ActiveState": "active", "VmRSS": "105336 kB"}, "searchfloor-opds-deploy.service": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "VmRSS": null}}, "cacheBytes": {"catalog.sqlite-wal": 32992, "catalog.sqlite": 28672, "catalog.sqlite-shm": 32768}, "diskAvailableBytes": 34800644096, "freeInodes": 2078529, "ramAvailableBytes": 5785100288, "codeLogicalBytes": {"d66216c134a5a4c085de6f137359bea27abdc597": 28859178}}
+{"time": "2026-10-05T22:33:25.591811+00:00", "check": "recovery", "action": "preserve-production", "state": {"settledSHA": "d66216c134a5a4c085de6f137359bea27abdc597", "previousSHA": null, "failedSHA": null, "phase": "idle"}, "timerDisabled": true}
+{"time": "2026-10-05T22:33:25.591902+00:00", "check": "production-summary", "valid": false, "phase": "timer-tick", "failure": "ValueError", "credentialsPrinted": false}

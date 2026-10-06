@@ -1,0 +1,193 @@
+{
+  "time": "2026-10-05T22:05:43.610114+00:00",
+  "infrastructure": [
+    {
+      "path": "/usr/local/lib/searchfloor-opds/run-deploy.mjs",
+      "reviewedSha256": "3e2713592cb4fd33a95d5e8c0adb7430cda3b4102569e11543a49cd3a5bb9c54",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "3e2713592cb4fd33a95d5e8c0adb7430cda3b4102569e11543a49cd3a5bb9c54",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/autodeploy.mjs",
+      "reviewedSha256": "4e734d343b502956428c77d8690e1475e54f4346867629f149c74205e88615ce",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "4e734d343b502956428c77d8690e1475e54f4346867629f149c74205e88615ce",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/artifact.mjs",
+      "reviewedSha256": "d67c4d7a94f0faa464f7bf944bb6316b3f8e4729f1de1c361096cb14420c2ec5",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "d67c4d7a94f0faa464f7bf944bb6316b3f8e4729f1de1c361096cb14420c2ec5",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/observe.mjs",
+      "reviewedSha256": "4b35bff9034bc971605b66a77a9b6caef2561ab95c0092be42a4604b0b15f9c2",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "4b35bff9034bc971605b66a77a9b6caef2561ab95c0092be42a4604b0b15f9c2",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/safe-extract.py",
+      "reviewedSha256": "2baf603ef446de359b12f2a8d755dfb411bacd0cd8fc9a23f09e7a22b455e924",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "2baf603ef446de359b12f2a8d755dfb411bacd0cd8fc9a23f09e7a22b455e924",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/usr/local/sbin/searchfloor-opds-control",
+      "reviewedSha256": "e946eac7413017dc96142be12fff62baca03371bb6358ea1cfffd4b7f6ce62a9",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o755",
+      "symlink": false,
+      "installedSha256": "e946eac7413017dc96142be12fff62baca03371bb6358ea1cfffd4b7f6ce62a9",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/etc/sudoers.d/searchfloor-opds",
+      "reviewedSha256": "5b3085e8bfa8536bee23d2c239a58ce263727ec0ede9d47ab202777fc1335860",
+      "metadataOrContentDenied": true
+    },
+    {
+      "path": "/etc/systemd/system/searchfloor-opds.service",
+      "reviewedSha256": "f8d778aa9e02ee52b216c747544609b1403e10655832ddee730e8d0d5c350ad7",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "f8d778aa9e02ee52b216c747544609b1403e10655832ddee730e8d0d5c350ad7",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/etc/systemd/system/searchfloor-opds-deploy.service",
+      "reviewedSha256": "3a57114fa131d23e08d4568c15ba1c8e1aad7b46261d468f8600bd55e7fbbc2e",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "3a57114fa131d23e08d4568c15ba1c8e1aad7b46261d468f8600bd55e7fbbc2e",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/etc/systemd/system/searchfloor-opds-deploy.timer",
+      "reviewedSha256": "5696a7e298c54d4a69cad72a6879f5a551d39fe4c79f1d902fa421b8776ebbba",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "installedSha256": "5696a7e298c54d4a69cad72a6879f5a551d39fe4c79f1d902fa421b8776ebbba",
+      "matchesReviewed": true
+    },
+    {
+      "path": "/etc/searchfloor-opds/runtime.env",
+      "metadataOrContentDenied": true
+    },
+    {
+      "path": "/etc/searchfloor-opds/deploy.env",
+      "metadataOrContentDenied": true
+    },
+    {
+      "path": "/etc/searchfloor-opds/prototype.env",
+      "metadataOrContentDenied": true
+    },
+    {
+      "path": "/opt/searchfloor-opds/prototype/releases/c22ac2e6edafeba1563d88363326b2bd19cbb097",
+      "exists": false
+    },
+    {
+      "path": "/opt/searchfloor-opds/prototype/c22ac2e6edafeba1563d88363326b2bd19cbb097",
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o755",
+      "symlink": false,
+      "manifest": {
+        "sha": "c22ac2e6edafeba1563d88363326b2bd19cbb097",
+        "nodeMajor": 24,
+        "platform": "linux",
+        "arch": "x64",
+        "libc": "glibc",
+        "glibcVersion": "2.39",
+        "nodeAbi": "137",
+        "cacheSchemaVersion": 1
+      },
+      "nonRootOrWritableEntries": 0
+    }
+  ],
+  "units": {
+    "warsaw-beer-bot.service": {
+      "MainPID": "2320493",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "searchfloor-opds-prototype.service": {
+      "MainPID": "2814933",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "static"
+    },
+    "searchfloor-opds.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    },
+    "searchfloor-opds-deploy.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "static"
+    },
+    "searchfloor-opds-deploy.timer": {
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    }
+  },
+  "health": {
+    "bot": {
+      "status": 200,
+      "ok": true
+    },
+    "prototype": {
+      "status": 200,
+      "ready": true,
+      "sha": "c22ac2e6edafeba1563d88363326b2bd19cbb097"
+    }
+  },
+  "node": {
+    "node": "24.19.0",
+    "abi": "137",
+    "arch": "x64",
+    "platform": "linux",
+    "glibc": "2.39"
+  },
+  "osRelease": "PRETTY_NAME=\"Ubuntu 24.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.4 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+  "ramAvailableBytes": 5772423168,
+  "diskAvailableBytes": 34843594752,
+  "freeInodes": 2082677,
+  "listener": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      511        127.0.0.1:8787      0.0.0.0:*          \n"
+}

@@ -1,0 +1,29 @@
+{"time": "2026-10-05T22:38:23.929690+00:00", "check": "main-ci", "valid": true, "sha": "d66216c134a5a4c085de6f137359bea27abdc597", "run": 37377050484, "artifact": 11372062331}
+{"time": "2026-10-05T22:38:23.957734+00:00", "check": "bot-health", "valid": true, "status": 200, "MainPID": "2320493", "NRestarts": "0", "ActiveState": "active", "SubState": "running", "UnitFileState": "enabled"}
+{"origin": "local", "path": "/health", "check": "health", "status": 200, "bytes": 63, "valid": true}
+{"origin": "local", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "local", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "local", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"origin": "https", "path": "/opds", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/completed", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/search", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/books/1/download.fb2.zip", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "basic", "status": 401, "bytes": 23, "valid": true}
+{"origin": "https", "path": "/opds", "check": "feed", "status": 200, "bytes": 823, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor", "check": "feed", "status": 200, "bytes": 1179, "valid": true}
+{"origin": "https", "path": "/opds/searchfloor/opensearch.xml", "check": "opensearch", "status": 200, "bytes": 481, "valid": true}
+{"time": "2026-10-05T22:38:25.427859+00:00", "check": "resources", "label": "before-timer-resume", "units": {"searchfloor-opds.service": {"MainPID": "2903006", "NRestarts": "0", "MemoryCurrent": "48517120", "MemoryPeak": "59101184", "CPUUsageNSec": "1682641000", "ActiveState": "active", "VmRSS": "101684 kB"}, "searchfloor-opds-deploy.service": {"MainPID": "0", "NRestarts": "0", "MemoryCurrent": "[not set]", "MemoryPeak": "[not set]", "CPUUsageNSec": "[not set]", "ActiveState": "inactive", "VmRSS": null}}, "cacheBytes": {"catalog.sqlite-wal": 32992, "catalog.sqlite": 28672, "catalog.sqlite-shm": 32768}, "diskAvailableBytes": 34799538176, "freeInodes": 2078506, "ramAvailableBytes": 5797871616, "codeLogicalBytes": {"d66216c134a5a4c085de6f137359bea27abdc597": 28859178}}
+{"time": "2026-10-05T22:38:25.980794+00:00", "check": "timer-wait", "elapsedSeconds": 0, "nextTickMonotonic": "infinity"}
+{"time": "2026-10-05T22:38:56.140139+00:00", "check": "timer-wait", "elapsedSeconds": 30, "nextTickMonotonic": "infinity"}
+{"time": "2026-10-05T22:39:26.291064+00:00", "check": "timer-wait", "elapsedSeconds": 60, "nextTickMonotonic": "infinity"}
+{"time": "2026-10-05T22:43:25.506469+00:00", "check": "timer-wait", "elapsedSeconds": 300, "nextTickMonotonic": "infinity"}
+{"time": "2026-10-05T22:43:55.662573+00:00", "check": "timer-wait", "elapsedSeconds": 330, "nextTickMonotonic": "infinity"}
+{"time": "2026-10-05T22:44:16.053378+00:00", "check": "recovery", "action": "preserve-production", "state": {"settledSHA": "d66216c134a5a4c085de6f137359bea27abdc597", "previousSHA": null, "failedSHA": null, "phase": "idle"}, "timerDisabled": true}
+{"time": "2026-10-05T22:44:16.053438+00:00", "check": "production-summary", "valid": false, "phase": "timer-tick", "failure": "ValueError", "credentialsPrinted": false}

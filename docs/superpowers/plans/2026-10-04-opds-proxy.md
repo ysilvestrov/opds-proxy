@@ -238,6 +238,36 @@ Basic auth behavior and a concrete bootstrap go/no-go result.
 
 ## Task 7: Linux release artifacts and isolated autodeploy
 
+2026-10-05 rollout continuation: main d66216c push CI/release origin verified;
+readable installed infrastructure hashes match; actual isolated activation,
+failure/rollback/hold/no-op verifier passed on immutable c22ac2e fixture.
+Production privilege/config/deploy/no-op/lock/timer gates await operator script.
+Terminal entry point: `deploy/production-rollout.sh`; evidence/remaining gates:
+`docs/production-rollout-report.md`.
+Operator cutover on2026-10-05 passed main d66216c deployment/60s observation,
+local/HTTPS auth/static feeds, same-main noop and fixed-unit lock contention.
+Production is active/enabled; prototype stopped. Timer acceptance hit a duration
+parsing bug in the operator helper and remains pending with timer disabled.
+Resume via `deploy/finish-production-timer.sh`; sanitized receipt:
+`docs/production-rollout-cutover.jsonl`. No production rollback claim from an
+injected failure: deliberate failure was exercised only in isolation.
+Timer restart correction (DEPLOY-001, spec0.4.9): replace boot-relative initial
+trigger with OnActiveSec=2min; retain OnUnitInactiveSec=5min/jitter15s. On systemd255
+a persisted realtime stamp disables elapsed boot trigger, while a reloaded
+oneshot may have inactive monotonic timestamp0. Initial activation-relative
+trigger avoids the observed infinity schedule. Review/install only that timer
+after settled-production/config/CI/HTTP gates; backup privately, daemon-reload,
+then require actual automatic noop and a finite subsequent scheduled event.
+No deployer/runtime/script/state/secret changes or manual stamp deletion.
+2026-10-06 final operator acceptance: corrected root-owned timer triggered
+automatic noop07:46UTC and scheduled the next event. Production d66216c is
+active/enabled; prototype stopped; production/bot PIDs and NRestarts unchanged.
+Independent08:54–08:56UTC check found14 automatic noops and timer waiting/enabled.
+Tasks7–8 production rollout gates are complete; historical unchecked rows below
+describe the original implementation plan. Evidence: production-rollout-report,
+production-timer-passed.jsonl and production-rollout-final.json. Unverified
+reader edge cases remain in backlog, without fabricated device Pass.
+
 **Files:** `.github/workflows/ci.yml`, `scripts/{package-release,autodeploy}.mjs`,
 `tests/deploy.test.ts`, deploy service/timer, `deploy/README.md`.
 
