@@ -15,7 +15,7 @@ it('renders genre categories separately from series and compact full-card volume
     { '@_scheme': 'urn:opds:series', '@_term': 'Series', '@_label': 'Series #2' },
     { '@_scheme': 'urn:opds:searchfloor:genre', '@_term': '2', '@_label': 'Genre & <fiction> "test"' },
   ]);
-  expect(e.summary['#text']).toBe('Обсяг: 10.5К знаків · 0,26 авторських аркушів\n\nFirst & <paragraph>\n\nSecond');
+  expect(e.summary['#text']).toBe('First & <paragraph>\n\nSecond\n\nОбсяг: 10.5К знаків · 0,26 авторських аркушів');
   expect(e.content['#text']).toBe('Збережені metadata (stale): джерело тимчасово недоступне\n\n' + e.summary['#text']);
   expect(e.link.find((l: any) => l['@_rel'] === 'http://opds-spec.org/image')['@_href']).toBe(base + '/signed-cover?sig=fixture');
   expect(e.link.find((l: any) => l['@_rel'] === 'http://opds-spec.org/acquisition')['@_length']).toBeUndefined();

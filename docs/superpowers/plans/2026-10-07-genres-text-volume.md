@@ -27,7 +27,7 @@ Spec is normative; owner approved this plan afterbee8baa before product code.
 - Display characters as decimal thousands, fixed1 fractional digit, decimal
   point, CyrillicК:10500 ->10.5К;10000 ->10.0К;511195 ->511.2К.
 - Preserve exact integer in model/cache. Below1000 uses the same display rule.
-- Full entry plain-text summary/content contains volume before existing synopsis;
+- Full entry plain-text summary/content contains volume after existing synopsis;
   stale notice remains explicit. No invented synopsis, pages, ZIP length or labels
   such as novel/short story; no extra source requests or listing hydration.
 - Existing list15min/book24h/detail24h/known absence15min cache behavior and
@@ -108,8 +108,8 @@ signatures and signed link inputs unchanged.
   no NaN/Infinity/undefined or empty volume line. Input integer remains unchanged.
 - [x] Add parsed-XML renderer assertions: list and full entry have genres with
   schemeurn:opds:searchfloor:genre, term IDs, XML-escaped labels, series category
-  retained. Full summary is volume + blank line + original synopsis; content
-  keeps stale notice first, then volume/synopsis. Without synopsis, volume alone
+  retained. Full summary is original synopsis + blank line + volume; content
+  keeps stale notice first, then synopsis/volume. Without synopsis, volume alone
   appears in both. Without volume, exact previous summary/content remains.
   Listing has no synthetic volume summary, image link or genre navigation link.
   Acquisition link has no character-count length attribute.
@@ -121,7 +121,7 @@ signatures and signed link inputs unchanged.
   decimals without grouping or invented trailing digits. Join present components
   only; prefix once. Feed renderer XML-escapes the resulting plain text.
 - [x] Add genre categories to shared bookMetadata, separate from series. Compose
-  volume+synopsis once for full summary/content; retain existing stale placement,
+  synopsis+volume once for full summary/content; retain existing stale placement,
   image/self grants, alternate/start and acquisition behavior. No raw source HTML.
 - [x] Run formatter/feed/parser plus tests/metadata-api.test.ts and
   tests/signed-card.test.ts; require GREEN/typecheck. Commit
@@ -161,7 +161,7 @@ local clients supply parsed Book and existing annotation/artwork methods.
 - [x] Request one independent read-only whole-change review. Fix findings and
   rerun affected checks. Update spec/backlog/plan with actual evidence; commit
   `test: verify genre volume compatibility and reader acceptance`.
-- [ ] Create/attach PR identifying OPDS-006 and preserved invariants. Require green
+- [x] Create/attach PR identifying OPDS-006 and preserved invariants. Require green
   exact-head test/typecheck/build, merge via approved normal workflow and require
   green exact-main native package. Verify actual health SHA after timer installs.
 - [ ] Ask owner for actual genre/volume display result; close only observed gates,
@@ -178,3 +178,5 @@ Author-sheet display stays source-derived; no inferred size or pages.
 Owner approved written specificationa979a83. Owner approved planbee8baa before execution;
 preserve current-folder/native implementation choice rather than asking again
 for worktree or per-task agents. Code has not started.
+
+Owner2026-10-07 accepted visible genres/volume/artwork via screenshot and explicitly requested volume after synopsis. This bounded layout amendment updates the composition above; rerun existing renderer/API ordering tests RED/GREEN, build/typecheck and Linux CI, then normal release. No parser/cache/auth/source change.

@@ -53,7 +53,7 @@ it('serves a legacy cache without enrichment calls and gains fields on ordinary 
     const refreshed = await s.app.request(signed);
     expect(refreshed.status).toBe(200);
     const xml = load(await refreshed.text(), { xmlMode: true });
-    expect(xml('summary').text()).toBe('Обсяг: 511.2К знаків · 12,78 авторських аркушів\n\nOriginal synopsis\n\nParagraph');
+    expect(xml('summary').text()).toBe('Original synopsis\n\nParagraph\n\nОбсяг: 511.2К знаків · 12,78 авторських аркушів');
     expect(xml('category[scheme="urn:opds:searchfloor:genre"]').length).toBe(3);
     expect(s.cache.get<ReturnType<typeof bookAt>>('book:searchfloor:27047', 25 * 3600000)?.value.characterCount).toBe(511195);
     expect((await s.app.request(signed)).status).toBe(200);
@@ -75,7 +75,7 @@ it('rich metadata preserves request counts and the separate completion freshness
       expect(entry.status).toBe(200);
       const $ = load(await entry.text(), { xmlMode: true });
       expect($('category[scheme="urn:opds:searchfloor:genre"]').length).toBe(rich ? 3 : 0);
-      expect($('summary').text()).toBe((rich ? 'Обсяг: 511.2К знаків · 12,78 авторських аркушів\n\n' : '') + 'Original synopsis\n\nParagraph');
+      expect($('summary').text()).toBe('Original synopsis\n\nParagraph' + (rich ? '\n\nОбсяг: 511.2К знаків · 12,78 авторських аркушів' : ''));
       const signed = $('link[rel="self"]').attr('href')!;
       const again = await s.app.request(signed);
       expect(again.status).toBe(200);
