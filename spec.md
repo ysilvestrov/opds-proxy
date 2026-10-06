@@ -732,3 +732,13 @@ actual usage after remains pending. No app source, limits or requirements change
 Main dashboard usage after:5.88MB (prior5.41MB); main delta не доводить окремий
 OPDS billing. Separate sub-user usage after не надана. Тимчасове artifact staging
 прибрано після перевіреного запуску; immutable code/evidence/unmerged work збережено.
+
+### Credential customization acceptance, 2026-10-06
+
+AUTH-001/002 operator rotation and owner FBReader login passed on b15970c.
+Evidence: docs/change-opds-credentials-report.md, server commit eaf3837.
+Runtime/deploy Basic pair changed privately; old-pair401/local/HTTPS/static checks
+passed, timer restored. Bot PID/NRestarts unchanged; OPDS restarted once as
+expected for rotation. No credentials or credential fingerprints in Git/chat.
+This closes credential usability acceptance, not persistence after reader restart
+or the postponed device edge scenarios. No normative requirement changed.
