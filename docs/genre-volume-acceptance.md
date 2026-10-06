@@ -7,7 +7,10 @@ not inferred from fixtures. No ZIP size/pages or new genre catalogue.
 
 Release3e660df06895cbe7b3548a82d275cb25f6b29ec2 installed: public HTTPS health
 on2026-10-07 returned this exact SHA and ready=true. Linux CI/package and final
-review passed; docs/genre-volume-release-evidence.md. Owner phone result pending.
+review passed; docs/genre-volume-release-evidence.md. Owner confirmed success
+and supplied screenshot for «Первый шаг Некроманта. Том1»: genre tags, cover,
+annotation and413.2К/10,33 volume visible. Requested layout follow-up moves volume
+after annotation; that updated visual position still needs phone confirmation.
 
 ## Release and compatibility gate
 
@@ -25,7 +28,7 @@ After the release is active, reopen a completed book from the authenticated
 listing in FBReader Android3.8.31, checking that:
 
 - Genre tags appear alongside the existing series tag.
-- The card's annotation area starts with a line such as
+- The card's annotation area ends with a line such as
   `Обсяг: 511.2К знаків · 12,78 авторських аркушів`, with available source values.
 - Original synopsis paragraphs and working artwork remain available.
 

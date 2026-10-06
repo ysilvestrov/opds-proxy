@@ -28,7 +28,11 @@ Fixtures and local integration assert no extra source requests, old-cache
 compatibility, ordinary expiry and separate completion freshness. These are
 offline contract results, not actual provider traffic or billing measurements.
 
-Phone acceptance remains pending: docs/genre-volume-acceptance.md.
+Owner confirmed phone success and supplied screenshot2026-10-07: genres,
+413.2К/10,33 volume, synopsis and artwork visible for «Первый шаг Некроманта. Том1».
+Requested follow-up: put volume after annotation, as in the Flibusta reference.
+OPDS-006/spec and renderer ordering tests updated together; no additional fields.
+Phone confirmation of updated position remains pending: docs/genre-volume-acceptance.md.
 Owner checks visible genre tags, compact volume line, original synopsis and
 working artwork. Old book cache lacks new fields until ordinary refresh,
 potentially24h; no forced cache rebuild or mass hydration is required.

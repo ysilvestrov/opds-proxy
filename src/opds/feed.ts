@@ -37,7 +37,7 @@ const bookMetadata = (b:Book) => `<id>urn:opds:${xml(b.sourceName)}:book:${xml(b
 const bookAcquisition = (b:Book,base:string) => link('http://opds-spec.org/acquisition',absolute(base,bookPath(b)+'/download.fb2.zip'),'application/fb2+zip');
 export function renderBookEntry(book:Book, details:BookDetails, baseUrl:string, stale:boolean, links?:{self:string;cover:string}):string {
   let body=bookMetadata(book)+link('self',links?.self??absolute(baseUrl,bookPath(book)),ENTRY)+link('start',absolute(baseUrl,'/opds'))+link('alternate',book.sourceUrl,'text/html')+bookAcquisition(book,baseUrl);
-  const summary=[formatTextVolume(book),details.summary].filter(Boolean).join('\n\n');
+  const summary=[details.summary,formatTextVolume(book)].filter(Boolean).join('\n\n');
   if(summary)body+=`<summary type="text">${xml(summary)}</summary>`;
   const content=[stale?'Збережені metadata (stale): джерело тимчасово недоступне':null,summary].filter(Boolean).join('\n\n');
   if(content)body+=`<content type="text">${xml(content)}</content>`;
