@@ -1,6 +1,6 @@
 # OPDS credential change — server result, 2026-10-06
 
-Status: operator rotation passed; FBReader login confirmation pending.
+Status: operator rotation and owner-confirmed FBReader login passed.
 
 AUTH-001/002, CONFIG-001, DEPLOY-002, OPS-002.
 Reviewed main: b15970c6843d3a335cabdd0ee4a3ee32e6561bdb, merged PR4.
@@ -51,8 +51,9 @@ timer active/waiting/enabled with a finite next event. Bot remained healthy,
 PID2320493/NRestarts0, unchanged from preparation. OPDS PID changed as expected
 for the explicit credential restart, not a crash loop.
 
-Server-side AUTH-001/002 rotation acceptance passed. Device login with the new
-pair is not yet confirmed: owner should restart FBReader, enter the new username
-and password privately, and report only whether login succeeded. Private backups
+Server-side AUTH-001/002 rotation acceptance passed. On2026-10-06 the owner
+confirmed "все працює" in response to the request to log into FBReader with
+the new pair. Device login is accepted; no claim of credential persistence
+across future restarts or additional edge-case tests. Private backups
 remain root-only outside Git. No task-specific temporary files or merged clean
 worktrees require deletion; dirty/unmerged work remains preserved.

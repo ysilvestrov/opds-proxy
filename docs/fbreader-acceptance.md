@@ -44,3 +44,9 @@ Production promotion завершено2026-10-06: main d66216c, наявні ho
 deployment/60s observation, same-main noop/lock і автоматичний timer підтверджено
 в docs/production-rollout-report.md. Це серверні докази; відкладені device
 сценарії вище залишаються pending і не позначаються Pass.
+
+2026-10-06: після зміни єдиної OPDS Basic пари власник підтвердив
+«все працює» у відповідь на перевірку входу у FBReader з новими credentials.
+Device login прийнято; credentials не передавалися в чат/Git. Звіт:
+docs/change-opds-credentials-report.md. Persistence між наступними restart
+та раніше відкладені edge cases цим підтвердженням не перевірені.
