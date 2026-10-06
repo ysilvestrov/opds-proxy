@@ -5,7 +5,9 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.4.11. Independent source proxy та базовий reader flow прийнято;
+**Версія:** 0.5.0-draft. META-01 design погоджено в чаті; письмова специфікація
+та implementation plan очікують review перед кодом. Нові metadata routes/cache
+ще не реалізовані й не прийняті на пристрої. Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
@@ -97,7 +99,10 @@ Card title може бути plain text без `/b/` link; див. docs/source-c
 
 Модель `Book`: `sourceName`, `id`, `title`, `authors[]`, optional `summary`, `series`,
 `seriesPosition`, `authorRefs[]`, `genres[]`; `sourceUrl`, `downloadPath`,
-`complete`, `observedAt`. `EntityRef` має `name` та optional source-local `id`;
+`complete`, `observedAt`. META-01 додає окрему модель `BookDetails`:
+sourceName/id, optional plain-text summary, optional cover reference з MIME,
+`observedAt` для деталей; вона не замінює completion evidence у `Book`.
+`EntityRef` має `name` та optional source-local `id`;
 authorRefs/genres зарезервовані для майбутнього парсингу, їх наповнення у v1
 не обов'язкове. Відсутні поля означають невідомі metadata, не відсутність автора/жанру.
 ID — числовий ідентифікатор джерела як string, не назва.
@@ -166,7 +171,8 @@ Direct urllib теж отримав 200: blanket VPS-IP ban не доведен�
   відхиляє startup без друку URL/userinfo. Unset зберігає direct для local/tests.
   Поточний VPS deployment конфігурує proxy явно через окремий OPDS env.
 - ARCH-001: composition root створює один власний undici ProxyAgent, інжектує
-  transport тільки в SearchfloorClient для HTML/Download. Без global dispatcher,
+  transport тільки в SearchfloorClient для HTML/Download та META-01 annotation/cover.
+  Без global dispatcher,
   HTTP_PROXY на весь процес, впливу на GitHub/deployer чи startup читання bot env.
   ProxyAgent повторно використовується й закривається після bounded shutdown.
 - SOURCE-002 / DOWNLOAD-001/002: залишаються всі source queue/spacing/redirect/
@@ -271,6 +277,94 @@ OpenSearch MIME — `application/opensearchdescription+xml`. MIME MUST NOT
 - **WHEN** title містить кирилицю, `&`, `<` чи лапки
 - **THEN** feed є валідним UTF-8 XML і показує вихідний title без XML injection.
 
+### Requirement: OPDS-005 — On-demand complete book entries and artwork
+
+META-01 SHALL додати `/opds/{name}/books/{id}` — standalone Atom entry,
+Content-Type `application/atom+xml;type=entry;profile=opds-catalog`.
+Listing entry SHALL посилатися на нього через `rel="alternate"` з цим type,
+зберігаючи наявний HTML alternate та acquisition. Повна картка SHALL мати
+той самий urn ID, title/authors, доступні series metadata, self/start links
+та наявний private acquisition. Анонс SHALL бути XML-escaped plain text у
+`summary` та `content` з `type="text"`, зі збереженням абзаців; HTML/JS із
+джерела не виконується. Порожній анонс не підмінюється site meta description.
+
+Список/пошук SHALL NOT завантажувати деталі кожної книги або запускати фонове
+збагачення. Відкриття повної картки MAY отримати базову source card, анонс
+і одну обкладинку на cache miss; спільні запити coalesce за source/id/resource.
+Попередньо кешовані деталі MAY додаватися до listing без upstream-запитів.
+Обкладинки у listing не рекламуватимуться до окремого перегляду eager-fetch
+поведінки reader; перша реалізація показує їх через повну картку.
+
+Картка SHALL рекламувати перевірену кешовану обкладинку через
+`http://opds-spec.org/image` і `http://opds-spec.org/image/thumbnail`, із
+фактичним MIME та private href `/opds/{name}/books/{id}/cover`.
+Одна source обкладинка MAY використовуватися для обох relations без resizing;
+це не твердження про окрему upstream thumbnail. Cover route SHALL віддавати
+JPEG/PNG/GIF з фактичним Content-Type, `X-Content-Type-Options: nosniff`
+і `Cache-Control: private, max-age=0, must-revalidate`; public/shared HTTP
+кешування авторизованих відповідей заборонене. Кеш сервісу визначає CACHE-003.
+
+Для numeric id, відсутнього в базовому кеші, SHALL виконуватися bounded lookup
+картки. Unknown/incomplete/no-Download книга SHALL давати404 без анонсу/cover.
+Відомі complete metadata не старші24h MAY використовуватися для відображення;
+це не дозвіл завантажити книгу без свіжої перевірки за SOURCE-001.
+Виявлена зміна completion SHALL прибрати доступні details/cover для цієї книги.
+Помилка необов'язкового ресурсу SHALL пропускати відповідне поле та зберігати
+базову картку й acquisition; помилка lookup без придатної бази дає503.
+Відомо відсутня cover повертає404; timeout/denial/invalid body дають503/502,
+без placeholder bytes або HTML під image MIME. Stale metadata при outage
+SHALL явно позначатися в plain-text content і не подовжувати Download eligibility.
+
+#### Scenario: A reader opens an uncached complete entry
+- **WHEN** FBReader переходить за Atom alternate зі списку до повної картки
+- **THEN** сервіс отримує лише ресурси вибраної книги, показує доступний анонс
+  і private image links, не збагачує решту сторінки
+- **AND** image запит потребує Basic auth; фактичне відображення перевіряється
+  у FBReader Android3.8.31, а не виводиться з валідності XML.
+
+#### Scenario: Optional source metadata is unavailable
+- **WHEN** анонс порожній/404 або cover відсутня/невалідна/недоступна
+- **THEN** базова картка залишається доступною без відповідного optional поля
+- **AND** acquisition і його окрема перевірка завершеності не змінюються.
+
+#### Scenario: Invalid or unknown source-specific metadata request
+- **WHEN** source name невідомий або id не відповідає numeric book ID
+- **THEN** API повертає404/400 відповідно без довільного URL чи upstream-запиту.
+
+### Requirement: SOURCE-004 — Bounded annotation and cover transport
+
+Searchfloor SHALL використовувати фіксовані same-origin шляхи
+`/api/annotation/{id}` та `/cover/{id}` для перевіреного numeric ID.
+Card MAY містити inline анонс; за його наявності окремий annotation request
+не потрібен. Card selector `#annotation`/`data-url` SHALL перевірятися без
+виконання script; довільний data-url не дозволений. Generic meta description
+не є анонсом. Ресурси SHALL використовувати той самий окремий source proxy,
+queue/concurrency/spacing, redirects/retry/cooldown за SOURCE-002; без
+browser automation, JS execution, external image origins чи proxy fallback.
+
+Annotation cap SHALL бути64KiB decoded response bytes, timeout15s;
+API annotation SHALL мати text/plain та валідний UTF-8. Inline text extraction
+SHALL зберігати абзаци та не включати scripts/styles. Cover cap SHALL бути2MiB
+decoded bytes, timeout15s; Content-Type і JPEG/PNG/GIF signature MUST збігатися.
+HTML/challenge, SVG та непідтримувані формати відхиляються. Ліміти SHALL
+перевірятися під час читання, навіть без Content-Length; body при перевищенні
+скасовується. Source cookies/userinfo/довільні клієнтські URL не додаються.
+
+Evidence 2026-10-06: bounded PC GET `/b/27047` та публічних scripts без execution
+показав annotation data-url і inline `bookCoverImage.src = "/cover/27047"`;
+GET annotation повернув200 text/plain,745B; HEAD cover —200 image/jpeg,46924B.
+Це evidence одного ID/локального direct доступу, не гарантія всіх книг,
+signature validation, server-proxy доступу або сумісності з reader.
+
+#### Scenario: Source serves HTML instead of artwork
+- **WHEN** cover response має image MIME, але body містить HTML/challenge
+- **THEN** body не кешується і не віддається як обкладинка
+- **AND** базова картка залишається доступною без image links.
+
+#### Scenario: Source redirects an optional resource outside Searchfloor
+- **WHEN** annotation або cover перенаправляє на інший origin
+- **THEN** запит відхиляється за SOURCE-002 без надсилання proxy/source secrets.
+
 ### Requirement: OPDS-003 — Source namespace and future adapters
 
 Усі source-specific public routes SHALL мати префікс `/opds/{name}/`.
@@ -325,7 +419,7 @@ Query SHALL бути trimmed, максимум 200 Unicode code points; page —
 
 ### Requirement: AUTH-001 — Private access on every acquisition path
 
-Root/feed/search/OpenSearch/download SHALL вимагати окрему HTTP Basic auth
+Root/feed/search/OpenSearch/download/full-entry/cover SHALL вимагати окрему HTTP Basic auth
 поверх HTTPS. Неправильні/відсутні credentials SHALL давати 401 і Basic challenge.
 Config без пароля або username MUST завершувати startup з помилкою.
 Порівняння credentials SHALL бути constant-time за fixed-length digests.
@@ -408,7 +502,8 @@ UTF-8 filename*, Cache-Control private/no-store. Range не підтримуєт
 
 ### Requirement: CACHE-001 — Disposable bounded SQLite cache
 
-SQLite SHALL містити лише відновлювані metadata/query results, без книг,
+SQLite SHALL містити лише відновлювані metadata/query results та cover cache
+за CACHE-003, без повних книг,
 секретів і deployment-state. List/search TTL — 15 min, metadata TTL — 24 h.
 Key SHALL включати sourceName, нормалізований query, page, filter і schema version.
 Однакові concurrent reads SHALL coalesce; cancel одного caller не скасовує
@@ -420,6 +515,43 @@ SHALL обмежувати накопичення, а фактичний disk fo
 #### Scenario: Several readers request the same cold page
 - **WHEN** запити з однаковим cache key виконуються одночасно
 - **THEN** відбувається один upstream request, результат доступний усім active callers.
+
+### Requirement: CACHE-003 — Separate detail freshness and bounded artwork cache
+
+BookDetails та covers SHALL кешуватися окремими versioned source/id/resource
+keys у наявній OPDS SQLite, TTL24h від фактичного отримання. List refresh
+MUST NOT перезаписувати багатші details чи їх observedAt; metadata refresh
+MUST NOT оновлювати completion observedAt. Cover JSON MAY містити base64
+і MIME; це recoverable artwork, не файл книги. Не вводяться нові writable
+шляхи, systemd permissions, env secrets, backup чи cache warmup.
+
+Cover values SHALL мати окремий LRU бюджет64MiB serialized values, включений
+у загальні128MiB/10,000keys CACHE-001; base64 overhead SHALL враховуватися.
+DB+WAL target256MiB не збільшується. Одна cover decoded<=2MiB. Cache reset
+та rollback SHALL працювати за CACHE-002; несумісний кеш перебудовується.
+Evicted cover MAY бути отримана на вимогу без збагачення списку.
+
+Успішні empty annotation і source404 optional ресурсу SHALL кешуватися як
+явна відсутність на15min, окремо від неперевіреного ресурсу. Timeout/403/429/
+5xx/invalid body SHALL NOT кешуватися як відсутність. Придатні details/cover
+не старші24h MAY використовуватися при outage; старші SHALL не віддаватися.
+Після optional error базова картка MAY повернутися негайно; наступний явний
+запит повторює лише відсутній ресурс через чинні queue/cooldown limits.
+
+#### Scenario: List refresh follows detail enrichment
+- **WHEN** книга має кешований анонс і cover, а список оновлює її базові поля
+- **THEN** details/cover та їх TTL зберігаються до expiry/eviction
+- **AND** timestamp деталей не робить прострочений Download дозволеним.
+
+#### Scenario: Artwork reaches its budget
+- **WHEN** нова cover перевищує64MiB serialized cover budget або загальний limit
+- **THEN** LRU eviction зберігає обидва бюджети; базовий каталог може
+  перебудуватися на вимогу без завантаження всіх covers.
+
+#### Scenario: Several readers request the same uncached cover
+- **WHEN** active callers одночасно запитують ту саму source/id cover
+- **THEN** виконується один bounded upstream fetch; cancel одного caller
+  не скасовує операцію для інших, shutdown залишається bounded.
 
 ### Requirement: CACHE-002 — Rebuild and bounded stale results
 
@@ -658,6 +790,15 @@ capacity check і майбутнього окремого переїзду.
 - **WHEN** автоматичні перевірки успішні, а клієнтський тест чи встановлення не виконано
 - **THEN** звіт називає відповідну частину неперевіреною/підготовленою
 - **AND** не стверджує, що сервіс працює у FBReader або на сервері.
+
+#### Scenario: META-01 reader acceptance remains unverified
+- **WHEN** fixture/mock tests підтвердили full-entry/summary/images/auth/cache,
+  але власник ще не відкрив реальну повну картку у FBReader Android3.8.31
+- **THEN** META-01 залишається device-pending; базове приймання не означає
+  підтримки нового Atom alternate або Basic forwarding для cover
+- **AND** потрібні bounded server-proxy annotation/cover probe та device check
+  анонсу, обкладинки, повторного відкриття, книги без optional полів і Download;
+  failure не обходиться публічним image URL або eager hydration без нового review.
 
 #### Scenario: Owner accepts the initial working baseline
 - **WHEN** власник підтверджує список, metadata та завантаження і просить
