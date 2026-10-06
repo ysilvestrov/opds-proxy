@@ -4,6 +4,7 @@ const digest = (v: string) => createHash("sha256").update(v).digest();
 export function privateAuth(
   username: string,
   password: string,
+  allowAdditional?: (request: Request) => boolean,
 ): MiddlewareHandler {
   const expected = digest(username + ":" + password);
   return async (c, next) => {
@@ -15,7 +16,7 @@ export function privateAuth(
       decoded = bytes.toString("utf8");
       if (bytes.toString("base64") !== match[1]) decoded = "";
     }
-    if (!timingSafeEqual(digest(decoded), expected)) {
+    if (!timingSafeEqual(digest(decoded), expected) && !allowAdditional?.(c.req.raw)) {
       c.header("WWW-Authenticate", 'Basic realm="OPDS", charset="UTF-8"');
       return c.text("Authentication required", 401);
     }

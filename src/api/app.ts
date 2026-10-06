@@ -13,6 +13,7 @@ import {
 import { renderOpenSearch } from "../opds/search.js";
 import { privateAuth } from "./auth.js";
 import { accessLog } from "./access-log.js";
+import { createBookCardSigner, isSignedBookCardRequest } from './card-grant.js';
 import { SourceError } from "../sources/searchfloor/client.js";
 interface Deps {
   catalog: Pick<Catalog, "page" | "book"> & Partial<Pick<Catalog,'details'|'cover'>>;
@@ -23,6 +24,8 @@ interface Deps {
 }
 export function createApp(d: Deps): Hono {
   const app = new Hono();
+  const signer = createBookCardSigner(d.config.OPDS_PASSWORD);
+  const authorizeCard = (request: Request) => isSignedBookCardRequest(request, signer);
   app.use('*', accessLog(d.log));
   app.get("/health", (c) =>
     c.json(
@@ -30,10 +33,10 @@ export function createApp(d: Deps): Hono {
       d.ready?.() === false ? 503 : 200,
     ),
   );
-  app.use("/opds", privateAuth(d.config.OPDS_USERNAME, d.config.OPDS_PASSWORD));
+  app.use("/opds", privateAuth(d.config.OPDS_USERNAME, d.config.OPDS_PASSWORD, authorizeCard));
   app.use(
     "/opds/*",
-    privateAuth(d.config.OPDS_USERNAME, d.config.OPDS_PASSWORD),
+    privateAuth(d.config.OPDS_USERNAME, d.config.OPDS_PASSWORD, authorizeCard),
   );
   const response = (xml: string, type: string) =>
     new Response(xml, {
@@ -103,7 +106,14 @@ export function createApp(d: Deps): Hono {
     const id=c.req.param('id');if(!/^\d+$/.test(id))return c.text('Invalid book ID',400);
     if(!d.catalog.details)return c.notFound();
     const value=await d.catalog.details(id,c.req.raw.signal);if(!value)return c.notFound();
-    return response(renderBookEntry(value.book,value.details,d.config.PUBLIC_BASE_URL,value.stale),ENTRY);
+    const b = value.book;
+    const links = b.sourceName === 'searchfloor' && /^[1-9][0-9]{0,19}$/.test(b.id)
+      ? { self: `${d.config.PUBLIC_BASE_URL}/opds/searchfloor/books/${b.id}?sig=${signer.sign(b.sourceName,b.id)}`,
+          cover: `${d.config.PUBLIC_BASE_URL}/opds/searchfloor/books/${b.id}/cover?sig=${signer.sign(b.sourceName,b.id)}` }
+      : undefined;
+    const result = response(renderBookEntry(b,value.details,d.config.PUBLIC_BASE_URL,value.stale,links),ENTRY);
+    result.headers.set('Referrer-Policy','no-referrer');
+    return result;
   });
   app.get('/opds/:name/books/:id/cover',async c=>{
     const id=c.req.param('id');if(!/^\d+$/.test(id))return c.text('Invalid book ID',400);
