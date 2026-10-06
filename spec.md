@@ -5,9 +5,10 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.5.0-draft. META-01 design і письмова специфікація погоджені в чаті;
-implementation plan очікує review перед кодом. Нові metadata routes/cache
-ще не реалізовані й не прийняті на пристрої. Independent source proxy та базовий reader flow прийнято;
+**Версія:** 0.5.0. META-01 design, письмова специфікація та implementation plan
+погоджені в чаті. Metadata routes/cache реалізовані локально; independent review,
+Linux CI, server та device acceptance ще pending (docs/metadata-acceptance.md).
+Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
 **Дата:** 2026-10-06.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
