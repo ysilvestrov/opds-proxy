@@ -81,4 +81,5 @@ test reader persistence before altering an otherwise stable Basic challenge.
 
 Server protocol changes, cookies, token URLs or fallback auth are not approved
 solutions. AUTH-001 requires separate owner decision for fallback auth; passwords
-in URLs remain prohibited. No production changes have been made in this task.
+in URLs remain prohibited. The auth protocol is unchanged; only the operator
+Basic pair was rotated, as recorded in the accepted server report.
