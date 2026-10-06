@@ -419,7 +419,15 @@ Genre discovery/routes OPDS-004 залишаються reserved/disabled; genre 
 
 Full entry SHALL містити один plain-text рядок обсягу перед анонсом у
 `summary` і `content`: наприклад,
-`Обсяг: 511 195 знаків · 12,78 авторських аркушів`.
+`Обсяг: 511.2К знаків · 12,78 авторських аркушів`.
+За уточненням власника2026-10-07 кількість знаків SHALL відображатися у
+десяткових тисячах (1К =1000 знаків), округлених до одного знака після
+десяткової крапки, із кириличною `К` без пробілу після числа:
+10500 -> `10.5К знаків`,10000 -> `10.0К знаків`,511195 -> `511.2К знаків`.
+Правило SHALL діяти також для кількості менше1000; нульовий результат
+округлення SHALL NOT означати невідоме поле. Точний positive integer
+`characterCount` SHALL залишатися незмінним у моделі/кеші; rounding SHALL
+виконуватися лише під час rendering, а не source parsing.
 Якщо відома лише одна величина, SHALL показуватися лише вона. Рядок MAY
 відображатися навіть за відсутності анонсу; наявний анонс/абзаци та stale
 позначка SHALL зберігатися. List summary SHALL NOT синтезувати анонс або
@@ -438,6 +446,12 @@ TTL, observedAt та SOURCE-001 Download eligibility не змінюються. 
 - **THEN** list/full entries містять genre categories, full entry містить рядок
   обсягу й наявний анонс; series та signed image/acquisition links збережені
 - **AND** upstream request count не збільшується заради цих metadata.
+
+#### Scenario: Character count uses compact decimal thousands
+- **WHEN** source characterCount дорівнює10500,10000 або511195
+- **THEN** картка показує відповідно `10.5К знаків`, `10.0К знаків` або
+  `511.2К знаків`, з одним десятковим знаком та крапкою
+- **AND** cache/model зберігають точну вихідну кількість знаків.
 
 #### Scenario: Source data is missing or malformed
 - **WHEN** genre/volume поле відсутнє, некоректне або неоднозначне
