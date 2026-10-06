@@ -161,7 +161,7 @@ local clients supply parsed Book and existing annotation/artwork methods.
 - [x] Request one independent read-only whole-change review. Fix findings and
   rerun affected checks. Update spec/backlog/plan with actual evidence; commit
   `test: verify genre volume compatibility and reader acceptance`.
-- [ ] Create/attach PR identifying OPDS-006 and preserved invariants. Require green
+- [x] Create/attach PR identifying OPDS-006 and preserved invariants. Require green
   exact-head test/typecheck/build, merge via approved normal workflow and require
   green exact-main native package. Verify actual health SHA after timer installs.
 - [ ] Ask owner for actual genre/volume display result; close only observed gates,

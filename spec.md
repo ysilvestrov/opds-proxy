@@ -9,10 +9,13 @@ same-main noop, lock contention і автоматичний timer підтвер
 owner selected character count and author sheets to assess work length on2026-10-07.
 OPDS-006 approved by owner aftera979a83; local META-02 implementation verified:
 133 Node tests pass (2 Windows-only skips),57 WSL Python tests pass;
-build/typecheck pass. Installed META-02 and reader display remain pending.
+build/typecheck pass. PR9 merged as3e660df; exact-head Linux CI and exact-main
+native artifact succeeded. Public HTTPS health on2026-10-07 confirms installed
+3e660df06895cbe7b3548a82d275cb25f6b29ec2,ready=true; reader display remains pending.
+Evidence: docs/genre-volume-release-evidence.md; phone check: docs/genre-volume-acceptance.md.
 Implementation plan docs/superpowers/plans/2026-10-07-genres-text-volume.md
 approved by owner afterbee8baa; native execution in current checkout.
-Approved production behavior remains0.6.0: card-resource signed-link design;
+Production includes0.7.0 genre/volume metadata plus0.6.0 card-resource signed-link design;
 AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
 Local implementation and independent review complete; 111 Node tests pass,
@@ -24,8 +27,8 @@ The cover display defect is resolved by owner observation; separate signed HTTP
 status receipts and service-identity checks were not collected. Restart/cold-cache
 actions were not individually described, so production edge coverage is not inferred.
 docs/signed-card-release-handoff.md records release evidence and operator steps.
-Previous production f76bfac8 used Basic-only card resources; current public health
-reports signed-card release1a3781a. Owner-visible artwork is confirmed in chat.
+Previous production f76bfac8 used Basic-only card resources;1a3781a introduced
+signed-card access (retained in3e660df). Owner-visible artwork was confirmed in chat.
 META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
 review виправлені з RED/GREEN доказами; Linux CI та server probe пройшли,
@@ -54,7 +57,7 @@ credentials журнали не розрізняють. Власник пого�
 Сам по собі серверний200 не доводить показ JPEG на телефоні.
 Independent source proxy та базовий reader flow прийнято;
 розширені device/edge сценарії перенесено в backlog за рішенням власника.
-**Дата:** 2026-10-06.
+**Дата:** 2026-10-07.
 **Репозиторій:** https://github.com/ysilvestrov/opds-proxy.
 
 ## 1. Призначення та авторитет документа

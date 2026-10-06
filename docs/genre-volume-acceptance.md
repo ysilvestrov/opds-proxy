@@ -5,6 +5,10 @@ Purpose: judge work length using source character count and author sheets.
 Source fixtures contain genres and both badges; live values/reader display are
 not inferred from fixtures. No ZIP size/pages or new genre catalogue.
 
+Release3e660df06895cbe7b3548a82d275cb25f6b29ec2 installed: public HTTPS health
+on2026-10-07 returned this exact SHA and ready=true. Linux CI/package and final
+review passed; docs/genre-volume-release-evidence.md. Owner phone result pending.
+
 ## Release and compatibility gate
 
 Require independent review, green exact-head Linux test/typecheck/build and
