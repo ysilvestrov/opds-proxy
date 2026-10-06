@@ -10,8 +10,12 @@ AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
 Local implementation and independent review complete; 111 Node tests pass,
 2 Windows-only skips, 57 WSL Python tests pass, build/typecheck pass.
-Linux CI, release and device acceptance remain pending.
-Installed production remains f76bfac8 with Basic-only card resources.
+PR8 merged as1a3781a; exact-head Linux CI and exact-main native package passed.
+Public HTTPS health confirmed installed1a3781a, ready=true at2026-10-06T18:29:19+02:00.
+Private HTTP, service-identity and device acceptance remain pending;
+docs/signed-card-release-handoff.md records release evidence and operator steps.
+Previous production f76bfac8 used Basic-only card resources; current public health
+reports signed-card release1a3781a. Owner-visible artwork is not yet verified.
 META-01 design, письмова специфікація та implementation plan
 погоджені в чаті. Metadata routes/cache реалізовані локально, findings незалежного
 review виправлені з RED/GREEN доказами; Linux CI та server probe пройшли,

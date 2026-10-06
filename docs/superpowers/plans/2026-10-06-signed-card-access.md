@@ -195,7 +195,7 @@ client/proxy calls; URLs/auth stay in memory. Fixed IDs27223/27505, <=2 IDs.
   whole-change review of AUTH-003 boundary/privacy/cache integration; fix blockers
   and rerun affected tests. No per-task implementation agents unless owner changes
   native execution selection. Commit `test: verify signed card access and reader handoff`.
-- [ ] Create/attach PR with requirement IDs. Require green exact-head Linux
+- [x] Create/attach PR with requirement IDs. Require green exact-head Linux
   test/typecheck/build; merge through existing approved release workflow and
   require exact-main native package artifact success before claiming releasable.
 - [ ] Verify actual deployed SHA via existing health and operator source/private
