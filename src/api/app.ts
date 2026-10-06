@@ -12,6 +12,7 @@ import {
 } from "../opds/feed.js";
 import { renderOpenSearch } from "../opds/search.js";
 import { privateAuth } from "./auth.js";
+import { accessLog } from "./access-log.js";
 import { SourceError } from "../sources/searchfloor/client.js";
 interface Deps {
   catalog: Pick<Catalog, "page" | "book"> & Partial<Pick<Catalog,'details'|'cover'>>;
@@ -22,6 +23,7 @@ interface Deps {
 }
 export function createApp(d: Deps): Hono {
   const app = new Hono();
+  app.use('*', accessLog(d.log));
   app.get("/health", (c) =>
     c.json(
       { ready: d.ready?.() ?? true, sha: d.config.RELEASE_SHA },

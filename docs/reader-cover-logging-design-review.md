@@ -1,5 +1,10 @@
 # META-01 bounded request observation — design review
 
+SUPERSEDED: owner selected permanent rolling access logs instead of this
+default-off180s proposal. Root spec.md OPS-001 and
+docs/access-log-rollout-handoff.md describe the current approved direction.
+The original proposal below is retained as history, not implementation guidance.
+
 Status: PROPOSED, awaiting owner approval. No application change or deployment.
 Evidence c8a196b: decoder absent, capture never started, production unchanged.
 Root spec.md remains normative; this is a design proposal, not a second spec.
