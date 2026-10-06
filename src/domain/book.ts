@@ -25,3 +25,9 @@ export interface SourcePage {
 export interface CatalogPage extends SourcePage {
   stale: boolean;
 }
+export type ArtworkMime = 'image/jpeg' | 'image/png' | 'image/gif';
+export interface Artwork { mime: ArtworkMime; bytes: Uint8Array; observedAt: string }
+export interface BookDetails { sourceName: string; id: string; summary?: string; cover?: {mime: ArtworkMime}; observedAt: string }
+export interface AnnotationHint { inline?: string; api: boolean; invalid?: boolean }
+export interface SourceCard { book: Book; annotation: AnnotationHint }
+export interface SourceObservation extends SourcePage { rejectedIds: string[] }

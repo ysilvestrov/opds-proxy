@@ -77,7 +77,7 @@ OPDS-001/003, CACHE-001/002, ARCH-001, ACCEPT-001. План не друга сп
 Client.list returns the observation, Catalog consumes rejectedIds internally;
 OPDS/public SourcePage never publishes these IDs. Do not persist DOM/source script.
 
-## Task1: Bounded optional source resources
+## Task 1: Bounded optional source resources
 
 **Files:** domain/book.ts, sources/searchfloor/metadata.ts and client.ts;
 tests/metadata.test.ts (new), client.test.ts, fixtures/searchfloor/metadata-*.html (new).
@@ -100,7 +100,7 @@ tests/metadata.test.ts (new), client.test.ts, fixtures/searchfloor/metadata-*.ht
 - [ ] Rerun focused tests, existing transport.test.ts and typecheck; commit files
   explicitly with `feat: fetch bounded Searchfloor annotations and covers`.
 
-## Task2: Artwork budget in disposable SQLite
+## Task 2: Artwork budget in disposable SQLite
 
 **Files:** src/storage/cache.ts, tests/cache.test.ts.
 
@@ -118,7 +118,7 @@ tests/metadata.test.ts (new), client.test.ts, fixtures/searchfloor/metadata-*.ht
 - [ ] Run cache.test.ts, typecheck and existing runtime.test.ts; commit
   `feat: bound recoverable artwork within the existing cache`.
 
-## Task3: Lazy metadata orchestration and independent freshness
+## Task 3: Lazy metadata orchestration and independent freshness
 
 **Files:** src/catalog.ts, tests/catalog.test.ts; client types from Task1.
 
@@ -152,7 +152,7 @@ failed/unrequested resources have no successful cache value.
 - [ ] Run catalog/parse/download/cache tests and typecheck; commit
   `feat: resolve book metadata on demand without extending download freshness`.
 
-## Task4: Private Atom entries and artwork API
+## Task 4: Private Atom entries and artwork API
 
 **Files:** src/opds/feed.ts, src/api/app.ts, tests/feed.test.ts, tests/app.test.ts.
 
@@ -174,7 +174,7 @@ failed/unrequested resources have no successful cache value.
 - [ ] Run feed/app/auth/download tests plus typecheck; commit
   `feat: expose private complete OPDS entries and book artwork`.
 
-## Task5: Whole-change verification, release and reader acceptance
+## Task 5: Whole-change verification, release and reader acceptance
 
 **Files:** docs/fbreader-acceptance.md, docs/backlog.md, spec.md status;
 docs/metadata-acceptance.md (new operator/device checklist and evidence).
