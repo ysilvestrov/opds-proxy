@@ -1,5 +1,14 @@
 # Private cover authorization compatibility — proposed design
 
+OWNER DESIGN APPROVED AND EXPANDED2026-10-06: purpose is to control gateway/
+proxy traffic, not conceal publicly available Searchfloor metadata. Signed
+access covers the full cached card/description and artwork for one book.
+Root spec.md v0.6.0 AUTH-003 now contains the written requirements awaiting
+owner review; the implementation plan comes after that review. Basic-authorized
+first entry hydrates cache; grant-only entry/cover never fetches upstream or
+renews expiry. Description stays inline; no annotation endpoint is added.
+The original cover-only proposal below is historical, not current guidance.
+
 Status: DESIGN PROPOSAL, awaiting owner decision. Normative AUTH-001 currently
 requires Basic on covers and prohibits unreviewed fallback. No code, production
 or auth change made. After design approval, revise root spec.md for review,
