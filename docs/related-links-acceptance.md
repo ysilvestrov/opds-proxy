@@ -25,7 +25,30 @@ plan approved afterd1b4d1e. Native implementation in current checkout.
 - Release/CI installed SHA verified:3e8a2bc, public health ready=true;
   docs/related-links-release-evidence.md. These release gates are complete.
 - Production source proxy availability for author/series documents.
-- Owner's FBReader Android3.8.31 actual Related link display and transitions.
+- Owner confirms Related links appeared and lists opened after retry. Series
+  transitions intermittently displayed301; full reader acceptance remains open.
+
+## Owner report and redirect investigation
+
+2026-10-07: owner opened only3–4 series, saw301 a couple of times, then obtained
+data on another click. Specific series is not remembered. Approximate event time
+was two minutes before the initial chat report; no exact message timestamp is
+available here. Author navigation, page2 and Download regression are not inferred.
+
+Local throwaway replay through built API -> Catalog -> SearchfloorClient with the
+series fixture: source301 with allowed same-origin HTTPS Location followed by200
+produced API200, no Location,2 source requests. Missing Location and cross-origin
+Location each produced API502, no Location,1 source request. This demonstrates
+local redirect handling; it does not reproduce the phone failure or identify its
+production origin. No application or production change was made.
+
+Next evidence: sanitized existing journal events around the owner's series clicks;
+see docs/related-links-301-observation-handoff.md. No speculative redirect/auth fix.
+
+Owner follow-up2026-10-07: server Codex found no problem; owner will report any
+recurrence with more details. Server receipt has not been independently inspected
+here. No root cause or fix is claimed; issue remains under observation and does
+not block discussing the next backlog item (catalogue icon).
 
 ## Phone checklist after release
 

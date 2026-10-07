@@ -38,8 +38,10 @@ from OPDS health. Architecture isolation and operator regressions passed.
 
 ## Remaining evidence gates
 
-Phone Related link display/navigation/auth and actual production source proxy
-access for entity pages remain unobserved. Existing fresh Book cache may lack
+Owner now confirms phone Related link display and list data after retry; a couple
+of series clicks displayed301. This is partial acceptance, with origin unresolved.
+Author/page2/auth details and live source versus cache delivery remain unobserved.
+See docs/related-links-301-observation-handoff.md. Existing fresh Book cache may lack
 refs until normal source refresh (book metadata TTL24h; list refresh15min may
 replace matching books sooner). Do not add hydration solely for missing refs.
 See docs/related-links-acceptance.md for the owner's phone checklist.
