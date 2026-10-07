@@ -3,6 +3,15 @@ import { XMLParser, XMLValidator } from "fast-xml-parser";
 import { renderBookEntry, renderFeed, renderRoot, renderSourceRoot } from "../src/opds/feed.js";
 import { renderOpenSearch } from "../src/opds/search.js";
 const base = "https://opds.example/proxy";
+it('advertises a local catalogue icon in navigation feeds and Searchfloor entry',()=>{
+ const parser=new XMLParser({ignoreAttributes:false});const url=base+'/opds/searchfloor/icon.png';
+ const root=renderRoot(base,[{name:'searchfloor',title:'Searchfloor'},{name:'unknown',title:'Other'}]);
+ const source=renderSourceRoot(base,'searchfloor');
+ for(const doc of [root,source]){expect(XMLValidator.validate(doc)).toBe(true);expect(parser.parse(doc).feed.icon).toBe(url);expect(doc.match(/<icon>/g)).toHaveLength(1);}
+ const entries=parser.parse(root).feed.entry;
+ for(const rel of ['http://opds-spec.org/image','http://opds-spec.org/image/thumbnail'])expect(entries[0].link).toContainEqual({'@_rel':rel,'@_href':url,'@_type':'image/png'});
+ expect(JSON.stringify(entries[1])).not.toContain('icon.png');expect(renderSourceRoot(base,'unknown')).not.toContain('icon.png');
+});
 it('renders genre categories separately from series and compact full-card volume', () => {
   const book = { sourceName: 'searchfloor', id: '1', title: 'Title', authors: ['Author'], complete: true,
     sourceUrl: 'https://searchfloor.org/b/1', downloadPath: '/book/1', observedAt: '2026-10-04T00:00:00Z',

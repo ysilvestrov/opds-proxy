@@ -8,7 +8,9 @@ same-main noop, lock contention і автоматичний timer підтвер
 **Версія:** 0.8.0 written spec approved: LINKS-01 author/series OPDS navigation.
 0.8.1 proposed: catalogue icon (OPDS-008); in-chat design approved by owner
 2026-10-07. Owner approved written OPDS-008 after385aadb; implementation plan
-review pending;
+approved plan7faa3e1; local implementation verified (165 Node passed,2 platform
+skips;57 WSL Python passed; build/typecheck passed). Review/release/device gates
+remain pending;
 no icon application code, asset installation or deployment is claimed.
 Owner approved the in-chat design and compact-row completion rule2026-10-07;
 written requirements OPDS-007/SOURCE-005 approved by owner afterad101ee.

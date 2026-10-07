@@ -8,7 +8,7 @@
 
 **Tech Stack:** Existing Node24, TypeScript, Hono, Vitest, Pino and fast-xml-parser; Node crypto/zlib for offline asset validation. No new dependency or infrastructure.
 
-**Spec:** Root spec.md proposed0.8.1, OPDS-008 approved by owner after385aadb2026-10-07; OPDS-001/005, AUTH-001/003, OPS-001, DEPLOY-001 and ACCEPT-001 apply. This plan awaits owner review before application code.
+**Spec:** Root spec.md proposed0.8.1, OPDS-008 approved by owner after385aadb2026-10-07; OPDS-001/005, AUTH-001/003, OPS-001, DEPLOY-001 and ACCEPT-001 apply. Owner approved this plan after7faa3e1; native execution/current checkout preserved.
 
 ## Global Constraints
 
@@ -22,11 +22,11 @@
 
 ## Review Focus
 
-1. Bad Basic on a public image must not cause401 (Task1 API test).
-2. A path prefix or spoofed Host must not alter advertised icon URL (Task2 XML test).
-3. Runtime cwd/cache/source failure must not affect the compiled asset (Task1 built-module child-process test).
-4. Unknown-source/similar path or other method must not inherit the public exception (Task1 API test).
-5. Valid PNG signature alone is insufficient: truncated/corrupt chunks must fail the offline asset check (Task1 asset test).
+1. Bad Basic on a public image must not cause401 (Task 1 API test).
+2. A path prefix or spoofed Host must not alter advertised icon URL (Task 2 XML test).
+3. Runtime cwd/cache/source failure must not affect the compiled asset (Task 1 built-module child-process test).
+4. Unknown-source/similar path or other method must not inherit the public exception (Task 1 API test).
+5. Valid PNG signature alone is insufficient: truncated/corrupt chunks must fail the offline asset check (Task 1 asset test).
 
 ## File map and interfaces
 
@@ -39,7 +39,7 @@
 - Create `docs/catalog-icon-acceptance.md`: actual validation and pending device evidence; update root spec status/backlog as work proceeds.
 - Existing `scripts/package-release.mjs` already copies dist; no packaging change needed for an embedded compiled asset.
 
-## Task1: Bundled icon and public static route
+## Task 1: Bundled icon and public static route
 
 - [ ] Write `tests/catalog-icon.test.ts` RED assertions for API GET without Basic and with invalid Basic:200, exact three headers above, no Location/WWW-Authenticate, payload matches bundled bytes. HEAD returns matching headers with zero body.
 - [ ] Assert catalogue/page/book/details/cover/download mocks were never called; root/source/search/Download without Basic still401. Wrong source and similar/trailing-suffix path do not return the PNG, including with valid Basic; POST to the exact icon route does not return the PNG without auth.
@@ -49,9 +49,9 @@
 - [ ] Add `src/opds/catalog-icon.ts` with embedded bytes/provenance; implement exact route before auth and fixed log class. Return a fresh byte array and headers; support HEAD explicitly or verify Hono's GET-to-HEAD behavior with the test.
 - [ ] Add offline asset assertions: size<=65536, SHA-256 matches provenance, PNG signature/IHDR/nonzero square dimensions, ordered bounded chunks with valid CRC, IDAT zlib decompression and final IEND/no truncation. Validate corrupted/truncated copies are rejected by the test helper; do not expand runtime artwork parser scope.
 - [ ] Build and test imported `dist/opds/catalog-icon.js` in a child process with cwd set to an unrelated temporary directory, no runtime network or cache setup. Assert same digest. The test must use an absolute module URL.
-- [ ] Run build, focused tests and typecheck; all pass. Commit only Task1 files with `feat: serve bundled catalogue icon`.
+- [ ] Run build, focused tests and typecheck; all pass. Commit only Task 1 files with `feat: serve bundled catalogue icon`.
 
-## Task2: Navigation metadata and release acceptance
+## Task 2: Navigation metadata and release acceptance
 
 - [ ] Write RED XML tests: renderRoot and renderSourceRoot each contain exactly one `<icon>` equal to `https://opds.example/proxy/opds/searchfloor/icon.png`; root Searchfloor entry includes image/thumbnail relations with the same URL and image/png. The source-name input must not cause icon links on an unknown source entry.
 - [ ] Assert acquisition book entries retain their existing artwork behavior and catalogue icon does not replace book covers. API root output with spoofed Host still derives icon URL from config.
@@ -75,8 +75,8 @@ Use bundled Node at `C:/Users/yuriy/.cache/codex-runtimes/codex-primary-runtime/
 
 ## Self-review
 
-OPDS-008 asset/provenance/portability/auth/headers/logging scenarios map to Task1;
-navigation/base URL/artwork regression/device acceptance map to Task2. Public
+OPDS-008 asset/provenance/portability/auth/headers/logging scenarios map to Task 1;
+navigation/base URL/artwork regression/device acceptance map to Task 2. Public
 exception is exact and precedes auth without changing grants. Embedded dist
 asset uses existing package inclusion; no second normative spec or new runtime
 storage. All five Review Focus cases have an owning test. Execution method and

@@ -71,3 +71,7 @@ it('keeps the public exception limited to this route and methods',async()=>{
  expect((await app.request(path,{method:'POST'})).status).toBe(401);
  for(const call of calls)expect(call).not.toHaveBeenCalled();
 });
+it('advertises config base URL rather than a spoofed Host',async()=>{
+ const {app}=setup();const r=await app.request('/opds',{headers:{authorization,host:'attacker.example'}});
+ expect(r.status).toBe(200);const xml=await r.text();expect(xml).toContain('<icon>https://opds.example/proxy/opds/searchfloor/icon.png</icon>');expect(xml).not.toContain('attacker.example');
+});
