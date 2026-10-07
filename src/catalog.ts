@@ -1,6 +1,7 @@
 import type { Book, BookDetails, Artwork, ArtworkMime, SourceCard, CatalogPage, SourcePage } from "./domain/book.js";
 import { Cache } from "./storage/cache.js";
 import { abortable } from "./sources/searchfloor/client.js";
+import { encodeRelatedKey, type RelatedTarget, type RelatedSnapshot } from './domain/related.js';
 export const cacheKey = (source: string, query: string | null, page: number) => JSON.stringify([
     1,
     source,
@@ -10,6 +11,7 @@ export const cacheKey = (source: string, query: string | null, page: number) => 
 ]);
 interface Client {
     list(q: string | null, p: number): Promise<SourcePage>;
+    listRelated?(target: RelatedTarget): Promise<RelatedSnapshot>;
     getBook(id: string): Promise<Book | null>;
     getCard?(id: string): Promise<SourceCard | null>;
     getAnnotation?(id: string): Promise<string | null>;
@@ -85,6 +87,29 @@ export class Catalog {
                 throw e;
             }
         }, signal);
+    }
+    async related(target: RelatedTarget, page: number, signal?: AbortSignal): Promise<CatalogPage> {
+        signal?.throwIfAborted();
+        if (!Number.isInteger(page) || page < 1 || page > 10000) throw new Error('Invalid related page');
+        const key = JSON.stringify([1, this.source, 'related', encodeRelatedKey(target)]);
+        const hit = this.deps.cache.get<RelatedSnapshot>(key, this.now());
+        const snapshot = hit ? { ...hit.value, stale: false } : await this.share(key, async () => {
+            try {
+                if (!this.deps.client.listRelated) throw new Error('Related catalog unavailable');
+                const value = await this.deps.client.listRelated(target);
+                this.deps.cache.set(key, value, this.now() + 15 * 60000);
+                return { ...value, stale: false };
+            } catch (error) {
+                const old = this.deps.cache.get<RelatedSnapshot>(key, this.now(), true);
+                if (old && this.now() - Date.parse(old.value.observedAt) <= day)
+                    return { ...old.value, stale: true };
+                throw error;
+            }
+        }, signal);
+        const offset = (page - 1) * 20;
+        return { books: snapshot.books.slice(offset, offset + 20),
+            nextPage: offset + 20 < snapshot.books.length ? page + 1 : null,
+            observedAt: snapshot.observedAt, stale: snapshot.stale };
     }
     async book(id: string, signal?: AbortSignal): Promise<Book | null> {
         if (!/^\d+$/.test(id))

@@ -10,8 +10,8 @@
 | DEP-01 | Завершено 2026-10-06 | Baseline, main release та production автодеплой | Exact-SHA d66216c; deployment/rollback/lock evidence; timer enabled, 14 automatic noop без runtime/bot рестартів; docs/production-rollout-report.md |
 | AUTH-02 | Завершено 2026-10-06 | Власні Basic логін/пароль, зручні для введення на телефоні | Rotation і FBReader login прийнято; timer restored, бот без рестартів; docs/change-opds-credentials-report.md, eaf3837. Restart prompt лишається прийнятним |
 | META-01 | Основний флоу підтверджено; edge checks відкриті | Анонс і обкладинка з картки книги | OPDS-005/AUTH-001/003;1a3781a installed, owner confirms visible/loading covers; earlier fast cards/annotations confirmed; independent review and CI passed; separate signed HTTP receipts, cold-cache/restart and other unobserved edge gates remain open; docs/metadata-acceptance.md |
-| META-02 | Основний флоу прийнято; layout follow-up | Жанри та обсяг тексту | Owner/screenshot2026-10-07 confirms genre tags, compact volume, synopsis and cover on3e660df; requested volume after annotation; OPDS-006 updated; layout release pending; unobserved reader edges remain open |
-| LINKS-01 | P2 | Related links на автора та серію | Перевірити upstream URL/IDs і відображення у FBReader; вирішити web-links чи OPDS navigation до реалізації; не вдавати готовий author/series catalog |
+| META-02 | Основний флоу прийнято; layout розгорнуто | Жанри та обсяг тексту | Owner/screenshot2026-10-07 confirms genre tags, compact volume, synopsis and cover on3e660df; volume after annotation installed as5efa8ef, health ready; OPDS-006 updated; new position phone result and unobserved reader edges remain open |
+| LINKS-01 | Реалізовано локально; release/reader gates відкриті | Related links на автора та серію | Owner approved spec afterad101ee and plan afterd1b4d1e;154 Node tests pass,2 skips. Single-page snapshots, compact completion, local pages/cache, Basic-only feeds. Review/CI/install/FBReader outcomes remain separate; docs/related-links-acceptance.md |
 | READ-01 | P1 | Пошук і query-preserving next у FBReader | Реальні device результати search/next, без повного crawl |
 | READ-02 | P1 | Порожня відфільтрована сторінка з next | Protected fixture навігується у FBReader, немає public test route |
 | READ-03 | P1 | Перервати Download і виконати fresh GET | Тунель/слот звільняються, повторне завантаження працює |
@@ -30,8 +30,8 @@ META-01, META-02, LINKS-01 (AUTH-02 завершено); edge checks READ-01–0
 із відповідними змінами. Це план обговорення, не підтвердження причин проблем.
 Власник підтвердив, що зазначені metadata/related fields відображаються на
 Флібусті: це reader reference для OPDS mapping, а не доказ полів Searchfloor.
-Автори/жанри зарезервовані в архітектурі, але автоматично не додаються до
-scope наступного релізу. Нові джерела та спільний переїзд VPS — окремі рішення.
+LINKS-01 проєктує переходи на конкретного автора/серію; загальні author/genre
+indexes залишаються reserved/disabled. Нові джерела та спільний переїзд VPS — окремі рішення.
 
 Review PR1: no blocking runtime findings. Abort/deadline suggestions не
 вимагають повернення raw errors; `/health` без auth відповідає OPS-001;

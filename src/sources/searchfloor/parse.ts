@@ -1,5 +1,6 @@
 import type { EntityRef, SourcePage, SourceObservation } from "../../domain/book.js";
 import { load, type CheerioAPI } from "cheerio";
+import { parseReferences } from './references.js';
 export class ParseError extends Error {}
 const emptyMarker = ($: CheerioAPI) =>
   $("p")
@@ -85,6 +86,7 @@ export function parseObservedPage(
       authors,
       complete: true,
       observedAt,
+      ...parseReferences($.html(e), id),
       sourceUrl: `https://searchfloor.org/b/${id}`,
       downloadPath: path,
       ...(genres.length ? { genres } : {}),

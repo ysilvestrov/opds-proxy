@@ -1,0 +1,41 @@
+import {it,expect,vi} from 'vitest';
+import {Catalog} from '../src/catalog.js';
+import {Cache} from '../src/storage/cache.js';
+import type {Book} from '../src/domain/book.js';
+const target={kind:'author' as const,slug:'A'};
+const book=(id:string,at=0):Book=>({sourceName:'searchfloor',id,title:'T'+id,authors:['A'],complete:true,sourceUrl:'https://searchfloor.org/b/'+id,downloadPath:'/book/'+id,observedAt:new Date(at).toISOString()});
+it('shares a snapshot across local pages and refreshes without touching rich records',async()=>{
+ let now=0,fail=false;
+ const cache=new Cache(':memory:');const rich={...book('1'),summary:'rich',genres:[{id:'7',name:'g'}]};
+ cache.set('book:searchfloor:1',rich,24*3600000);
+ cache.set('details:v1:searchfloor:1:annotation',{state:'present',value:'rich details',observedAt:rich.observedAt},24*3600000);
+ const listRelated=vi.fn(async()=>{if(fail)throw Error('offline');return {books:Array.from({length:40},(_,i)=>book(String(i+1),now)),observedAt:new Date(now).toISOString()};});
+ const getBook=vi.fn(async()=>book('1',now));
+ const c=new Catalog({cache,now:()=>now,client:{list:async()=>({books:[],nextPage:null,observedAt:new Date(now).toISOString()}),getBook,listRelated}});
+ const [a,b]=await Promise.all([c.related(target,1),c.related(target,2)]);
+ expect(a.books).toHaveLength(20);expect(a.nextPage).toBe(2);expect(b.books).toHaveLength(20);expect(b.nextPage).toBeNull();
+ expect((await c.related(target,3)).books).toEqual([]);expect(listRelated).toHaveBeenCalledTimes(1);
+ expect(cache.get<Book>('book:searchfloor:1',now)?.value).toEqual(rich);
+ expect(cache.get('details:v1:searchfloor:1:annotation',now)?.value).toMatchObject({value:'rich details'});
+ now=15*60000+1;await c.related(target,1);expect(listRelated).toHaveBeenCalledTimes(2);
+ await c.book('1');expect(getBook).toHaveBeenCalledTimes(1);
+ now+=15*60000+1;fail=true;expect((await c.related(target,1)).stale).toBe(true);
+ now=2*24*3600000;await expect(c.related(target,1)).rejects.toThrow('offline');cache.close();
+});
+it('uses20+1 pagination, separates targets and never caches errors as empty',async()=>{
+ const cache=new Cache(':memory:');let fail=true;
+ const listRelated=vi.fn(async()=>{if(fail)throw Error('offline');return {books:Array.from({length:21},(_,i)=>book(String(i+1))),observedAt:new Date(0).toISOString()};});
+ const c=new Catalog({cache,now:()=>0,client:{list:async()=>({books:[],nextPage:null,observedAt:new Date(0).toISOString()}),getBook:async()=>null,listRelated}});
+ await expect(c.related(target,1)).rejects.toThrow();fail=false;
+ expect((await c.related(target,2)).books).toHaveLength(1);
+ await c.related({kind:'series',name:'S',authors:'A'},1);await c.related({kind:'series',name:'S',authors:'B'},1);
+ expect(listRelated).toHaveBeenCalledTimes(4);cache.close();
+});
+it('coalesces callers while allowing independent caller cancellation',async()=>{
+ const cache=new Cache(':memory:');let finish:()=>void=()=>{};
+ const listRelated=vi.fn(()=>new Promise<{books:Book[];observedAt:string}>(resolve=>{finish=()=>resolve({books:[],observedAt:new Date(0).toISOString()});}));
+ const c=new Catalog({cache,now:()=>0,client:{list:async()=>({books:[],nextPage:null,observedAt:new Date(0).toISOString()}),getBook:async()=>null,listRelated}});
+ const ac=new AbortController();const first=c.related(target,1,ac.signal);const other=c.related(target,1);
+ ac.abort();await expect(first).rejects.toThrow();finish();expect((await other).books).toEqual([]);
+ expect(listRelated).toHaveBeenCalledTimes(1);cache.close();
+});
