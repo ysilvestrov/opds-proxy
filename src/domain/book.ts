@@ -11,6 +11,7 @@ export interface Book {
     series?: string;
     seriesPosition?: number;
     authorRefs?: EntityRef[];
+    seriesRef?: { name: string; authors: string };
     genres?: EntityRef[];
     characterCount?: number;
     authorSheets?: number;
