@@ -26,8 +26,13 @@ Series has2 book links. For27047, `p.fw-medium > a[href=/b/27047]` is inside
 `data-url=/book/27047` and no status badge. For27484, content has exact status
 `в процессе` and no Download, showing subscription access instead.
 Author page also has no `div#book{id}`; existing ordinary-page parser cannot
-parse these documents unchanged. Author row/section selectors still need
-sanitized fixture discovery during the implementation plan's contract task.
+parse these documents unchanged. Author rows, including standalone books, use
+`.card-body > .series-item` and direct child `.series-content`. Section headers
+carry source author/series links; standalone books use verified page context.
+Page title and `.card-body > p.fs-5` author/series heading identify the entity.
+Real sanitized fixtures are related-author.html and related-series.html under
+tests/fixtures/searchfloor. Generic body `data-page=""` is not pagination;
+explicit next/nonempty page controls remain unsupported.
 
 Public `/static/js/series-1.0.js` fetched and read without execution:200,2718B.
 It handles authenticated user follow/exclude interactions, not book pagination.
