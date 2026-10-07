@@ -8,10 +8,12 @@ same-main noop, lock contention і автоматичний timer підтвер
 **Версія:** 0.8.0 written spec approved: LINKS-01 author/series OPDS navigation.
 Owner approved the in-chat design and compact-row completion rule2026-10-07;
 written requirements OPDS-007/SOURCE-005 approved by owner afterad101ee.
-Implementation plan docs/superpowers/plans/2026-10-07-related-links.md awaits
-owner review; preserved execution is native in current checkout, no worktree.
-Runtime remains0.7.1 on5efa8ef; no LINKS-01 code/deployment
-is claimed. Evidence: docs/related-links-source-evidence.md.
+Implementation plan docs/superpowers/plans/2026-10-07-related-links.md approved
+by owner afterd1b4d1e; preserved execution is native in current checkout, no worktree.
+LINKS-01 implemented locally:154 Node tests pass,2 platform skips; independent
+review/CI/deployment and reader acceptance remain separate pending gates.
+Runtime remains0.7.1 on5efa8ef; LINKS-01 deployment is not yet claimed.
+Evidence: docs/related-links-source-evidence.md; docs/related-links-acceptance.md.
 0.7.1: owner-requested volume-after-annotation layout correction;
 META-02 tags/volume/artwork display confirmed by owner and screenshot2026-10-07
 on3e660df; OPDS-006 now places volume after synopsis. Layout correction5efa8ef

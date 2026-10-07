@@ -55,6 +55,10 @@ it('keeps coauthors and unrelated section volume isolated',()=>{
  expect(parsePage(card(''),1,at).books[0].complete).toBe(true);
  expect(()=>parsePage(card('').replace('весь текст',''),1,at).books[0].complete).toThrow();
 });
+it('fails on partially changed row layout and honors status anywhere in the same row',()=>{
+ expect(()=>parseRelatedPage(changed($=>$('.series-item').last().removeClass('series-item')),target,at)).toThrow();
+ expect(parseRelatedPage(changed($=>$('.series-item').first().append('<span data-bs-title="Статус книги">в процессе</span>')),target,at).books).toEqual([]);
+});
 it('isolates refs, deduplicates coauthors and omits ambiguous/foreign links',()=>{
  const refs='<a href="/a/A">A</a><a href="/a/B">B</a><a href="/a/A">Again</a><a href="https://bad.example/a/C">C</a><a href="/a/%FF">bad</a><a href="/a/C?q=x">bad</a><a href="/a/D#x">bad</a><a data-bs-title="Серия" href="/s/S?authors=A">S</a>';
  expect(parseReferences(card(refs+'<div id="book2"><a href="/a/OTHER">other</a></div>'),'1')).toEqual({authorRefs:[{id:'A',name:'A'},{id:'B',name:'B'}],seriesRef:{name:'S',authors:'A'}});

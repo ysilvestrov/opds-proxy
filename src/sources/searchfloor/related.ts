@@ -16,6 +16,14 @@ export function parseRelatedPage(html: string, target: RelatedTarget, observedAt
       $('[data-page]').toArray().some(e => ($(e).attr('data-page') ?? '').trim() !== ''))
     throw new ParseError('Unsupported entity pagination');
   const rows = $('.card-body > .series-item');
+  for (const a of $('a[href]').toArray()) {
+    try {
+      const u = new URL($(a).attr('href')!, 'https://searchfloor.org');
+      if (u.origin === 'https://searchfloor.org' && /^\/b\/[0-9]+$/.test(u.pathname) &&
+          !$(a).parents('.series-item').toArray().some(e => $(e).parent('.card-body').length > 0))
+        throw new ParseError('Book outside recognized entity rows');
+    } catch (error) { if (error instanceof ParseError) throw error; }
+  }
   if (!rows.length && !$('p').toArray().some(e => $(e).text().trim().startsWith('Ничего не найдено')))
     throw new ParseError('Missing entity rows');
   const accepted = new Map<string, Book>();
@@ -36,7 +44,7 @@ export function parseRelatedPage(html: string, target: RelatedTarget, observedAt
       } catch { /* A malformed optional row is not a book. */ }
     }
     const id = ids.length === 1 && anchors.length === 1 ? ids[0] : undefined;
-    const badges = content.find('[data-bs-title="Статус книги"]');
+    const badges = row.find('[data-bs-title="Статус книги"]');
     const downloads = content.find('.download-btn');
     const valid = id && anchors.text().trim() && (badges.length === 0 ||
       (badges.length === 1 && badges.text().trim() === 'весь текст')) &&

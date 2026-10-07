@@ -5,6 +5,11 @@ import {loadConfig} from '../src/config.js';
 import {encodeRelatedKey} from '../src/domain/related.js';
 import {createBookCardSigner} from '../src/api/card-grant.js';
 import {SourceError} from '../src/sources/searchfloor/client.js';
+import {SearchfloorClient} from '../src/sources/searchfloor/client.js';
+import {Catalog} from '../src/catalog.js';
+import {Cache} from '../src/storage/cache.js';
+import {readFileSync} from 'node:fs';
+import {XMLParser} from 'fast-xml-parser';
 const config=loadConfig({PUBLIC_BASE_URL:'https://opds.example',CACHE_PATH:':memory:',OPDS_USERNAME:'reader',OPDS_PASSWORD:'testing-only'});
 const authorization='Basic '+Buffer.from('reader:testing-only').toString('base64');
 const target={kind:'author' as const,slug:'A'};const key=encodeRelatedKey(target);const path='/opds/searchfloor/authors/'+key;
@@ -33,4 +38,32 @@ it('logs route classes without keys, selectors, queries or credentials',async()=
  for(const p of [path+'?page=1&extra=secret','/opds/searchfloor/series/'+s])await app.request(p,{headers:{authorization}});
  expect(logs).toMatchObject([{route:'author_feed',status:200},{route:'series_feed',status:200}]);
  expect(JSON.stringify(logs)).not.toMatch(new RegExp([key,s,'Private','secret','testing-only','Authorization'].join('|')));
+});
+it('follows real full-card links through source parser and shared local-page cache',async()=>{
+ const calls:string[]=[];
+ const html=(name:string)=>readFileSync(new URL('fixtures/searchfloor/'+name+'.html',import.meta.url),'utf8');
+ const client=new SearchfloorClient({spacingMs:0,fetch:async input=>{const u=new URL(input);calls.push(u.pathname);
+  if(u.pathname==='/b/27047')return new Response(html('book'));
+  if(u.pathname.startsWith('/a/'))return new Response(html('related-author'));
+  if(u.pathname.startsWith('/s/'))return new Response(html('related-series'));
+  if(u.pathname.startsWith('/api/annotation/'))return new Response('Synopsis',{headers:{'content-type':'text/plain'}});
+  return new Response(null,{status:404});}});
+ const cache=new Cache(':memory:');const catalog=new Catalog({cache,client});
+ try {
+  const app=createApp({config,catalog,log:pino({enabled:false})});
+  const full=await app.request('/opds/searchfloor/books/27047',{headers:{authorization}});
+  expect(full.status).toBe(200);
+  const parser=new XMLParser({ignoreAttributes:false});const links=parser.parse(await full.text()).entry.link.filter((l:any)=>l['@_rel']==='related');
+  expect(links).toHaveLength(2);const baseline=calls.length;
+  const authorUrl=links.find((l:any)=>l['@_title'].includes('автора'))['@_href'];
+  const p1=await app.request(authorUrl,{headers:{authorization}});expect(p1.status).toBe(200);
+  const f=parser.parse(await p1.text()).feed;expect(f.entry).toHaveLength(20);
+  const next=f.link.find((l:any)=>l['@_rel']==='next')['@_href'];
+  expect((await app.request(next,{headers:{authorization}})).status).toBe(200);
+  expect(calls.length-baseline).toBe(1);
+  const seriesUrl=links.find((l:any)=>l['@_title'].includes('серії'))['@_href'];
+  const s=await app.request(seriesUrl,{headers:{authorization}});expect(s.status).toBe(200);
+  expect(parser.parse(await s.text()).feed.entry.id).toBe('urn:opds:searchfloor:book:27047');
+  expect(calls.length-baseline).toBe(2);
+ }finally{client.close();cache.close();}
 });
