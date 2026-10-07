@@ -12,8 +12,11 @@ Implementation plan docs/superpowers/plans/2026-10-07-related-links.md approved
 by owner afterd1b4d1e; preserved execution is native in current checkout, no worktree.
 LINKS-01 implemented locally:158 Node tests pass,2 platform skips;57 WSL Python
 tests pass, typecheck/build pass. Independent review findings fixed with4 RED/GREEN
-regressions; CI/deployment and reader acceptance remain separate pending gates.
-Runtime remains0.7.1 on5efa8ef; LINKS-01 deployment is not yet claimed.
+regressions. PR11 merged as3e8a2bc; exact-head CI and exact-main native artifact
+passed. Public HTTPS health2026-10-07 confirms installed
+3e8a2bced78f2beb58c4bd0023997f0128d9ec40,ready=true.
+Reader Related links and production entity source access remain unobserved.
+Release evidence: docs/related-links-release-evidence.md.
 Evidence: docs/related-links-source-evidence.md; docs/related-links-acceptance.md.
 0.7.1: owner-requested volume-after-annotation layout correction;
 META-02 tags/volume/artwork display confirmed by owner and screenshot2026-10-07
@@ -32,7 +35,7 @@ genre/volume/synopsis/artwork display by screenshot. Follow-up layout position p
 Evidence: docs/genre-volume-release-evidence.md; phone check: docs/genre-volume-acceptance.md.
 Implementation plan docs/superpowers/plans/2026-10-07-genres-text-volume.md
 approved by owner afterbee8baa; native execution in current checkout.
-Production includes0.7.1 genre/volume layout plus0.6.0 card-resource signed-link design;
+Production includes0.8.0 related navigation,0.7.1 genre/volume layout and0.6.0 card-resource signed-link design;
 AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
 Local implementation and independent review complete; 111 Node tests pass,

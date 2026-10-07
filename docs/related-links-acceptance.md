@@ -22,8 +22,8 @@ plan approved afterd1b4d1e. Native implementation in current checkout.
 
 ## Pending separate gates
 
-- Exact-head CI.
-- Exact-main native package and normal timer installed SHA/health.
+- Release/CI installed SHA verified:3e8a2bc, public health ready=true;
+  docs/related-links-release-evidence.md. These release gates are complete.
 - Production source proxy availability for author/series documents.
 - Owner's FBReader Android3.8.31 actual Related link display and transitions.
 
