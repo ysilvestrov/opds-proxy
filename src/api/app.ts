@@ -9,14 +9,16 @@ import {
   NAV,
   ACQ,
   ENTRY, renderBookEntry,
+  renderRelatedFeed,
 } from "../opds/feed.js";
 import { renderOpenSearch } from "../opds/search.js";
 import { privateAuth } from "./auth.js";
 import { accessLog } from "./access-log.js";
 import { createBookCardSigner, isSignedBookCardRequest } from './card-grant.js';
 import { SourceError } from "../sources/searchfloor/client.js";
+import { decodeRelatedKey } from '../domain/related.js';
 interface Deps {
-  catalog: Pick<Catalog, "page" | "book"> & Partial<Pick<Catalog,'details'|'cover'>>;
+  catalog: Pick<Catalog, "page" | "book"> & Partial<Pick<Catalog,'details'|'cover'|'related'>>;
   config: Config;
   log: Logger;
   download?: (id: string, signal: AbortSignal) => Promise<Response>;
@@ -97,6 +99,18 @@ export function createApp(d: Deps): Hono {
         ACQ,
       );
     });
+  for (const route of ['authors', 'series'] as const) {
+    app.get(`/opds/:name/${route}/:key`, async c => {
+      const target = decodeRelatedKey(c.req.param('key'), route === 'authors' ? 'author' : 'series');
+      const raw = c.req.query('page') ?? '1';
+      const page = Number(raw);
+      if (!target || !/^\d+$/.test(raw) || !Number.isInteger(page) || page < 1 || page > 10000)
+        return c.text('Invalid related key or page', 400);
+      if (!d.catalog.related) return c.notFound();
+      const data = await d.catalog.related(target, page, c.req.raw.signal);
+      return response(renderRelatedFeed(data, target, d.config.PUBLIC_BASE_URL, page), ACQ);
+    });
+  }
   app.get("/opds/:name/books/:id/download.fb2.zip", (c) => {
     const id = c.req.param("id");
     if (!/^\d+$/.test(id) || !d.download) return c.notFound();

@@ -13,6 +13,8 @@ function routeFields(path: string): { route: string; bookId?: string } {
     '/opds/searchfloor/genres': 'genres',
   };
   if (Object.hasOwn(fixed, path)) return { route: fixed[path]! };
+  if (/^\/opds\/searchfloor\/authors\/[^/]+$/.test(path)) return { route: 'author_feed' };
+  if (/^\/opds\/searchfloor\/series\/[^/]+$/.test(path)) return { route: 'series_feed' };
   const book = /^\/opds\/searchfloor\/books\/(\d{1,20})(?:\/(cover|download\.fb2\.zip))?$/.exec(path);
   if (book) return { route: book[2] === 'cover' ? 'cover' : book[2] ? 'download' : 'entry', bookId: book[1]! };
   return { route: 'unknown' };
