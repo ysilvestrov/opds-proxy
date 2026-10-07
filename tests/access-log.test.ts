@@ -22,6 +22,11 @@ function setup(failure?: Error) {
   return { app, rows, access, auth };
 }
 
+it('logs the static catalogue icon without query, credentials or image data',async()=>{
+ const {app,access}=setup();const r=await app.request('/opds/searchfloor/icon.png?token=private-query',{headers:{authorization:'Basic private-header'}});
+ expect(r.status).toBe(200);expect(access()).toHaveLength(1);expect(access()[0]).toMatchObject({route:'catalog_icon',method:'GET',status:200});
+ expect(JSON.stringify(access())).not.toMatch(/private-query|private-header|icon\.png|token|bookId/);
+});
 it('logs each challenge/retry and entry response once without credentials or image data', async () => {
   const { app, rows, access, auth } = setup();
   const path = '/opds/searchfloor/books/27223/cover';

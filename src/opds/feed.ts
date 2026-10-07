@@ -1,6 +1,7 @@
 import type { SourcePage, Book, BookDetails, CatalogPage } from "../domain/book.js";
 import { encodeRelatedKey, type RelatedTarget } from '../domain/related.js';
 import { formatTextVolume } from './text-volume.js';
+import { CATALOG_ICON_PATH } from './catalog-icon.js';
 export const NAV = "application/atom+xml;profile=opds-catalog;kind=navigation";
 export const ACQ = "application/atom+xml;profile=opds-catalog;kind=acquisition";
 export const ENTRY = 'application/atom+xml;type=entry;profile=opds-catalog';
@@ -31,8 +32,11 @@ const discovery = (base: string, name: string) =>
     absolute(base, `/opds/${name}/opensearch.xml`),
     "application/opensearchdescription+xml",
   );
-const entry = (id: string, title: string, href: string, type: string) =>
-  `<entry><id>${xml(id)}</id><title>${xml(title)}</title><updated>${stamp}</updated>${link("subsection", href, type)}<content type="text">${xml(title)}</content></entry>`;
+const entry = (id: string, title: string, href: string, type: string, artwork = '') =>
+  `<entry><id>${xml(id)}</id><title>${xml(title)}</title><updated>${stamp}</updated>${link("subsection", href, type)}${artwork}<content type="text">${xml(title)}</content></entry>`;
+const catalogIcon = (base: string) => `<icon>${xml(absolute(base, CATALOG_ICON_PATH))}</icon>`;
+const catalogArtwork = (base: string) => ['http://opds-spec.org/image', 'http://opds-spec.org/image/thumbnail']
+  .map(rel => link(rel, absolute(base, CATALOG_ICON_PATH), 'image/png')).join('');
 const bookPath = (book:Book) => `/opds/${book.sourceName}/books/${book.id}`;
 const bookMetadata = (b:Book) => `<id>urn:opds:${xml(b.sourceName)}:book:${xml(b.id)}</id><title>${xml(b.title)}</title><updated>${xml(b.observedAt)}</updated>${b.authors.map(a=>`<author><name>${xml(a)}</name></author>`).join('')}${b.series ? `<category scheme="urn:opds:series" term="${xml(b.series)}" label="${xml(b.series + (b.seriesPosition ? ' #'+b.seriesPosition : ''))}"/>` : ''}${(b.genres ?? []).filter(g=>g.id && g.name).map(g=>`<category scheme="urn:opds:${xml(b.sourceName)}:genre" term="${xml(g.id!)}" label="${xml(g.name)}"/>`).join('')}`;
 const bookAcquisition = (b:Book,base:string) => link('http://opds-spec.org/acquisition',absolute(base,bookPath(b)+'/download.fb2.zip'),'application/fb2+zip');
@@ -69,7 +73,7 @@ export function renderRoot(
     "urn:opds:root",
     "Бібліотеки",
     stamp,
-    link("self", absolute(base, "/opds")) +
+    catalogIcon(base) + link("self", absolute(base, "/opds")) +
       link("start", absolute(base, "/opds")) +
       sources
         .map((s) =>
@@ -78,6 +82,7 @@ export function renderRoot(
             s.title,
             absolute(base, `/opds/${s.name}`),
             NAV,
+            s.name === 'searchfloor' ? catalogArtwork(base) : '',
           ),
         )
         .join(""),
@@ -88,7 +93,7 @@ export function renderSourceRoot(base: string, name: string): string {
     `urn:opds:${name}:root`,
     name,
     stamp,
-    link("self", absolute(base, `/opds/${name}`)) +
+    (name === 'searchfloor' ? catalogIcon(base) : '') + link("self", absolute(base, `/opds/${name}`)) +
       link("start", absolute(base, "/opds")) +
       link("up", absolute(base, "/opds")) +
       discovery(base, name) +

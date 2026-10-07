@@ -18,8 +18,8 @@ Vitest, Pino; no new dependencies or infrastructure.
 OPDS-007/SOURCE-005 plus SPEC-001, ARCH-001, SOURCE-001/002/003,
 OPDS-001/002/003/004/005/006, AUTH-001/003, CACHE-001/002/003,
 DOWNLOAD-001/002, OPS-001, DEPLOY-001 and ACCEPT-001.
-This plan awaits owner review; no product implementation is authorized by
-the existence of the plan alone. Native execution/current checkout/no worktree
+Owner approved this plan afterd1b4d1e; product implementation authorized by
+that review, not its existence alone. Native execution/current checkout/no worktree
 already selected; preserve those choices rather than asking again.
 
 ## Global Constraints
@@ -198,25 +198,25 @@ supports optional related; absent capability returns404 for valid related routes
 **Interfaces:** docs/related-links-acceptance.md records separate fixture/CI,
 installed SHA, source availability and owner reader results; no fabricated gates.
 
-- [ ] Prepare owner acceptance checklist: reopen/refreshed book with refs; verify
+- [x] Prepare owner acceptance checklist: reopen/refreshed book with refs; verify
   Related link titles and open author/series without browser; page2; completed-only
   known mixed series; ordinary card/annotation/volume-after-annotation/cover/Download.
   Record cache-fresh legacy book may lack links until its normal refresh; do not
   force production cache flush or source warmup. Cold source failure remains explicit.
-- [ ] Run full `node node_modules/vitest/vitest.mjs run`,
+- [x] Run full `node node_modules/vitest/vitest.mjs run`,
   `node node_modules/typescript/bin/tsc --noEmit`, and
   `node node_modules/typescript/bin/tsc -p tsconfig.build.json`; record actual
   pass/fail/skip counts. Use bundled Node executable if PATH lacks node/npm;
   environment/approval failures are not RED product tests. Existing Python
   deployment regression suite runs in WSL or Linux CI, not mocked as passed.
-- [ ] Run git diff --check; self-check coverage against requirements and the five
+- [x] Run git diff --check; self-check coverage against requirements and the five
   Review Focus conditions. Update spec/backlog/plan with verified implementation
   status while retaining unobserved source/device gates.
-- [ ] Request one fresh-context read-only whole-branch reviewer per preserved
+- [x] Request one fresh-context read-only whole-branch reviewer per preserved
   native workflow, covering requirement IDs, parser isolation, request counts,
   key/auth boundaries, cache guards and prior book flow. Resolve actionable
   findings with regression tests and repeat affected checks only.
-- [ ] Push branch, create/attach PR with spec IDs and actual checks; require green
+- [x] Push branch, create/attach PR with spec IDs and actual checks; require green
   exact-head CI, merge through normal repository flow. Await exact-main native
   artifact and enabled deploy timer; confirm public health installed exact SHA.
   Do not change server/bot/Cloudflare/timer config for this feature.
@@ -235,5 +235,5 @@ assigned above. Fixture discovery and actual author selectors precede compact
 parser implementation; reader mapping and production availability remain evidence
 gates, not conclusions inferred from fixtures. No competing normative spec exists.
 
-**Execution handoff:** Await owner plan review, then continue native implementation
-in this checkout with the existing separate branch; no execution-method question.
+**Execution handoff:** Owner approved; native implementation and release complete
+in this checkout. Phone acceptance remains open; release evidence records installed SHA.

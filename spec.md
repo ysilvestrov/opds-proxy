@@ -6,14 +6,29 @@
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
 **Версія:** 0.8.0 written spec approved: LINKS-01 author/series OPDS navigation.
+0.8.1 proposed: catalogue icon (OPDS-008); in-chat design approved by owner
+2026-10-07. Owner approved written OPDS-008 after385aadb; implementation plan
+approved plan7faa3e1; local implementation verified (165 Node passed,2 platform
+skips;57 WSL Python passed; build/typecheck passed). Review/release/device gates
+remain pending; bundled icon application code is implemented locally.
+Production icon installation and phone display are not yet claimed.
 Owner approved the in-chat design and compact-row completion rule2026-10-07;
 written requirements OPDS-007/SOURCE-005 approved by owner afterad101ee.
 Implementation plan docs/superpowers/plans/2026-10-07-related-links.md approved
 by owner afterd1b4d1e; preserved execution is native in current checkout, no worktree.
 LINKS-01 implemented locally:158 Node tests pass,2 platform skips;57 WSL Python
 tests pass, typecheck/build pass. Independent review findings fixed with4 RED/GREEN
-regressions; CI/deployment and reader acceptance remain separate pending gates.
-Runtime remains0.7.1 on5efa8ef; LINKS-01 deployment is not yet claimed.
+regressions. PR11 merged as3e8a2bc; exact-head CI and exact-main native artifact
+passed. Public HTTPS health2026-10-07 confirms installed
+3e8a2bced78f2beb58c4bd0023997f0128d9ec40,ready=true.
+Owner reports visible Related links and successful list opening after retry on
+2026-10-07; a couple of series transitions displayed301. Exact series/time and
+origin of301 are not established. Owner subsequently reports server Codex found
+no problem and will report a recurrence with more details; this is an owner
+report, not an independently inspected server receipt. The intermittent301 is
+under observation; live source
+fetch versus cached list delivery has not been distinguished.
+Release evidence: docs/related-links-release-evidence.md.
 Evidence: docs/related-links-source-evidence.md; docs/related-links-acceptance.md.
 0.7.1: owner-requested volume-after-annotation layout correction;
 META-02 tags/volume/artwork display confirmed by owner and screenshot2026-10-07
@@ -32,7 +47,7 @@ genre/volume/synopsis/artwork display by screenshot. Follow-up layout position p
 Evidence: docs/genre-volume-release-evidence.md; phone check: docs/genre-volume-acceptance.md.
 Implementation plan docs/superpowers/plans/2026-10-07-genres-text-volume.md
 approved by owner afterbee8baa; native execution in current checkout.
-Production includes0.7.1 genre/volume layout plus0.6.0 card-resource signed-link design;
+Production includes0.8.0 related navigation,0.7.1 genre/volume layout and0.6.0 card-resource signed-link design;
 AUTH-003 written requirements9c619ff and implementation plan
 docs/superpowers/plans/2026-10-06-signed-card-access.md approved by owner;
 Local implementation and independent review complete; 111 Node tests pass,
@@ -354,6 +369,58 @@ OpenSearch MIME — `application/opensearchdescription+xml`. MIME MUST NOT
 #### Scenario: A book title contains XML characters
 - **WHEN** title містить кирилицю, `&`, `<` чи лапки
 - **THEN** feed є валідним UTF-8 XML і показує вихідний title без XML injection.
+
+### Requirement: OPDS-008 — Local catalogue icon
+
+Сервіс SHALL використовувати favicon Searchfloor як іконку каталогу. Перевірене
+джерело2026-10-07 — `https://searchfloor.org/static/favicon.png`: HTTP200,
+`image/png`,192×192,16618 bytes. Це evidence на момент перевірки, не вимога
+отримувати поточний favicon при кожному запуску або HTTP request.
+
+Перевірена PNG-копія SHALL бути включена в immutable OPDS release разом із
+provenance (source URL, дата отримання, SHA-256). Розмір asset SHALL бути не
+більше64KiB; payload SHALL мати валідну PNG структуру та квадратні ненульові
+dimensions. Build/package SHALL включати asset; runtime SHALL не звертатися
+до Searchfloor/WebShare для іконки й не залежати від writable cache або cwd.
+
+Тільки fixed route `GET/HEAD /opds/searchfloor/icon.png` SHALL віддавати цей
+asset без Basic auth і без signed grant. Це вузький публічний виняток AUTH-001:
+іконка не відкриває каталог, metadata книг чи Download і не виконує source I/O.
+Невірний/відсутній Basic SHALL не блокувати цей статичний ресурс. Маршрут SHALL
+не приймати remote URL, source path або arbitrary asset selector; інші source
+names SHALL не отримувати Searchfloor asset. Відповідь SHALL бути200,
+`Content-Type: image/png`, `X-Content-Type-Options: nosniff`,
+`Cache-Control: public, max-age=86400`; HEAD SHALL мати такі самі headers без body.
+Route SHALL не повертати redirect. Access log OPS-001 SHALL класифікувати його
+fixed label `catalog_icon`, без raw path/query/header/credentials.
+
+Navigation feeds `/opds` і `/opds/searchfloor` SHALL містити один Atom `<icon>`
+з абсолютним URL цього asset, побудованим від PUBLIC_BASE_URL (OPDS-001),
+включно з налаштованим base path. Entry Searchfloor у global root SHALL містити
+image і thumbnail links на ту саму PNG з type `image/png`, rel
+`http://opds-spec.org/image` і `http://opds-spec.org/image/thumbnail`.
+Це іконка джерела, не обкладинка книг; acquisition book entries та ресурси
+OPDS-005 SHALL зберігати поточну поведінку. Нові джерела у v1 не додаються.
+
+FBReader Android3.8.31 display SHALL перевірятися окремо власником: коректний
+Atom/HTTP не доводить, що вже доданий або кешований каталог оновив свою іконку.
+Asset недоступність SHALL не спричиняти додатковий upstream fetch.
+
+#### Scenario: Reader fetches the catalogue icon without credentials
+- **WHEN** GET/HEAD надходить на exact icon route без credentials або з невірним Basic
+- **THEN** сервіс віддає локальний PNG200 (HEAD без body), без challenge/redirect
+- **AND** Catalog, source client і Searchfloor proxy не викликаються.
+
+#### Scenario: Private catalogue remains protected
+- **WHEN** клієнт без Basic відкриває root, source root, search або Download
+- **THEN** AUTH-001 лишається чинним; public icon не авторизує ці запити
+- **AND** unknown source icon не віддає Searchfloor asset.
+
+#### Scenario: Installed release works without the source and cache
+- **WHEN** source недоступне і runtime запущений із довільної cwd
+- **THEN** immutable release віддає PNG, а обидва navigation feeds посилаються
+  на цей asset через PUBLIC_BASE_URL
+- **AND** факт відображення іконки у FBReader записується окремо від локальних тестів.
 
 ### Requirement: OPDS-005 — On-demand complete book entries and artwork
 
@@ -735,6 +802,8 @@ Root/feed/search/OpenSearch/download SHALL вимагати окрему HTTP Ba
 поверх HTTPS. Full-entry/cover SHALL приймати валідний Basic або scoped signed
 book-card grant за AUTH-003. Якщо обидва механізми невалідні/відсутні,
 response SHALL давати401 і Basic challenge без source/cache-resource access.
+Єдиний catalogue-icon виняток — fixed GET/HEAD route за OPDS-008; він віддає
+тільки bundled PNG, не авторизує інші paths і не витрачає upstream traffic.
 Config без пароля або username MUST завершувати startup з помилкою.
 Порівняння credentials SHALL бути constant-time за fixed-length digests.
 Пароль MUST NOT потрапляти в URL, logs, fixtures, spec, artifact або кеш.
