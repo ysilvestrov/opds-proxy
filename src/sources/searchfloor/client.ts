@@ -3,6 +3,8 @@ import { setTimeout as delay } from "node:timers/promises";
 import type { Book, SourceObservation, SourceCard, Artwork } from "../../domain/book.js";
 import { parseAnnotationCard, parseAnnotation, validateArtwork } from './metadata.js';
 import { parsePage, parseObservedPage, ParseError, hasEmptyResult } from "./parse.js";
+import { parseRelatedPage } from './related.js';
+import { encodeRelatedKey, type RelatedTarget, type RelatedSnapshot } from '../../domain/related.js';
 export class SourceError extends Error {
   constructor(
     message: string,
@@ -213,6 +215,24 @@ export class SearchfloorClient {
       const parsed = parseObservedPage(html, page, new Date(this.now()).toISOString());
       if (r.status === 404 && (!hasEmptyResult(html) || parsed.books.length))
         throw new SourceError("Unexpected source 404", 502);
+      return parsed;
+    }, signal);
+  }
+  async listRelated(target: RelatedTarget, signal?: AbortSignal): Promise<RelatedSnapshot> {
+    encodeRelatedKey(target);
+    const path = target.kind === 'author' ? `/a/${encodeURIComponent(target.slug)}` : `/s/${encodeURIComponent(target.name)}`;
+    const url = new URL(path, 'https://searchfloor.org');
+    if (url.pathname !== path) throw new SourceError('Invalid entity path', 400);
+    if (target.kind === 'series') url.searchParams.set('authors', target.authors);
+    return this.run(async s => {
+      const r = await this.request(url.pathname + url.search, s);
+      if (!r.ok && r.status !== 404) {
+        await r.body?.cancel(); throw new SourceError('Unexpected entity response', 502);
+      }
+      const html = new TextDecoder().decode(await readLimited(r, this.options.htmlLimit ?? 2 * 1024 * 1024, s));
+      const parsed = parseRelatedPage(html, target, new Date(this.now()).toISOString());
+      if (r.status === 404 && (!hasEmptyResult(html) || parsed.books.length))
+        throw new SourceError('Unexpected entity 404', 502);
       return parsed;
     }, signal);
   }
