@@ -10,8 +10,8 @@ same-main noop, lock contention і автоматичний timer підтвер
 2026-10-07. Owner approved written OPDS-008 after385aadb; implementation plan
 approved plan7faa3e1; local implementation verified (165 Node passed,2 platform
 skips;57 WSL Python passed; build/typecheck passed). Review/release/device gates
-remain pending;
-no icon application code, asset installation or deployment is claimed.
+remain pending; bundled icon application code is implemented locally.
+Production icon installation and phone display are not yet claimed.
 Owner approved the in-chat design and compact-row completion rule2026-10-07;
 written requirements OPDS-007/SOURCE-005 approved by owner afterad101ee.
 Implementation plan docs/superpowers/plans/2026-10-07-related-links.md approved

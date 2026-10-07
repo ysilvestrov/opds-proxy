@@ -80,4 +80,6 @@ navigation/base URL/artwork regression/device acceptance map to Task 2. Public
 exception is exact and precedes auth without changing grants. Embedded dist
 asset uses existing package inclusion; no second normative spec or new runtime
 storage. All five Review Focus cases have an owning test. Execution method and
-checkout preference are preserved; written plan approval remains pending.
+checkout preference are preserved; owner approved the written plan after7faa3e1.
+Local implementation is complete; review/release/device outcomes are recorded
+in docs/catalog-icon-acceptance.md as evidence becomes available.

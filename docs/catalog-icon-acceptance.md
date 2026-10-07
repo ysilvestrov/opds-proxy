@@ -27,7 +27,9 @@ approved after7faa3e1; native execution in the current checkout.
 
 ## Remaining gates
 
-Independent review, exact-head CI, exact-main artifact and installed SHA/public
+Independent fresh review3e8a2bc..5de8e7b found no Critical/Important findings and
+independently ran16 focused tests successfully. Two Minor stale documentation
+status statements were corrected. Exact-head CI, exact-main artifact and installed SHA/public
 PNG evidence are pending. FBReader Android3.8.31 actual catalogue icon display
 requires the owner's check; a cached catalogue may need refreshing/re-adding,
 but no such requirement has been observed yet. Local green tests are not proof
