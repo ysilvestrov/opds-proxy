@@ -12,7 +12,14 @@ export function parseRelatedPage(html: string, target: RelatedTarget, observedAt
     ? $('.card-body > p.fs-5').filter((_, e) => $(e).find('i.bi-person').length > 0 && $(e).text().trim() === target.slug)
     : $('.card-body > p.fs-5 [data-bs-title="Серия"]').filter((_, e) => $(e).text().trim() === target.name);
   if (title !== expectedTitle || header.length !== 1) throw new ParseError('Unknown entity layout');
-  if ($('#btn-next-page, [data-next-page], .load-more, #load-more, a[rel="next"]').length ||
+  const entityPath = target.kind === 'author' ? `/a/${encodeURIComponent(target.slug)}` : `/s/${encodeURIComponent(target.name)}`;
+  const pageLinks = $('a[href]').toArray().some(e => {
+    try {
+      const u = new URL($(e).attr('href')!, 'https://searchfloor.org' + entityPath);
+      return u.origin === 'https://searchfloor.org' && u.pathname === entityPath && u.searchParams.has('page');
+    } catch { return false; }
+  });
+  if ($('#btn-next-page, [data-next-page], .load-more, #load-more, .pagination, a[rel="next"]').length || pageLinks ||
       $('[data-page]').toArray().some(e => ($(e).attr('data-page') ?? '').trim() !== ''))
     throw new ParseError('Unsupported entity pagination');
   const rows = $('.card-body > .series-item');
@@ -35,6 +42,11 @@ export function parseRelatedPage(html: string, target: RelatedTarget, observedAt
     if (contents.length !== 1) throw new ParseError('Unknown entity row');
     const content = contents.first();
     const anchors = content.children('p.fw-medium').find('a[href]');
+    const hasBookLink = content.find('a[href]').toArray().some(a => {
+      try { return /^\/b\/[0-9]+$/.test(new URL($(a).attr('href')!, 'https://searchfloor.org').pathname); }
+      catch { return false; }
+    });
+    if (!anchors.length && hasBookLink) throw new ParseError('Unknown entity title structure');
     const ids: string[] = [];
     for (const a of anchors.toArray()) {
       try {
@@ -51,7 +63,7 @@ export function parseRelatedPage(html: string, target: RelatedTarget, observedAt
       downloads.length === 1 && downloads.attr('data-url') === `/book/${id}`;
     if (!valid) { for (const candidate of ids) rejected.add(candidate); continue; }
     const context = $(e).parent('.card-body').clone();
-    context.find('.series-item, script, style').remove();
+    context.find('.card-body, .series-item, script, style').remove();
     const refs = parseReferences(`<div id="book${id}">${context.html()}</div>`, id);
     const sourceAuthors = refs.authorRefs?.map(a => a.name) ?? (target.kind === 'author' ? [target.slug] : []);
     if (!sourceAuthors.length) throw new ParseError('Missing entity authors');
@@ -62,7 +74,7 @@ export function parseRelatedPage(html: string, target: RelatedTarget, observedAt
     if (!book) throw new ParseError('Invalid entity row');
     const position = row.children('.series-num').text().trim().match(/^([1-9][0-9]*)\.$/);
     const seriesPosition = position ? Number(position[1]) : undefined;
-    accepted.set(id, { ...book, authors: sourceAuthors, ...refs,
+    if (!accepted.has(id)) accepted.set(id, { ...book, authors: sourceAuthors, ...refs,
       ...(seriesRef ? { series: seriesRef.name, seriesRef } : {}),
       ...(seriesRef && seriesPosition && Number.isSafeInteger(seriesPosition) ? { seriesPosition } : {}) });
   }

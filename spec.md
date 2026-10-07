@@ -10,8 +10,9 @@ Owner approved the in-chat design and compact-row completion rule2026-10-07;
 written requirements OPDS-007/SOURCE-005 approved by owner afterad101ee.
 Implementation plan docs/superpowers/plans/2026-10-07-related-links.md approved
 by owner afterd1b4d1e; preserved execution is native in current checkout, no worktree.
-LINKS-01 implemented locally:154 Node tests pass,2 platform skips; independent
-review/CI/deployment and reader acceptance remain separate pending gates.
+LINKS-01 implemented locally:158 Node tests pass,2 platform skips;57 WSL Python
+tests pass, typecheck/build pass. Independent review findings fixed with4 RED/GREEN
+regressions; CI/deployment and reader acceptance remain separate pending gates.
 Runtime remains0.7.1 on5efa8ef; LINKS-01 deployment is not yet claimed.
 Evidence: docs/related-links-source-evidence.md; docs/related-links-acceptance.md.
 0.7.1: owner-requested volume-after-annotation layout correction;

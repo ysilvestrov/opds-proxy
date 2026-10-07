@@ -12,12 +12,17 @@ plan approved afterd1b4d1e. Native implementation in current checkout.
 - Rich Book/details records and existing Download freshness remain unchanged.
 - Full-card related Atom links, Basic-only related routes, sanitized access logs.
 - Real API/Catalog/source integration: card -> author -> local page2 -> series.
--154 Node tests passed;2 platform skips. Typecheck/build and WSL results are
-  recorded with the final release evidence when confirmed, not inferred here.
+-158 Node tests passed;2 platform skips;57 WSL Python tests passed;
+  typecheck and production build passed.
+- Independent read-only review reproduced4 parser/reference issues. All4
+  regressions were observed RED, then GREEN in a single fix pass: explicit
+  pagination, changed title layout, nested context, malformed UTF-8 selector.
+  The selector finding was treated as Important because it advertises a broken
+  navigation target, rather than deferred as cosmetic malformed input.
 
 ## Pending separate gates
 
-- Fresh independent whole-branch review and exact-head CI.
+- Exact-head CI.
 - Exact-main native package and normal timer installed SHA/health.
 - Production source proxy availability for author/series documents.
 - Owner's FBReader Android3.8.31 actual Related link display and transitions.

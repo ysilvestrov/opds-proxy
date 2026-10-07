@@ -26,7 +26,11 @@ export function parseReferences(html: string, bookId: string): Pick<Book, 'autho
       } else if (match[1] === 's') {
         const params = [...url.searchParams];
         if (params.length !== 1 || params[0][0] !== 'authors') continue;
-        const ref = { name: slug, authors: params[0][1] };
+        const rawParams = url.search.slice(1).split('&');
+        if (rawParams.length !== 1 || !rawParams[0].includes('=')) continue;
+        const rawValue = rawParams[0].slice(rawParams[0].indexOf('=') + 1);
+        const authors = decodeURIComponent(rawValue.replace(/\+/g, ' '));
+        const ref = { name: slug, authors };
         series.set(encodeRelatedKey({ kind: 'series', ...ref }), ref);
       }
     } catch { /* Invalid optional source references do not invalidate a book. */ }

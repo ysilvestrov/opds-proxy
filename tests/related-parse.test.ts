@@ -59,6 +59,21 @@ it('fails on partially changed row layout and honors status anywhere in the same
  expect(()=>parseRelatedPage(changed($=>$('.series-item').last().removeClass('series-item')),target,at)).toThrow();
  expect(parseRelatedPage(changed($=>$('.series-item').first().append('<span data-bs-title="Статус книги">в процессе</span>')),target,at).books).toEqual([]);
 });
+it('rejects conventional pagination and page-bearing entity navigation',()=>{
+ for(const pagination of ['<nav class="pagination"><a href="?page=2">Следующая</a></nav>','<a href="?page=2">Next</a>'])
+  expect(()=>parseRelatedPage(changed($=>$('.card-body').append(pagination)),target,at)).toThrow();
+});
+it('rejects unknown title markup rather than replacing a snapshot with empty',()=>{
+ expect(()=>parseRelatedPage(changed($=>$('.series-content > p.fw-medium').first().removeClass('fw-medium')),target,at)).toThrow();
+});
+it('does not borrow authors from a nested section',()=>{
+ const html=changed($=>{const nested=$('<div class="card-body"><p><a href="/a/Other">Other</a></p></div>');nested.append($('.series-item').first().clone());$('.card-body').first().append(nested);});
+ expect(parseRelatedPage(html,target,at).books[0].authors).toEqual(['Алексей Котов']);
+});
+it('omits series refs with malformed percent or UTF-8 author selectors',()=>{
+ for(const selector of ['%FF','%ZZ','%E0%A4','%ED%A0%80'])expect(parseReferences(card(`<a href="/s/S?authors=${selector}">S</a>`),'1')).toEqual({});
+ expect(parseReferences(card('<a href="/s/S?authors=A+B">S</a>'),'1').seriesRef).toEqual({name:'S',authors:'A B'});
+});
 it('isolates refs, deduplicates coauthors and omits ambiguous/foreign links',()=>{
  const refs='<a href="/a/A">A</a><a href="/a/B">B</a><a href="/a/A">Again</a><a href="https://bad.example/a/C">C</a><a href="/a/%FF">bad</a><a href="/a/C?q=x">bad</a><a href="/a/D#x">bad</a><a data-bs-title="Серия" href="/s/S?authors=A">S</a>';
  expect(parseReferences(card(refs+'<div id="book2"><a href="/a/OTHER">other</a></div>'),'1')).toEqual({authorRefs:[{id:'A',name:'A'},{id:'B',name:'B'}],seriesRef:{name:'S',authors:'A'}});

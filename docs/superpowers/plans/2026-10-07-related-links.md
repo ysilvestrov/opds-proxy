@@ -1,6 +1,6 @@
 # Related author and series links implementation plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for the owner's preserved native execution choice. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for the owner's preserved native execution choice. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Open completed author/series books from a book's Related links inside
 FBReader Android3.8.31, using bounded server-side Searchfloor access.
@@ -90,20 +90,20 @@ src/sources/searchfloor/references.ts exports
 `parseReferences(html:string,bookId:string):Pick<Book,'authorRefs'|'seriesRef'>`;
 it scopes to the exact ordinary book container, excluding nested book containers.
 
-- [ ] Write key tests: Cyrillic tuple round-trip; same series/different authors
+- [x] Write key tests: Cyrillic tuple round-trip; same series/different authors
   distinct keys; wrong kind/version/shape, invalid UTF-8/base64, padding, alternate
   JSON whitespace, non-NFC/controls,201 code points and4097-char key rejected.
-- [ ] Write refs tests using book27047 and small cards: author Алексей Котов,
+- [x] Write refs tests using book27047 and small cards: author Алексей Котов,
   series Асмодей+selector; dedup refs, two coauthors, foreign origin/query/hash,
   malformed percent encoding, duplicate authors parameter, ambiguous series,
   nested second-book refs; legacy fields remain optional.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/related-keys.test.ts tests/related-parse.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/related-keys.test.ts tests/related-parse.test.ts`;
   record RED for missing public interfaces/fields, not tool/environment errors.
-- [ ] Implement codec, optional type and scoped extraction. Integrate once into
+- [x] Implement codec, optional type and scoped extraction. Integrate once into
   parseObservedPage's per-card path; no source calls or wholesale parser rewrite.
-- [ ] Run the above plus tests/parse.test.ts and tests/genre-volume-parse.test.ts;
+- [x] Run the above plus tests/parse.test.ts and tests/genre-volume-parse.test.ts;
   expect all passing and unchanged strict completion/genre/volume behavior.
-- [ ] Commit exact Task1 product/tests files: `feat: parse author and series references`.
+- [x] Commit exact Task1 product/tests files: `feat: parse author and series references`.
 
 ## Task2: Compact author/series parser and source fixtures
 
@@ -114,27 +114,27 @@ Uses Book output with sourceName searchfloor, numeric id, verified row title,
 authors/series from verified context, sourceUrl/downloadPath, complete/observedAt;
 missing optional metadata stays absent. No network or global time reads.
 
-- [ ] Obtain and sanitize one known author and one known series HTML with bounded
+- [x] Obtain and sanitize one known author and one known series HTML with bounded
   normal GETs using the existing caps/timeouts; retain row/section markup, remove
   scripts/styles/tracking/user controls. Record actual author/standalone/series
   selectors and provenance in docs/related-links-source-evidence.md; no invented
   source markup as the sole contract fixture. If layout exceeds approved bounds,
   stop that implementation and revise written spec before broadening it.
-- [ ] Write fixture tests:27047 accepted,27484 ongoing rejected, valid author
+- [x] Write fixture tests:27047 accepted,27484 ongoing rejected, valid author
   rows across series/standalone sections retain source order; coauthor contexts
   and optional volume isolation. Add synthetic recognized-row modifications for
   ongoing+Download, absent status/no Download, empty/unknown/duplicate badges,
   foreign/mismatched href/Download ID, nested rows, conflicting duplicate IDs,
   all-rejected valid empty, explicit pagination and unknown/challenge HTML.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/related-parse.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/related-parse.test.ts`;
   record RED for compact parser assertions.
-- [ ] Implement isolated row parsing against observed selectors; reject unknown
+- [x] Implement isolated row parsing against observed selectors; reject unknown
   structure before using absence-of-status completion, dedup conflicting IDs
   conservatively, reuse pure optional field helpers when doing so preserves
   existing OPDS-006 behavior. Never call getBook per row.
-- [ ] Run related-parse plus existing parse/genre-volume tests; expect GREEN,
+- [x] Run related-parse plus existing parse/genre-volume tests; expect GREEN,
   including ordinary pages still requiring explicit `весь текст`.
-- [ ] Commit exact Task2 files/fixtures/evidence: `feat: parse compact related book lists`.
+- [x] Commit exact Task2 files/fixtures/evidence: `feat: parse compact related book lists`.
 
 ## Task3: Bounded transport, isolated snapshots and local pages
 
@@ -145,25 +145,25 @@ Catalog adds `related(target:RelatedTarget,page:number,signal?:AbortSignal):Prom
 It uses an independently versioned entity cache key, no Book/resource writes,
 and calculates nextPage from snapshot length with20-book slices.
 
-- [ ] Write mocked transport tests asserting one fixed encoded `/a/...` or
+- [x] Write mocked transport tests asserting one fixed encoded `/a/...` or
   `/s/...?authors=...` request (two different authors selectors stay separate),
   no per-ID lookups;200 parse, unexpected404/nonempty404 rejection, recognized
   empty404 handling,2MiB limit, timeout, foreign redirect and unsupported pagination.
   Reuse existing transport fixtures for request caps and queue/cooldown coverage.
-- [ ] Write real in-memory Cache/counting-client tests:21 books gives20+1 with
+- [x] Write real in-memory Cache/counting-client tests:21 books gives20+1 with
   one source call across page1/2;40 gives next only on first page;0/all-rejected
   and out-of-range empty; concurrent calls share one operation; one caller abort
   does not cancel another; refresh after15min; stale <=24h only; errors not empty.
   Seed rich Book/details/cover records and assert values/observedAt unchanged;
   call existing Catalog.book after expired completion and assert getBook occurs.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/related-client.test.ts tests/related-catalog.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/related-client.test.ts tests/related-catalog.test.ts`;
   record RED for new methods and behavioral assertions.
-- [ ] Implement listRelated using existing request/run/readLimited and typed
+- [x] Implement listRelated using existing request/run/readLimited and typed
   validated paths; implement snapshot cache/shared reads/local slices in Catalog.
   Do not cache rendered links or alter existing ordinary page/book paths.
-- [ ] Run new tests plus tests/client.test.ts, tests/catalog.test.ts,
+- [x] Run new tests plus tests/client.test.ts, tests/catalog.test.ts,
   tests/details.test.ts and tests/cache.test.ts; expect GREEN with prior guards intact.
-- [ ] Commit exact Task3 files: `feat: cache bounded author and series snapshots`.
+- [x] Commit exact Task3 files: `feat: cache bounded author and series snapshots`.
 
 ## Task4: OPDS rendering, Basic-only routes and sanitized logs
 
@@ -174,24 +174,24 @@ refs using Task1 codec. Share acquisition entry rendering internally with render
 preserving current ordinary feed output. createApp's Catalog dependency additionally
 supports optional related; absent capability returns404 for valid related routes.
 
-- [ ] Write XML tests asserting related rel/title/acquisition MIME and absolute
+- [x] Write XML tests asserting related rel/title/acquisition MIME and absolute
   PUBLIC_BASE_URL href, no sig, two authors and series link, escaped labels;
   no refs yields no invented links. Assert entity/page-specific feed IDs/title,
   self/start/up, next only when present and same target key; entry urn/card/
   acquisition unchanged, no covers/hydration added to lists, synopsis then volume.
-- [ ] Write Hono tests: Basic success; no Basic or only card sig gives401 and
+- [x] Write Hono tests: Basic success; no Basic or only card sig gives401 and
   zero related calls; wrong source404; invalid kind/key/page400 with zero source
   calls; unsupported optional capability404; route errors preserve source status.
   Existing Basic or signed book-card/cover paths remain valid; Download Basic-only.
-- [ ] Add access-log tests: author_feed/series_feed route classes; generated keys,
+- [x] Add access-log tests: author_feed/series_feed route classes; generated keys,
   names, query, Authorization and sig absent from serialized log output.
-- [ ] Run `node node_modules/vitest/vitest.mjs run tests/related-feed.test.ts tests/related-api.test.ts tests/access-log.test.ts`;
+- [x] Run `node node_modules/vitest/vitest.mjs run tests/related-feed.test.ts tests/related-api.test.ts tests/access-log.test.ts`;
   record RED for missing renderer/routes/classification.
-- [ ] Implement routes with validated keys/page before Catalog; shared feed rendering
+- [x] Implement routes with validated keys/page before Catalog; shared feed rendering
   and full-entry related links; classify entity paths without retaining raw keys.
-- [ ] Run new tests plus tests/feed.test.ts, tests/app.test.ts,
+- [x] Run new tests plus tests/feed.test.ts, tests/app.test.ts,
   tests/signed-card.test.ts and tests/genre-volume-api.test.ts; expect GREEN.
-- [ ] Commit exact Task4 files: `feat: expose private related OPDS navigation`.
+- [x] Commit exact Task4 files: `feat: expose private related OPDS navigation`.
 
 ## Task5: Branch validation, review, normal deployment and reader acceptance
 
