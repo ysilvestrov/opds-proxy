@@ -29,8 +29,10 @@ approved after7faa3e1; native execution in the current checkout.
 
 Independent fresh review3e8a2bc..5de8e7b found no Critical/Important findings and
 independently ran16 focused tests successfully. Two Minor stale documentation
-status statements were corrected. Exact-head CI, exact-main artifact and installed SHA/public
-PNG evidence are pending. FBReader Android3.8.31 actual catalogue icon display
+status statements were corrected. Exact-head CI and exact-main artifact passed;
+Installed SHA23603bb and anonymous public PNG GET/HEAD200, exact digest/headers
+are confirmed2026-10-07T18:17:12.524Z (docs/catalog-icon-release-evidence.md).
+FBReader Android3.8.31 actual catalogue icon display
 requires the owner's check; a cached catalogue may need refreshing/re-adding,
 but no such requirement has been observed yet. Local green tests are not proof
 of production installation or phone display.

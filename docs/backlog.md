@@ -13,6 +13,7 @@
 | META-02 | Основний флоу прийнято; layout розгорнуто | Жанри та обсяг тексту | Owner/screenshot2026-10-07 confirms genre tags, compact volume, synopsis and cover on3e660df; volume after annotation installed as5efa8ef, health ready; OPDS-006 updated; new position phone result and unobserved reader edges remain open |
 | LINKS-01 | Розгорнуто; reader acceptance відкрита | Related links на автора та серію | PR11/main3e8a2bc installed, public health ready;158 Node tests pass,2 skips;57 WSL Python pass; review findings fixed, exact-head/main CI green. Owner підтвердив видимі Related links і списки після повтору; intermittent301 на переходах до серії ще досліджується; docs/related-links-release-evidence.md і docs/related-links-acceptance.md |
 | READ-01 | P1 | Пошук і query-preserving next у FBReader | Реальні device результати search/next, без повного crawl |
+| ICON-01 | Розгорнуто; phone display pending | Іконка каталогу Searchfloor | OPDS-008; PR12/main23603bb installed; reviewed, CI/package passed; public GET/HEAD200 and digest confirmed; docs/catalog-icon-release-evidence.md |
 | READ-02 | P1 | Порожня відфільтрована сторінка з next | Protected fixture навігується у FBReader, немає public test route |
 | READ-03 | P1 | Перервати Download і виконати fresh GET | Тунель/слот звільняються, повторне завантаження працює |
 | READ-04 | P1 | Окремо зафіксувати відкриття FB2 ZIP та auth prompts | Device evidence; не виводити це лише з download success |

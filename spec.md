@@ -5,13 +5,16 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.8.0 written spec approved: LINKS-01 author/series OPDS navigation.
-0.8.1 proposed: catalogue icon (OPDS-008); in-chat design approved by owner
-2026-10-07. Owner approved written OPDS-008 after385aadb; implementation plan
-approved plan7faa3e1; local implementation verified (165 Node passed,2 platform
-skips;57 WSL Python passed; build/typecheck passed). Review/release/device gates
-remain pending; bundled icon application code is implemented locally.
-Production icon installation and phone display are not yet claimed.
+**Версія:** 0.8.1 approved: catalogue icon (OPDS-008).
+Owner approved design, written OPDS-008 after385aadb and plan7faa3e1 on2026-10-07.
+Local implementation:165 Node passed,2 platform skips;57 WSL Python passed;
+build/typecheck passed. Independent review found no Critical/Important findings;
+16 focused tests independently passed. PR12 merged as23603bb; exact-head CI
+and exact-main artifact passed. Public HTTPS health2026-10-07T18:17:12.524Z
+confirms installed23603bb9e7c431e577dabf940442c0ca125f79c5,ready=true;
+anonymous PNG GET/HEAD200, exact digest and headers confirmed. Phone display
+remains pending. Evidence: docs/catalog-icon-release-evidence.md.
+0.8.0 written spec approved: LINKS-01 author/series OPDS navigation.
 Owner approved the in-chat design and compact-row completion rule2026-10-07;
 written requirements OPDS-007/SOURCE-005 approved by owner afterad101ee.
 Implementation plan docs/superpowers/plans/2026-10-07-related-links.md approved

@@ -1,6 +1,6 @@
 # Catalogue icon implementation plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for the owner's preserved native execution choice. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for the owner's preserved native execution choice. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Display the Searchfloor favicon as this private catalogue's icon in FBReader Android3.8.31.
 
@@ -41,26 +41,26 @@
 
 ## Task 1: Bundled icon and public static route
 
-- [ ] Write `tests/catalog-icon.test.ts` RED assertions for API GET without Basic and with invalid Basic:200, exact three headers above, no Location/WWW-Authenticate, payload matches bundled bytes. HEAD returns matching headers with zero body.
-- [ ] Assert catalogue/page/book/details/cover/download mocks were never called; root/source/search/Download without Basic still401. Wrong source and similar/trailing-suffix path do not return the PNG, including with valid Basic; POST to the exact icon route does not return the PNG without auth.
-- [ ] Write access-log regression: GET icon with dummy query/header secrets emits one `catalog_icon`200 event without those secrets, query, path or PNG bytes.
-- [ ] Run focused Vitest tests and observe failure caused by the absent feature, not a test import/setup error.
-- [ ] Retrieve only the source favicon with timeout15s, byte cap64KiB and HTTPS same-origin checks. Decode/inspect it locally; record actual retrieval UTC date and SHA-256. If it is not valid square PNG, stop and report source evidence instead of committing HTML/error bytes.
-- [ ] Add `src/opds/catalog-icon.ts` with embedded bytes/provenance; implement exact route before auth and fixed log class. Return a fresh byte array and headers; support HEAD explicitly or verify Hono's GET-to-HEAD behavior with the test.
-- [ ] Add offline asset assertions: size<=65536, SHA-256 matches provenance, PNG signature/IHDR/nonzero square dimensions, ordered bounded chunks with valid CRC, IDAT zlib decompression and final IEND/no truncation. Validate corrupted/truncated copies are rejected by the test helper; do not expand runtime artwork parser scope.
-- [ ] Build and test imported `dist/opds/catalog-icon.js` in a child process with cwd set to an unrelated temporary directory, no runtime network or cache setup. Assert same digest. The test must use an absolute module URL.
-- [ ] Run build, focused tests and typecheck; all pass. Commit only Task 1 files with `feat: serve bundled catalogue icon`.
+- [x] Write `tests/catalog-icon.test.ts` RED assertions for API GET without Basic and with invalid Basic:200, exact three headers above, no Location/WWW-Authenticate, payload matches bundled bytes. HEAD returns matching headers with zero body.
+- [x] Assert catalogue/page/book/details/cover/download mocks were never called; root/source/search/Download without Basic still401. Wrong source and similar/trailing-suffix path do not return the PNG, including with valid Basic; POST to the exact icon route does not return the PNG without auth.
+- [x] Write access-log regression: GET icon with dummy query/header secrets emits one `catalog_icon`200 event without those secrets, query, path or PNG bytes.
+- [x] Run focused Vitest tests and observe failure caused by the absent feature, not a test import/setup error.
+- [x] Retrieve only the source favicon with timeout15s, byte cap64KiB and HTTPS same-origin checks. Decode/inspect it locally; record actual retrieval UTC date and SHA-256. If it is not valid square PNG, stop and report source evidence instead of committing HTML/error bytes.
+- [x] Add `src/opds/catalog-icon.ts` with embedded bytes/provenance; implement exact route before auth and fixed log class. Return a fresh byte array and headers; support HEAD explicitly or verify Hono's GET-to-HEAD behavior with the test.
+- [x] Add offline asset assertions: size<=65536, SHA-256 matches provenance, PNG signature/IHDR/nonzero square dimensions, ordered bounded chunks with valid CRC, IDAT zlib decompression and final IEND/no truncation. Validate corrupted/truncated copies are rejected by the test helper; do not expand runtime artwork parser scope.
+- [x] Build and test imported `dist/opds/catalog-icon.js` in a child process with cwd set to an unrelated temporary directory, no runtime network or cache setup. Assert same digest. The test must use an absolute module URL.
+- [x] Run build, focused tests and typecheck; all pass. Commit only Task 1 files with `feat: serve bundled catalogue icon`.
 
 ## Task 2: Navigation metadata and release acceptance
 
-- [ ] Write RED XML tests: renderRoot and renderSourceRoot each contain exactly one `<icon>` equal to `https://opds.example/proxy/opds/searchfloor/icon.png`; root Searchfloor entry includes image/thumbnail relations with the same URL and image/png. The source-name input must not cause icon links on an unknown source entry.
-- [ ] Assert acquisition book entries retain their existing artwork behavior and catalogue icon does not replace book covers. API root output with spoofed Host still derives icon URL from config.
-- [ ] Run focused XML/API tests and record RED; implement navigation icon metadata using `CATALOG_ICON_PATH` and existing absolute/XML escaping helpers. Keep source-specific entry artwork limited to Searchfloor.
-- [ ] Run focused tests GREEN, then build/typecheck/full Node suite and existing WSL Python deployment regressions. Run git diff --check. Record actual pass/skip counts rather than copying earlier feature results.
-- [ ] Write acceptance document with requirements mapped to evidence; note cached catalogue icons may require reader refresh/re-add, but do not claim this is necessary without a device result. Commit with `feat: advertise Searchfloor catalogue icon`.
-- [ ] Obtain one fresh read-only whole-branch review per preserved native workflow; resolve actionable findings with focused verification before PR/merge.
-- [ ] Push feature branch, create and attach PR naming OPDS-008/AUTH-001/OPDS-001/OPS-001. Require exact-head CI, then normal main merge/artifact/timer deployment; no manual infrastructure changes.
-- [ ] Confirm actual installed SHA via HTTPS health and public icon200/digest/headers without credentials; record evidence separately from local test success. Ask owner to check actual catalogue icon in FBReader and record the result.
+- [x] Write RED XML tests: renderRoot and renderSourceRoot each contain exactly one `<icon>` equal to `https://opds.example/proxy/opds/searchfloor/icon.png`; root Searchfloor entry includes image/thumbnail relations with the same URL and image/png. The source-name input must not cause icon links on an unknown source entry.
+- [x] Assert acquisition book entries retain their existing artwork behavior and catalogue icon does not replace book covers. API root output with spoofed Host still derives icon URL from config.
+- [x] Run focused XML/API tests and record RED; implement navigation icon metadata using `CATALOG_ICON_PATH` and existing absolute/XML escaping helpers. Keep source-specific entry artwork limited to Searchfloor.
+- [x] Run focused tests GREEN, then build/typecheck/full Node suite and existing WSL Python deployment regressions. Run git diff --check. Record actual pass/skip counts rather than copying earlier feature results.
+- [x] Write acceptance document with requirements mapped to evidence; note cached catalogue icons may require reader refresh/re-add, but do not claim this is necessary without a device result. Commit with `feat: advertise Searchfloor catalogue icon`.
+- [x] Obtain one fresh read-only whole-branch review per preserved native workflow; resolve actionable findings with focused verification before PR/merge.
+- [x] Push feature branch, create and attach PR naming OPDS-008/AUTH-001/OPDS-001/OPS-001. Require exact-head CI, then normal main merge/artifact/timer deployment; no manual infrastructure changes.
+- [x] Confirm actual installed SHA via HTTPS health and public icon200/digest/headers without credentials; record evidence separately from local test success. Ask owner to check actual catalogue icon in FBReader and record the result.
 
 ## Commands and expected results
 
