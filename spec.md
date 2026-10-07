@@ -5,10 +5,12 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.8.0 draft for written review: LINKS-01 author/series OPDS navigation.
+**Версія:** 0.8.0 written spec approved: LINKS-01 author/series OPDS navigation.
 Owner approved the in-chat design and compact-row completion rule2026-10-07;
-written requirements OPDS-007/SOURCE-005 below await owner review before the
-implementation plan. Runtime remains0.7.1 on5efa8ef; no LINKS-01 code/deployment
+written requirements OPDS-007/SOURCE-005 approved by owner afterad101ee.
+Implementation plan docs/superpowers/plans/2026-10-07-related-links.md awaits
+owner review; preserved execution is native in current checkout, no worktree.
+Runtime remains0.7.1 on5efa8ef; no LINKS-01 code/deployment
 is claimed. Evidence: docs/related-links-source-evidence.md.
 0.7.1: owner-requested volume-after-annotation layout correction;
 META-02 tags/volume/artwork display confirmed by owner and screenshot2026-10-07
