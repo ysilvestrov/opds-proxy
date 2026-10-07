@@ -6,6 +6,7 @@ function routeFields(path: string): { route: string; bookId?: string } {
   if (path === '/opds') return { route: 'root' };
   if (path === '/opds/searchfloor') return { route: 'source_root' };
   const fixed: Record<string, string> = {
+    '/opds/searchfloor/icon.png': 'catalog_icon',
     '/opds/searchfloor/completed': 'completed',
     '/opds/searchfloor/search': 'search',
     '/opds/searchfloor/opensearch.xml': 'opensearch',

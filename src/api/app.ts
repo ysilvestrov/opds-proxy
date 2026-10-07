@@ -17,6 +17,7 @@ import { accessLog } from "./access-log.js";
 import { createBookCardSigner, isSignedBookCardRequest } from './card-grant.js';
 import { SourceError } from "../sources/searchfloor/client.js";
 import { decodeRelatedKey } from '../domain/related.js';
+import { CATALOG_ICON_PATH, catalogIconBytes } from '../opds/catalog-icon.js';
 interface Deps {
   catalog: Pick<Catalog, "page" | "book"> & Partial<Pick<Catalog,'details'|'cover'|'related'>>;
   config: Config;
@@ -35,6 +36,10 @@ export function createApp(d: Deps): Hono {
       d.ready?.() === false ? 503 : 200,
     ),
   );
+  app.get(CATALOG_ICON_PATH, () => new Response(new Uint8Array(catalogIconBytes()), {headers: {
+    'Content-Type': 'image/png', 'X-Content-Type-Options': 'nosniff',
+    'Cache-Control': 'public, max-age=86400',
+  }}));
   app.use("/opds", privateAuth(d.config.OPDS_USERNAME, d.config.OPDS_PASSWORD, authorizeCard));
   app.use(
     "/opds/*",
