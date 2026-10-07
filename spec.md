@@ -5,7 +5,12 @@
 і погодив фіналізацію бази та налаштування deployment. Production activation,
 same-main noop, lock contention і автоматичний timer підтверджено operator-
 доказами в docs/production-rollout-report.md; бот працює без рестартів.
-**Версія:** 0.7.1: owner-requested volume-after-annotation layout correction;
+**Версія:** 0.8.0 draft for written review: LINKS-01 author/series OPDS navigation.
+Owner approved the in-chat design and compact-row completion rule2026-10-07;
+written requirements OPDS-007/SOURCE-005 below await owner review before the
+implementation plan. Runtime remains0.7.1 on5efa8ef; no LINKS-01 code/deployment
+is claimed. Evidence: docs/related-links-source-evidence.md.
+0.7.1: owner-requested volume-after-annotation layout correction;
 META-02 tags/volume/artwork display confirmed by owner and screenshot2026-10-07
 on3e660df; OPDS-006 now places volume after synopsis. Layout correction5efa8ef
 installed: public HTTPS health2026-10-07 confirms exact5efa8efd791d028cec159f60ae6c487de1ea9675,
@@ -145,7 +150,9 @@ OPDS MUST NOT використовувати процес, БД, секрети,
 
 Origin: `https://searchfloor.org`. Відомі маршрути: завершений список
 `/?status=is_finished&page=N`, пошук `/search?q=Q&page=N`, Download `/book/{id}`,
-картка `/b/{id}`. Download path береться з перевіреної картки, не з довільного
+картка `/b/{id}`. LINKS-01 додає bounded `/a/{authorSlug}` та
+`/s/{seriesName}?authors={authorSelector}` за SOURCE-005.
+Download path береться з перевіреної картки, не з довільного
 клієнтського URL. Query-фільтр пошуку `status=is_finished` не є доказом завершеності.
 Контракт 2026-10-04 підтвердив, що цей фільтр ігнорується у mixed-status search.
 HTTP 404 search SHALL трактуватися як порожній результат лише після перевірки
@@ -153,23 +160,32 @@ HTTP 404 search SHALL трактуватися як порожній резул�
 Card title може бути plain text без `/b/` link; див. docs/source-contract.md.
 
 Модель `Book`: `sourceName`, `id`, `title`, `authors[]`, optional `summary`, `series`,
-`seriesPosition`, `authorRefs[]`, `genres[]`, optional `characterCount`,
+`seriesPosition`, `authorRefs[]`, `seriesRef`, `genres[]`, optional `characterCount`,
 `authorSheets`; `sourceUrl`, `downloadPath`,
 `complete`, `observedAt`. META-01 додає окрему модель `BookDetails`:
 sourceName/id, optional plain-text summary, optional cover reference з MIME,
 `observedAt` для деталей; вона не замінює completion evidence у `Book`.
 `EntityRef` має `name` та optional source-local `id`;
-authorRefs зарезервовані для майбутнього парсингу. META-02 SHALL наповнювати
+LINKS-01 SHALL наповнювати authorRefs із перевірених source author links;
+optional `seriesRef: {name: string, authors: string}` SHALL зберігати назву
+серії та author selector із source series link. EntityRef.id для автора є
+source-local decoded author slug, а не numeric book ID. Series identity SHALL
+включати назву й author selector; сам series label не є унікальним ID.
+META-02 SHALL наповнювати
 genres та обсяг тексту за OPDS-006, коли вони доступні в отриманому HTML.
 Відсутні поля означають невідомі metadata, не відсутність автора/жанру чи нульовий обсяг.
-ID — числовий ідентифікатор джерела як string, не назва.
+Book ID — числовий ідентифікатор джерела як string, не назва.
 `SourcePage`: `books[]`, `nextPage: number|null`, `observedAt`.
 `CatalogPage`: SourcePage + `stale: boolean`; observedAt не змінюється на cache hit.
 
 ### Requirement: SOURCE-001 — Complete and downloadable books only
 
-Сервіс SHALL показувати лише книги з явно встановленою завершеністю
-та доступним Download. Unknown/«в процесі» MUST NOT трактуватися як complete.
+Сервіс SHALL показувати лише книги з встановленою завершеністю
+та доступним Download. Звичайні list/search/full-card pages SHALL вимагати
+явний статус «весь текст». Окремий погоджений контракт compact author/series
+rows SOURCE-005 допускає відсутній status разом із валідним Download лише
+в розпізнаній структурі цих сторінок. Unknown layout/«в процессе» MUST NOT
+трактуватися як complete.
 Parser SHALL приймати повну сторінку та HTML-фрагмент пагінації,
 дедуплікувати ID, розрізняти валідний порожній результат і помилку структури.
 Перед Download статус SHALL бути повторно підтверджено, якщо остання
@@ -547,16 +563,152 @@ signature validation, server-proxy доступу або сумісності з
 `/opds/{name}/genres`, `/opds/{name}/genres/{genreId}`.
 Майбутня реалізація SHALL дозволяти adapter парсити entities і отримувати
 завершені книги автора/жанру через той самий Catalog/OPDS path.
-У v1 ці capabilities disabled: парсинг entity index, entity-фільтри та
-публікація відповідних feeds не потрібні. Зарезервовані маршрути SHALL
-повертати 404 та MUST NOT рекламуватися у feeds/OpenSearch як робочі.
+LINKS-01 SHALL увімкнути лише переходи з картки на завершені книги конкретного
+автора за OPDS-007. Загальний author index `/authors`, genre index `/genres`
+і `/genres/{genreId}` залишаються disabled, SHALL повертати404 та MUST NOT
+рекламуватися у feeds/OpenSearch як робочі. Загальний series index не додається.
 Authors metadata у книгах залишається обов'язковою частиною доступних даних;
 author browser не є умовою відображення author names.
 
-#### Scenario: Author browsing is not yet implemented
-- **WHEN** клієнт запитує `/opds/searchfloor/authors` або `/opds/searchfloor/genres/123`
+#### Scenario: Global author and genre indexes remain disabled
+- **WHEN** клієнт запитує author index `/opds/searchfloor/authors` або `/opds/searchfloor/genres/123`
 - **THEN** отримує 404 без додаткового crawl
 - **AND** джерело показує доступні каталоги v1 без неробочих navigation links.
+
+### Requirement: OPDS-007 — Related author and series acquisition feeds
+
+LINKS-01 SHALL дозволяти власнику переходити з Related links повної картки
+у FBReader до завершених книг автора або серії, без відкриття браузера.
+Full entry SHALL видавати `rel="related"` links із title `Книги автора: {name}`
+для кожного verified authorRef та `Книги серії: {name}` для verified seriesRef;
+type SHALL бути acquisition Atom MIME OPDS-001. Відображення/перехід у
+FBReader Android3.8.31 SHALL перевірятися окремо від XML validation.
+Listing не SHALL виконувати hydration або рекламувати related links до
+окремого reader evidence; names/series categories й наявні links зберігаються.
+
+Public routes SHALL бути `/opds/{name}/authors/{authorKey}?page=N` та
+`/opds/{name}/series/{seriesKey}?page=N`, name v1 тільки searchfloor.
+Keys SHALL бути canonical unpadded base64url UTF-8 JSON tuples:
+author `[1,"author",slug]`; series `[1,"series",seriesName,authorSelector]`.
+Кожен string SHALL бути непорожнім, trimmed NFC, максимум200 Unicode code
+points, без control characters; encoded key максимум4096 ASCII characters.
+Canonical key SHALL дорівнювати повторному encoding `JSON.stringify(tuple)`;
+альтернативний JSON whitespace, normalization чи encoding не створює aliases.
+Invalid UTF-8/JSON/version/shape/noncanonical encoding SHALL давати400 до
+source access. Decoded keys не є URL, grant або secret. Unknown source SHALL
+давати404; page SHALL бути integer1..10000 за OPDS-002.
+
+Parser SHALL брати references тільки з власного book container, із same-origin
+HTTPS links `/a/{single encoded slug}` або `/s/{single encoded seriesName}`
+із одним непорожнім query parameter `authors`. Author links SHALL бути без
+query; обидва типи SHALL бути без hash/userinfo/інших query parameters.
+Malformed/foreign/ambiguous refs SHALL пропускатися як optional metadata;
+однакові author IDs дедуплікуються зі збереженням порядку. SeriesRef SHALL
+пропускатися за неоднозначних різних valid series links. Labels не SHALL
+синтезувати source refs. Старий кеш без refs SHALL працювати без related links
+та додаткового fetch тільки заради збагачення; normal refresh MAY додати refs.
+
+Source client SHALL будувати лише fixed same-origin author/series paths із
+декодованих validated fields через URL encoding, а не приймати клієнтський URL.
+На cold navigation SHALL завантажуватися одна bounded source HTML page за
+SOURCE-005; жодних per-book lookups, annotation/cover/Download requests.
+Відфільтрований дедуплікований source порядок SHALL зберігатися, без власного
+пересортування серії. OPDS SHALL локально ділити snapshot на20 books/page;
+next SHALL існувати тільки за наявності наступної порції й зберігати entity key.
+Порожня порція/out-of-range page SHALL бути валідним empty feed без next.
+Feed SHALL мати source/entity/page-specific id, title, self/start/up links;
+entries SHALL зберігати book urn IDs, card alternate та private acquisition.
+
+Snapshot SHALL кешуватися в існуючій SQLite на15min, із source/kind/canonical
+tuple/schema version у key, в межах CACHE-001 budgets. Усі local pages одного
+entity SHALL використовувати той самий snapshot; concurrent cold reads coalesce.
+Stale snapshot MAY віддаватися не старше24h із CACHE-002 stale notice; errors
+не SHALL кешуватися як empty. Немає snapshot pinning між reader requests:
+refresh MAY змінити склад/порядок між сторінками. Related snapshot не SHALL
+перезаписувати Book/details/cover cache скороченими metadata або оновлювати
+їх observedAt/completion freshness. Entry/card/Download SHALL використовувати
+звичайний Catalog lookup; Download eligibility SOURCE-001 не послаблюється.
+
+Нові feeds SHALL вимагати Basic AUTH-001, не приймати AUTH-003 book-card grants.
+Related links SHALL бути без sig; signed card може містити ці links, але не
+надає доступ до каталогів. Safe access log SHALL класифікувати author/series
+feed без raw keys, names, query чи headers. Нових env/dependencies/DB schema,
+bot/Cloudflare changes, warmup або source crawl не потрібно.
+
+#### Scenario: Reader follows author or series from a card
+- **WHEN** full card має verified refs і власник відкриває відповідний Related link
+- **THEN** FBReader відкриває Basic-protected acquisition feed завершених книг
+- **AND** друга local page читає snapshot cache без per-book/source requests;
+  наявні synopsis, volume-after-annotation і signed artwork не змінюються.
+
+#### Scenario: Same series name belongs to different authors
+- **WHEN** seriesName однакове, але source authorSelector відрізняється
+- **THEN** keys/cache/feed IDs та source queries залишаються різними
+- **AND** список однієї серії не змішується зі списком іншої.
+
+#### Scenario: Missing refs or a malformed navigation key
+- **WHEN** legacy book не має refs або запит містить invalid key/page
+- **THEN** книга залишається доступною без вигаданих links; invalid запит дає400
+- **AND** invalid запит не викликає source access чи довільне URL fetching.
+
+#### Scenario: A signed card grant is reused on a related feed
+- **WHEN** related feed запитано лише з book-card sig без valid Basic
+- **THEN** він повертає401 до source/cache access
+- **AND** чинний signed card/cover flow залишається доступним у своєму scope.
+
+### Requirement: SOURCE-005 — Compact author and series page contract
+
+Evidence2026-10-07: bounded local direct GET author Алексей Котов повернув200,
+309592B,46 Download buttons; series Асмодей для цього автора —200,29144B,
+2 book links,1 Download. Обидві сторінки не містили `div#book{id}` та
+`#btn-next-page`. У series row27047 є `/b/27047` і Download `/book/27047`,
+без status badge; row27484 має «в процессе» та не має Download.
+Власник погодив таке completion правило2026-10-07. Це bounded source evidence,
+не гарантія всіх авторів, server-proxy availability або reader compatibility.
+
+Окремий pure compact-page parser SHALL розпізнавати author/series layout та
+ізольовані book rows. Row SHALL мати один unambiguous positive numeric book
+ID із same-origin `/b/{id}`, непорожній title та exact matching Download
+`.download-btn[data-url="/book/{id}"]` у тому самому row. Book ID/title/status
+або Download іншого row/section SHALL NOT підтверджувати цю книгу.
+Complete SHALL бути true тільки якщо status badges у row відсутні або один
+точний «весь текст», і валідний Download присутній. «в процессе», будь-який
+інший непорожній/порожній badge чи неоднозначні duplicates SHALL відхиляти row.
+Проста відсутність status на довільному HTML не є completion evidence.
+Row authors/series MAY походити з verified source section context; optional
+genre/volume SHALL відповідати OPDS-006, без копіювання сусідніх metadata.
+
+Структура/empty marker SHALL бути перевірена незалежно від кількості прийнятих
+книг. Розпізнана сторінка з усіма rejected rows є valid empty result;
+unknown layout/challenge/login wall є source error, не empty catalog.
+Непорожні malformed/ambiguous book IDs SHALL NOT створювати fictitious books.
+Observed duplicate IDs SHALL дедуплікуватися; conflicting completion evidence
+для одного ID SHALL відхиляти цей ID, а не довіряти першій complete row.
+Compact parser не SHALL змінювати strict status правило звичайного parser.
+
+Перша реалізація SHALL читати лише один author/series document, максимум2MiB,
+15s timeout та всі queue/proxy/redirect/retry/cooldown limits SOURCE-002/003.
+Явна upstream pagination/load-more у такому document SHALL давати502 як
+unsupported contract, не неповний список із удаваним кінцем; автоматичний
+crawl не додається. Support іншої структури потребує нового evidence/spec.
+HTTP404 SHALL NOT автоматично ставати empty result; лише recognized entity
+layout із явним empty marker може підтвердити empty. Без цього404 є source error.
+
+#### Scenario: Compact page mixes completed and ongoing books
+- **WHEN** recognized entity document містить27047 без badge з matching Download
+  та27484 із «в процессе» без Download
+- **THEN** acquisition snapshot включає тільки27047
+- **AND** source request count не зростає заради individual completion lookups.
+
+#### Scenario: An ongoing row also has a Download button
+- **WHEN** row має «в процессе» та matching Download
+- **THEN** row не включається до завершених книг
+- **AND** Download button не переважає explicit non-complete status.
+
+#### Scenario: Layout changes or upstream adds pagination
+- **WHEN** document має unknown layout чи explicit unsupported pagination
+- **THEN** source parse повертає502; придатний stale snapshot MAY віддаватися
+- **AND** відсутній badge не використовується для автоматичного прийняття книг.
 
 ### Requirement: OPDS-002 — Source pagination remains navigable
 
@@ -743,7 +895,8 @@ UTF-8 filename*, Cache-Control private/no-store. Range не підтримуєт
 
 SQLite SHALL містити лише відновлювані metadata/query results та cover cache
 за CACHE-003, без повних книг,
-секретів і deployment-state. List/search TTL — 15 min, metadata TTL — 24 h.
+секретів і deployment-state. List/search/related snapshots TTL — 15 min,
+metadata TTL — 24 h. Related cache isolation визначає OPDS-007.
 Key SHALL включати sourceName, нормалізований query, page, filter і schema version.
 Однакові concurrent reads SHALL coalesce; cancel одного caller не скасовує
 операцію для інших активних callers. Помилки не кешуються як порожній список.
