@@ -70,4 +70,5 @@ must name the actual catalogue; investigate auth/log evidence if it still fails.
 Self-review: existing requirement IDs preserved; no new normative spec copy,
 no fixed live book-count guarantee, no claim of production request correlation.
 This is a small amendment to approved OPDS-001, not a new architectural spec.
-Written owner review remains pending before the implementation plan.
+Owner approved the written OPDS-001 amendment afterd45aa38 on2026-11-16.
+Implementation plan review remains pending before application code.

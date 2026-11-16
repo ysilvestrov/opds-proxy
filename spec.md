@@ -2,7 +2,8 @@
 
 **Proposed amendment0.8.2 / READ-01 (2026-11-16):** FBReader search discovery
 and fixed first-page OpenSearch template. Owner approved the in-chat approach;
-written OPDS-001 amendment below awaits review before implementation planning.
+written OPDS-001 amendment approved by owner afterd45aa38 on2026-11-16.
+Implementation plan review remains pending before application code.
 Evidence: docs/search-discovery-diagnostics-20261116.md. No search application
 code or production change has been made for this amendment.
 
