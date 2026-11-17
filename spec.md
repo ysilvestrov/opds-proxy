@@ -7,7 +7,11 @@ Owner approved implementation plan29e626d on2026-11-17. Local implementation
 verified:172 Node tests passed,2 platform skips;57 WSL Python tests passed;
 Node24.22.1 build/typecheck passed. Independent review found two test gaps;
 both were fixed, including a reproduced RED/GREEN URL-boundary regression.
-CI/deployment/phone gates remain pending.
+PR13 merged as6b8021670a92ff9f1c2b6ecd240ef8bc9cdd98fb; exact-head CI and
+exact-main artifact passed. Public HTTPS health through2026-11-17T09:09:59.416Z
+still reports previous23603bb ready=true. Search deployment is not confirmed;
+server observation and phone acceptance remain pending. Evidence:
+docs/search-discovery-release-evidence.md and docs/search-deploy-observation-handoff.md.
 Evidence: docs/search-discovery-diagnostics-20261116.md and
 docs/search-discovery-acceptance.md.
 

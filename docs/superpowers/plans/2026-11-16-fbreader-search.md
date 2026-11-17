@@ -1,6 +1,6 @@
 # Пошук Searchfloor у FBReader — план реалізації
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for the owner's preserved native execution choice. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for the owner's preserved native execution choice. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** FBReader знаходить пошук Searchfloor через доданий `/opds`, а початковий запит не утворює порожній page.
 
@@ -34,14 +34,14 @@
 
 **Interfaces:** renderRoot(base, sources):string і renderOpenSearch(base, name):string зберігають сигнатури. Використати наявні discovery(base,name), absolute, xml, ACQ. createApp/Catalog/SearchfloorClient не потребують production змін; у тесті ін’єктувати fetch і in-memory Cache після Node24 npm ci.
 
-- [ ] Перед змінами записати BASE=git rev-parse HEAD. Підготувати Node24 та залежності; Node24 runtime prefix у PATH і Node24 запуск npm-cli.js для сумісного native SQLite. Не змінювати lockfile для виправлення локального середовища.
-- [ ] Написати RED renderer тести: root зі Searchfloor містить рівно один rel=search з правильними href/type; порожній/unknown-only sources не містить searchfloor OpenSearch. Source/feed/related discovery лишається чинним. Розпарсований template точно дорівнює `https://opds.example/proxy/opds/searchfloor/search?q={searchTerms}&page=1`, без startPage; XML валідний.
-- [ ] Написати API integration: authenticated root → OpenSearch → заміна лише searchTerms через encodeURIComponent → acquisition feed → next. Для query «стоев», «за последним порогом» та `А & Б 100% е\u0308` перевірити upstream q після чинної trim/NFC, page1/2, один GET на source page, відсутність дублювання percent encoding. Prefix перевіряти renderer-ом; API requests виконувати на фактичних internal paths без `/proxy` prefix, як reverse proxy routing.
-- [ ] У цьому тесті discovery не викликає fetch/Catalog.page; root/OpenSearch/search без Basic або з book-card grant мають401. Перевірити spoofed Host: URLs лише від config. Відсутній page викликає page1; page=,page=0,page=1.5 і page=10001 дають400 без source I/O.
-- [ ] Fixtures: mixed search відсіює незавершені книги, зберігає completed IDs і source order; filtered page лишає next навіть без entries; проходження next зберігає query. Не фіксувати17/13 як незмінні live counts.
-- [ ] Запустити focused tests до коду й зафіксувати RED через відсутній root discovery/optional template, а не setup/import failure. Для незмінної валідації/auth очікувати GREEN уже до виправлення.
-- [ ] У renderRoot додати `discovery(base,'searchfloor')` лише за sources.some(s=>s.name==='searchfloor'). У renderOpenSearch замінити тільки optional page placeholder на literal1; залишити MIME/XML escaping. Без рефакторингу інших renderer/API/source функцій.
-- [ ] Focused GREEN; typecheck, build, full Node suite та WSL Python deployment regressions. git diff --check; записати фактичні pass/skip counts і Node версію. Commit: `fix: expose Searchfloor search to FBReader`.
+- [x] Перед змінами записати BASE=git rev-parse HEAD. Підготувати Node24 та залежності; Node24 runtime prefix у PATH і Node24 запуск npm-cli.js для сумісного native SQLite. Не змінювати lockfile для виправлення локального середовища.
+- [x] Написати RED renderer тести: root зі Searchfloor містить рівно один rel=search з правильними href/type; порожній/unknown-only sources не містить searchfloor OpenSearch. Source/feed/related discovery лишається чинним. Розпарсований template точно дорівнює `https://opds.example/proxy/opds/searchfloor/search?q={searchTerms}&page=1`, без startPage; XML валідний.
+- [x] Написати API integration: authenticated root → OpenSearch → заміна лише searchTerms через encodeURIComponent → acquisition feed → next. Для query «стоев», «за последним порогом» та `А & Б 100% е\u0308` перевірити upstream q після чинної trim/NFC, page1/2, один GET на source page, відсутність дублювання percent encoding. Prefix перевіряти renderer-ом; API requests виконувати на фактичних internal paths без `/proxy` prefix, як reverse proxy routing.
+- [x] У цьому тесті discovery не викликає fetch/Catalog.page; root/OpenSearch/search без Basic або з book-card grant мають401. Перевірити spoofed Host: URLs лише від config. Відсутній page викликає page1; page=,page=0,page=1.5 і page=10001 дають400 без source I/O.
+- [x] Fixtures: mixed search відсіює незавершені книги, зберігає completed IDs і source order; filtered page лишає next навіть без entries; проходження next зберігає query. Не фіксувати17/13 як незмінні live counts.
+- [x] Запустити focused tests до коду й зафіксувати RED через відсутній root discovery/optional template, а не setup/import failure. Для незмінної валідації/auth очікувати GREEN уже до виправлення.
+- [x] У renderRoot додати `discovery(base,'searchfloor')` лише за sources.some(s=>s.name==='searchfloor'). У renderOpenSearch замінити тільки optional page placeholder на literal1; залишити MIME/XML escaping. Без рефакторингу інших renderer/API/source функцій.
+- [x] Focused GREEN; typecheck, build, full Node suite та WSL Python deployment regressions. git diff --check; записати фактичні pass/skip counts і Node версію. Commit: `fix: expose Searchfloor search to FBReader`.
 
 ## Task 2: Review, release та phone acceptance
 
@@ -49,9 +49,9 @@
 
 **Interfaces:** Task1 зберігає всі публічні сигнатури; цей task використовує лише його перевірений commit і звичайний deployment pipeline.
 
-- [ ] Записати локальне evidence за requirement IDs і провести незалежне whole-branch review згідно з preserved native workflow. Виправити підтверджені findings із відповідною регресією; не називати owner-confirmed foreign-catalogue results доказом server bug.
+- [x] Записати локальне evidence за requirement IDs і провести незалежне whole-branch review згідно з preserved native workflow. Виправити підтверджені findings із відповідною регресією; не називати owner-confirmed foreign-catalogue results доказом server bug.
 - [ ] Перед PR виконати застосовний detent-cross-review skill; repo наразі не має detent.json. Не додавати runtime/project policy конфігурацію мовчки заради review tool; якщо CLI потребує окремої конфігурації, зафіксувати limitation та запропонувати конкретний варіант, не вважати review виконаним. Наявний незалежний review лишається окремим gate.
-- [ ] Fetch актуальний main, перевірити відсутність неоглянутих змін. Push branch/PR з OPDS-001/002, SOURCE-001, AUTH-001/003 і доказами. Exact-head CI GREEN → звичайний merge/main artifact/timer rollout. Ніяких ручних рестартів, source cache flush чи змін бота.
+- [x] Fetch актуальний main, перевірити відсутність неоглянутих змін. Push branch/PR з OPDS-001/002, SOURCE-001, AUTH-001/003 і доказами. Exact-head CI GREEN → звичайний merge/main artifact/timer rollout. Ніяких ручних рестартів, source cache flush чи змін бота.
 - [ ] Перевірити actual installed SHA/ready та зберегти точні CI/artifact/release докази. Authenticated root/OpenSearch HTTP evidence отримувати тільки з уже доступними приватними operator credentials, не виводити їх; без доступу чесно лишити цей пункт pending. Один неавторизований401 не доводить коректність XML.
 - [ ] Власник оновлює каталог у FBReader і повторює обидва запити. Записати Catalogue: Searchfloor у перевіреній картці, автора/серію та результат. Phone пошук/next позначати PASS лише за фактичним спостереженням; кешований опис каталогу може потребувати refresh/re-add, але не оголошувати це обов’язковим без evidence.
 - [ ] Якщо Searchfloor усе ще не бере участі або дає іншу видачу, зіставити фактичний HTTP boundary з sanitized access logs і bounded authenticated server probes. Не міняти source parser/filtering за здогадом і не логувати credentials/query. Зафіксувати неперевірені operator/phone gates окремо від готовності коду.

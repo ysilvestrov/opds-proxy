@@ -33,8 +33,10 @@ prefix (new regression observed RED then GREEN), and12 expected completed IDs ar
 literal fixture order. Final172 Node tests passed,2 platform skips; typecheck
 passed after these test-only fixes. No production finding or code change from review.
 
-Exact-head CI, main artifact/actual installation and device
-result remain pending. No private production credentials are available here;
+Exact-head CI and main artifact passed; PR13 merged as6b80216. Actual installation
+is not confirmed: public health through2026-11-17T09:09:59.416Z still23603bb.
+See docs/search-discovery-release-evidence.md and the read-only server handoff.
+Device result remains pending. No private production credentials are available here;
 anonymous401 is not evidence of actual authenticated root/OpenSearch XML.
 Phone acceptance must inspect Catalogue: Searchfloor and separately observe next;
 foreign catalogue results and exact live book counts are not acceptance proof.
