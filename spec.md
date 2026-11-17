@@ -4,8 +4,10 @@
 and fixed first-page OpenSearch template. Owner approved the in-chat approach;
 written OPDS-001 amendment approved by owner afterd45aa38 on2026-11-16.
 Owner approved implementation plan29e626d on2026-11-17. Local implementation
-verified:171 Node tests passed,2 platform skips; Node24.22.1 build/typecheck passed.
-Review/CI/deployment/phone gates remain pending.
+verified:172 Node tests passed,2 platform skips;57 WSL Python tests passed;
+Node24.22.1 build/typecheck passed. Independent review found two test gaps;
+both were fixed, including a reproduced RED/GREEN URL-boundary regression.
+CI/deployment/phone gates remain pending.
 Evidence: docs/search-discovery-diagnostics-20261116.md and
 docs/search-discovery-acceptance.md.
 

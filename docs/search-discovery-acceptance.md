@@ -27,7 +27,13 @@ the recovered checkout; original incomplete checkout was not overwritten.
   private code. No bypass attempted; no Detent marker or completed review claimed.
   Fresh in-session independent review and exact-head CI remain the normal gates.
 
-Independent review, exact-head CI, main artifact/actual installation and device
+Independent review identified P2 URL-boundary replay and P3 parser-derived expected
+IDs in tests. Both were fixed: the hop helper rejects foreign origins/HTTP/wrong
+prefix (new regression observed RED then GREEN), and12 expected completed IDs are
+literal fixture order. Final172 Node tests passed,2 platform skips; typecheck
+passed after these test-only fixes. No production finding or code change from review.
+
+Exact-head CI, main artifact/actual installation and device
 result remain pending. No private production credentials are available here;
 anonymous401 is not evidence of actual authenticated root/OpenSearch XML.
 Phone acceptance must inspect Catalogue: Searchfloor and separately observe next;

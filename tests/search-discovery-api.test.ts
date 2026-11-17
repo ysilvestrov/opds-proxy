@@ -8,7 +8,6 @@ import {loadConfig} from '../src/config.js';
 import {Catalog} from '../src/catalog.js';
 import {Cache} from '../src/storage/cache.js';
 import {SearchfloorClient} from '../src/sources/searchfloor/client.js';
-import {parsePage} from '../src/sources/searchfloor/parse.js';
 
 const base='https://opds.example/proxy';
 const config=loadConfig({PUBLIC_BASE_URL:base,CACHE_PATH:':memory:',OPDS_USERNAME:'reader',OPDS_PASSWORD:'testing-only'});
@@ -16,9 +15,14 @@ const authorization='Basic '+Buffer.from('reader:testing-only').toString('base64
 const headers={authorization,host:'attacker.example'};
 const parser=new XMLParser({ignoreAttributes:false});
 const html=(name:string)=>readFileSync(new URL('fixtures/searchfloor/'+name+'.html',import.meta.url),'utf8');
-const internal=(url:string)=>{const u=new URL(url);return u.pathname.slice('/proxy'.length)+u.search;};
+const internal=(url:string)=>{const u=new URL(url);expect(u.origin).toBe(new URL(base).origin);expect(u.pathname.startsWith('/proxy/')).toBe(true);return u.pathname.slice('/proxy'.length)+u.search;};
 const links=(feed:any):Record<string,string>[]=>Array.isArray(feed.link)?feed.link:[feed.link];
 const entries=(feed:any)=>feed.entry?(Array.isArray(feed.entry)?feed.entry:[feed.entry]):[];
+const completedFixtureIds=['25463','25466','25974','12791','7654','5063','26307','7411','15888','5604','5603','5574'];
+it('rejects discovered URLs outside configured HTTPS origin or base path',()=>{
+ for(const url of ['https://attacker.example/proxy/opds/searchfloor/search','http://opds.example/proxy/opds/searchfloor/search','https://opds.example/proxy-wrong/opds/searchfloor/search','https://opds.example/opds/searchfloor/search'])expect(()=>internal(url)).toThrow();
+ expect(internal(base+'/opds/searchfloor/search?q=x&page=1')).toBe('/opds/searchfloor/search?q=x&page=1');
+});
 
 for(const query of ['стоев','за последним порогом','  А & Б 100% е\u0308  '])it('follows discovered search and next preserving query: '+query,async()=>{
  const calls:URL[]=[];
@@ -34,7 +38,7 @@ for(const query of ['стоев','за последним порогом','  А 
   const url=template.replace('{searchTerms}',encodeURIComponent(query));expect(url).not.toContain('{');
   const response=await app.request(internal(url),{headers});expect(response.status).toBe(200);
   const feed=parser.parse(await response.text()).feed;
-  expect(entries(feed).map((b:any)=>b.id)).toEqual(parsePage(html('mixed-search'),1,new Date(0).toISOString()).books.map(b=>'urn:opds:searchfloor:book:'+b.id));
+  expect(entries(feed).map((b:any)=>b.id)).toEqual(completedFixtureIds.map(id=>'urn:opds:searchfloor:book:'+id));
   expect(calls).toHaveLength(1);expect(calls[0].pathname).toBe('/search');expect(calls[0].searchParams.get('q')).toBe(query.trim().normalize('NFC'));expect(calls[0].searchParams.get('page')).toBe('1');
   const next=links(feed).find(l=>l['@_rel']==='next')!['@_href'];expect(new URL(next).searchParams.get('q')).toBe(query.trim().normalize('NFC'));
   expect((await app.request(internal(next),{headers})).status).toBe(200);expect(calls).toHaveLength(2);expect(calls[1].searchParams.get('q')).toBe(query.trim().normalize('NFC'));expect(calls[1].searchParams.get('page')).toBe('2');
