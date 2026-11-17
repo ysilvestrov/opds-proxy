@@ -8,7 +8,7 @@
 
 **Tech Stack:** Node24, TypeScript, Hono, Vitest, fast-xml-parser та наявні SQLite/Cheerio; без нових залежностей.
 
-**Spec:** Кореневий spec.md, уточнення0.8.2 OPDS-001 погоджене післяd45aa38; також OPDS-002, SOURCE-001/002, AUTH-001/003, OPS-001, DEPLOY-001, ACCEPT-001. План очікує рев’ю власника; його наявність не означає дозвіл починати код.
+**Spec:** Кореневий spec.md, уточнення0.8.2 OPDS-001 погоджене післяd45aa38; також OPDS-002, SOURCE-001/002, AUTH-001/003, OPS-001, DEPLOY-001, ACCEPT-001. Власник погодив цей план після29e626d2026-11-17; native виконання у відновленій копії.
 
 ## Global Constraints
 
@@ -69,4 +69,4 @@
 
 ## Self-review
 
-OPDS-001 discovery/template/URL scenarios → Task1; OPDS-002 query/next/strict page → Task1; SOURCE-001 filtering → existing fixtures; AUTH-001/003 → Task1 auth regression; actual catalogue identity/READ-01/DEPLOY-001 → Task2. Один невеликий behavior PR без супутнього рефакторингу, дві задачі, окремий harness не потрібний. Detent не сконфігурований: project paths і українська мова відповідають AGENTS.md та поточній роботі. Усі п’ять Review Focus мають перевірку. Root spec є єдиною нормативною специфікацією. План очікує рев’ю власника; спосіб виконання збережено.
+OPDS-001 discovery/template/URL scenarios → Task1; OPDS-002 query/next/strict page → Task1; SOURCE-001 filtering → existing fixtures; AUTH-001/003 → Task1 auth regression; actual catalogue identity/READ-01/DEPLOY-001 → Task2. Один невеликий behavior PR без супутнього рефакторингу, дві задачі, окремий harness не потрібний. Detent не сконфігурований: project paths і українська мова відповідають AGENTS.md та поточній роботі. Усі п’ять Review Focus мають перевірку. Root spec є єдиною нормативною специфікацією. План погоджений після29e626d; спосіб виконання збережено.

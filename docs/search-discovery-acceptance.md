@@ -19,6 +19,13 @@ the recovered checkout; original incomplete checkout was not overwritten.
 - Node24.22.1 native SQLite setup passed. Build/typecheck passed. Full suite:
   171 tests passed,2 Windows platform skips. This is fresh local evidence;
   earlier Node26 diagnostic replay is not used as the implementation gate.
+- Deployment Python suite:57 tests passed in WSL. Its Projects mount is not
+  available, so unchanged tracked deployment files were transferred as git archive
+  HEAD into an isolated temporary Linux directory for this run.
+- Additional Detent cross-family review was blocked before execution by automatic
+  approval review: fetching/executing an external npm package could read/transmit
+  private code. No bypass attempted; no Detent marker or completed review claimed.
+  Fresh in-session independent review and exact-head CI remain the normal gates.
 
 Independent review, exact-head CI, main artifact/actual installation and device
 result remain pending. No private production credentials are available here;
