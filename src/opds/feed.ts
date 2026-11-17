@@ -75,6 +75,7 @@ export function renderRoot(
     stamp,
     catalogIcon(base) + link("self", absolute(base, "/opds")) +
       link("start", absolute(base, "/opds")) +
+      (sources.some(s => s.name === 'searchfloor') ? discovery(base, 'searchfloor') : '') +
       sources
         .map((s) =>
           entry(

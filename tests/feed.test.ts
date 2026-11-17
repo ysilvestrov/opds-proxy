@@ -3,6 +3,18 @@ import { XMLParser, XMLValidator } from "fast-xml-parser";
 import { renderBookEntry, renderFeed, renderRoot, renderSourceRoot } from "../src/opds/feed.js";
 import { renderOpenSearch } from "../src/opds/search.js";
 const base = "https://opds.example/proxy";
+it('advertises search only when Searchfloor is enabled and fixes the initial page',()=>{
+ const parser=new XMLParser({ignoreAttributes:false});
+ const root=renderRoot(base,[{name:'searchfloor',title:'Searchfloor'}]);
+ expect(XMLValidator.validate(root)).toBe(true);
+ expect(parser.parse(root).feed.link.filter((l:any)=>l['@_rel']==='search')).toEqual([{'@_rel':'search','@_href':base+'/opds/searchfloor/opensearch.xml','@_type':'application/opensearchdescription+xml'}]);
+ for(const sources of [[],[{name:'unknown',title:'Other'}]])expect(renderRoot(base,sources)).not.toContain('rel="search"');
+ const xml=renderOpenSearch(base,'searchfloor');expect(XMLValidator.validate(xml)).toBe(true);
+ const url=parser.parse(xml).OpenSearchDescription.Url;
+ expect(url['@_template']).toBe(base+'/opds/searchfloor/search?q={searchTerms}&page=1');
+ expect(url['@_type']).toBe('application/atom+xml;profile=opds-catalog;kind=acquisition');
+ expect(xml).not.toContain('startPage');
+});
 it('advertises a local catalogue icon in navigation feeds and Searchfloor entry',()=>{
  const parser=new XMLParser({ignoreAttributes:false});const url=base+'/opds/searchfloor/icon.png';
  const root=renderRoot(base,[{name:'searchfloor',title:'Searchfloor'},{name:'unknown',title:'Other'}]);
