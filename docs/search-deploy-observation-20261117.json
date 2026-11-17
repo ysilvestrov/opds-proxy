@@ -1,0 +1,185 @@
+{
+  "startedUtc": "2026-11-17T09:24:21.861848+00:00",
+  "expectedSHA": "6b8021670a92ff9f1c2b6ecd240ef8bc9cdd98fb",
+  "mode": "read-only",
+  "health": [
+    {
+      "target": "local",
+      "utc": "2026-11-17T09:24:21.870311+00:00",
+      "exitCode": 0,
+      "status": 200,
+      "ready": true,
+      "sha": "23603bb9e7c431e577dabf940442c0ca125f79c5"
+    },
+    {
+      "target": "public",
+      "utc": "2026-11-17T09:24:22.014559+00:00",
+      "exitCode": 0,
+      "status": 200,
+      "ready": true,
+      "sha": "23603bb9e7c431e577dabf940442c0ca125f79c5"
+    }
+  ],
+  "currentRelease": "/opt/searchfloor-opds/releases/23603bb9e7c431e577dabf940442c0ca125f79c5",
+  "units": [
+    {
+      "unit": "searchfloor-opds-deploy.timer",
+      "utc": "2026-11-17T09:24:22.020163+00:00",
+      "exitCode": 0,
+      "properties": {
+        "NextElapseUSecRealtime": "",
+        "NextElapseUSecMonotonic": "6d 13h 15min 24.494595s",
+        "LastTriggerUSec": "Tue 2026-11-17 09:21:50 UTC",
+        "Result": "success",
+        "Id": "searchfloor-opds-deploy.timer",
+        "ActiveState": "active",
+        "SubState": "waiting",
+        "UnitFileState": "enabled"
+      }
+    },
+    {
+      "unit": "searchfloor-opds-deploy.service",
+      "utc": "2026-11-17T09:24:22.026183+00:00",
+      "exitCode": 0,
+      "properties": {
+        "Result": "exit-code",
+        "ExecMainStartTimestamp": "Tue 2026-11-17 09:21:50 UTC",
+        "ExecMainExitTimestamp": "Tue 2026-11-17 09:21:53 UTC",
+        "ExecMainCode": "1",
+        "ExecMainStatus": "1",
+        "Id": "searchfloor-opds-deploy.service",
+        "ActiveState": "failed",
+        "SubState": "failed",
+        "UnitFileState": "static"
+      }
+    }
+  ],
+  "runtime": {
+    "utc": "2026-11-17T09:24:22.032384+00:00",
+    "properties": {
+      "MainPID": "1247317",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Sun 2026-11-15 06:19:31 UTC",
+      "ActiveState": "active",
+      "SubState": "running"
+    }
+  },
+  "journal": {
+    "since": "2026-11-17T08:55:00Z",
+    "until": "2026-11-17T09:15:00Z",
+    "exitCode": 0,
+    "recordsRead": 20,
+    "events": [
+      {
+        "utc": "2026-11-17T08:55:35.633996+00:00",
+        "event": "deploy_failed"
+      },
+      {
+        "utc": "2026-11-17T09:00:50.058485+00:00",
+        "event": "deploy_failed"
+      },
+      {
+        "utc": "2026-11-17T09:06:05.638057+00:00",
+        "event": "deploy_failed"
+      },
+      {
+        "utc": "2026-11-17T09:11:15.651674+00:00",
+        "event": "deploy_failed"
+      }
+    ],
+    "truncated": false,
+    "gap": "Generic deploy_failed has no reason/boundary field; other messages deliberately omitted."
+  },
+  "installedFiles": [
+    {
+      "path": "/usr/local/lib/searchfloor-opds/run-deploy.mjs",
+      "sha256": "3e2713592cb4fd33a95d5e8c0adb7430cda3b4102569e11543a49cd3a5bb9c54",
+      "matchesMain": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/artifact.mjs",
+      "sha256": "d67c4d7a94f0faa464f7bf944bb6316b3f8e4729f1de1c361096cb14420c2ec5",
+      "matchesMain": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/autodeploy.mjs",
+      "sha256": "4e734d343b502956428c77d8690e1475e54f4346867629f149c74205e88615ce",
+      "matchesMain": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/observe.mjs",
+      "sha256": "4b35bff9034bc971605b66a77a9b6caef2561ab95c0092be42a4604b0b15f9c2",
+      "matchesMain": true
+    },
+    {
+      "path": "/usr/local/lib/searchfloor-opds/safe-extract.py",
+      "sha256": "2baf603ef446de359b12f2a8d755dfb411bacd0cd8fc9a23f09e7a22b455e924",
+      "matchesMain": true
+    }
+  ],
+  "privilegedChecks": {
+    "state": "blocked-permission-denied",
+    "lockOwnership": "blocked-permission-denied",
+    "lockHolder": "unverified; unprivileged lslocks produced no usable data",
+    "deployTokenApi": "blocked; OPDS deployment token not readable",
+    "sudo": "outside-sandbox sudo -n requires operator password; no OPDS NOPASSWD route",
+    "credentialFallbackUsed": false
+  },
+  "discoveryChecks": {
+    "status": "not-run",
+    "reason": "expected SHA not installed; existing OPDS credentials inaccessible"
+  },
+  "finishedUtc": "2026-11-17T09:24:22.063486+00:00",
+  "githubCliEvidence": {
+    "utc": "2026-11-17T09:24:38.110471+00:00",
+    "identity": "existing gh CLI; NOT the deploy-service token",
+    "desiredMainSHA": "6b8021670a92ff9f1c2b6ecd240ef8bc9cdd98fb",
+    "run": {
+      "id": 44051945006,
+      "workflow_id": 374905819,
+      "head_sha": "6b8021670a92ff9f1c2b6ecd240ef8bc9cdd98fb",
+      "head_branch": "main",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "headRepository": "ysilvestrov/opds-proxy",
+    "jobs": [
+      {
+        "name": "typecheck",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "test",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "build",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "package",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "artifact": {
+      "id": 14313269541,
+      "name": "opds-release-6b8021670a92ff9f1c2b6ecd240ef8bc9cdd98fb",
+      "size_in_bytes": 7365500,
+      "expired": false,
+      "digest": "sha256:d8d1ac4e007de395aff4c0c98a7f2bbf9f1cfb710b80d92501448c07943412ff",
+      "workflow_run": {
+        "id": 44051945006,
+        "repository_id": 1404804617,
+        "head_repository_id": 1404804617,
+        "head_branch": "main",
+        "head_sha": "6b8021670a92ff9f1c2b6ecd240ef8bc9cdd98fb"
+      }
+    },
+    "installedWorkflowPin": "not verified; private deploy.env inaccessible"
+  }
+}
