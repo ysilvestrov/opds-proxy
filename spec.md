@@ -1,5 +1,16 @@
 # OPDS Proxy — OpenSpec
 
+**Approved amendment0.8.2 / READ-01 (2026-11-16):** FBReader search discovery
+and fixed first-page OpenSearch template. Owner approved the in-chat approach;
+written OPDS-001 amendment approved by owner afterd45aa38 on2026-11-16.
+Owner approved implementation plan29e626d on2026-11-17. Local implementation
+verified:172 Node tests passed,2 platform skips;57 WSL Python tests passed;
+Node24.22.1 build/typecheck passed. Independent review found two test gaps;
+both were fixed, including a reproduced RED/GREEN URL-boundary regression.
+CI/deployment/phone gates remain pending.
+Evidence: docs/search-discovery-diagnostics-20261116.md and
+docs/search-discovery-acceptance.md.
+
 **Статус:** BASELINE ACCEPTED / PRODUCTION ACTIVE.
 Власник підтвердив список книг, metadata та завантаження у FBReader на c22ac2e
 і погодив фіналізацію бази та налаштування deployment. Production activation,
@@ -349,6 +360,46 @@ self/start і next, коли він існує. Entry ID SHALL бути
 `/opds/{name}/books/{id}/download.fb2.zip`, rel — `http://opds-spec.org/acquisition`.
 Посилання SHALL бути абсолютними від PUBLIC_BASE_URL, не від Host header.
 Global start — `/opds`; source root доступний через collection/up navigation.
+
+Для єдиного увімкненого у v1 джерела Searchfloor global root `/opds` SHALL
+містити один `rel="search"` link на `/opds/searchfloor/opensearch.xml` із type
+`application/opensearchdescription+xml`, як і source root. Цей link SHALL
+публікуватися лише коли Searchfloor присутній у configured enabled sources.
+Наявні search links у source/acquisition/related feeds SHALL зберігатися.
+Це пошук Searchfloor, не агрегований пошук усіх каталогів FBReader.
+
+OpenSearch description SHALL оголошувати acquisition Atom URL із template
+`{PUBLIC_BASE_URL}/opds/searchfloor/search?q={searchTerms}&page=1` (у XML `&`
+має бути escaped). Початковий запит SHALL не залежати від підстановки
+optional `{startPage?}`. Наступні сторінки SHALL відкриватися через feed `next`
+зі збереженням query за OPDS-002. PUBLIC_BASE_URL, зокрема optional path prefix,
+SHALL визначати всі ці URL; Host header не SHALL змінювати їх.
+
+Root/OpenSearch/search SHALL зберігати Basic auth за AUTH-001. Searchfloor
+request і completion filtering SOURCE-001 SHALL залишатися чинними: пошук
+повертає лише підтверджено завершені книги з Download. Ця зміна SHALL не
+додавати source requests для discovery, локальне переосмислення пошукового
+query, обхід challenge, інше джерело чи нові правила page validation.
+Відсутній page означає1, а явний порожній/некоректний page лишається400.
+
+#### Scenario: FBReader discovers Searchfloor search from the added global root
+- **WHEN** reader завантажує authenticated `/opds` з увімкненим Searchfloor
+- **THEN** root містить search discovery link на його OpenSearch description
+- **AND** опис підтримує початковий пошук лише через підстановку `{searchTerms}`,
+  без порожнього `page=` та без додаткового source I/O для discovery.
+
+#### Scenario: Search preserves a non-ASCII query through initial and next requests
+- **WHEN** client підставляє URL-encoded query з кирилицею, пробілами або `&`
+- **THEN** початковий URL містить page=1 і API отримує вихідний query з чинною
+  trim/NFC normalization, без втрати чи дублювання percent encoding
+- **AND** `next`, коли він існує, зберігає цей query та наступний source page.
+
+#### Scenario: Phone acceptance identifies the catalogue that supplied the books
+- **WHEN** власник перевіряє запити «стоев» та «за последним порогом» у FBReader
+- **THEN** результат зараховується READ-01 лише коли перевірена картка має
+  Catalogue: Searchfloor; результат іншого каталогу не доводить збій source search
+- **AND** порівняння з сайтом враховує SOURCE-001: незавершені записи відсіюються,
+  а актуальний live count не є незмінним контрактом або доказом phone success.
 
 Acquisition link type SHALL бути `application/fb2+zip`, щоб FBReader розпізнавав
 повний FB2 ZIP як книгу. Download HTTP Content-Type лишається `application/zip`
