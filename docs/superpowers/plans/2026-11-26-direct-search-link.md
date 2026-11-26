@@ -29,12 +29,12 @@
 
 **Files:** Modify src/opds/feed.ts, tests/feed.test.ts, tests/search-discovery-api.test.ts.
 
-- [ ] Записати BASE=`git rev-parse HEAD`; Node24, `npm ci --no-audit --no-fund`.
-- [ ] RED renderer тест у tests/feed.test.ts: для root зі Searchfloor, source root, renderFeed (completed і search) та renderRelatedFeed search links дорівнюють `[direct, opensearch]` у цьому порядку; direct href = `https://opds.example/proxy/opds/searchfloor/search?q={searchTerms}&page=1`, type = ACQ. Root з `[]`/unknown — без `rel="search"`. Оновити наявний тест, що очікує один root search link.
-- [ ] RED API тест у tests/search-discovery-api.test.ts: з authenticated root (spoofed Host) взяти перший search link, переконатися, що це direct Atom template, замінити `{searchTerms}` на encodeURIComponent(query) і пройти search → next з наявними fixtures для «стоев», «за последним порогом», `А & Б 100% ё`; до search-запиту source fetch не викликався. Наявний OpenSearch шлях зберегти, але шукати link за type, а не першим.
-- [ ] Запустити focused tests, зафіксувати RED через відсутній direct link, а не setup failure.
-- [ ] У `discovery()` додати `link("search", absolute(base, \`/opds/${name}/search?q={searchTerms}&page=1\`), ACQ)` перед OpenSearch link. Інших змін немає.
-- [ ] Focused GREEN; `npm run typecheck`, `npm run build`, `npm test`, Python deployment regressions (`python3 -m unittest discover -s tests -p '*_test.py'`), `git diff --check`. Записати фактичні counts/skips і версію Node. Commit: `fix: publish direct Searchfloor search template for FBReader`.
+- [x] Записати BASE=`git rev-parse HEAD`; Node24, `npm ci --no-audit --no-fund`.
+- [x] RED renderer тест у tests/feed.test.ts: для root зі Searchfloor, source root, renderFeed (completed і search) та renderRelatedFeed search links дорівнюють `[direct, opensearch]` у цьому порядку; direct href = `https://opds.example/proxy/opds/searchfloor/search?q={searchTerms}&page=1`, type = ACQ. Root з `[]`/unknown — без `rel="search"`. Оновити наявний тест, що очікує один root search link.
+- [x] RED API тест у tests/search-discovery-api.test.ts: з authenticated root (spoofed Host) взяти перший search link, переконатися, що це direct Atom template, замінити `{searchTerms}` на encodeURIComponent(query) і пройти search → next з наявними fixtures для «стоев», «за последним порогом», `А & Б 100% ё`; до search-запиту source fetch не викликався. Наявний OpenSearch шлях зберегти, але шукати link за type, а не першим.
+- [x] Запустити focused tests, зафіксувати RED через відсутній direct link, а не setup failure.
+- [x] У `discovery()` додати `link("search", absolute(base, \`/opds/${name}/search?q={searchTerms}&page=1\`), ACQ)` перед OpenSearch link. Інших змін немає.
+- [x] Focused GREEN; `npm run typecheck`, `npm run build`, `npm test`, Python deployment regressions (`python3 -m unittest discover -s tests -p '*_test.py'`), `git diff --check`. Записати фактичні counts/skips і версію Node. Commit: `fix: publish direct Searchfloor search template for FBReader`.
 
 ## Task 2: Review, release та phone acceptance
 
@@ -49,3 +49,11 @@
 ## Self-review
 
 OPDS-001 direct/OpenSearch порядок, prefix, Host → Task1 renderer; OPDS-002 query/next → Task1 API; AUTH-001 → наявний auth тест лишається; ACCEPT-001/phone → Task2. Одна зміна helper, без рефакторингу. Висновок про FBReader Android3.8.31 — inference з FBReaderJ і логів, phone gate явний.
+
+## Task 1 execution record (2026-11-26)
+
+BASE f357672. Node v24.22.3, Linux. RED: 5 focused failures, all from the missing
+direct link (renderer: root has only OpenSearch; API: first search link type was
+opensearchdescription). GREEN after one `discovery()` change: typecheck exit0;
+`npm test` (build + vitest) 34 files, 178 passed, 0 skipped; Python deployment
+regressions 57 OK; `git diff --check` exit0.

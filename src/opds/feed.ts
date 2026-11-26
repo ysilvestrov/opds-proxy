@@ -26,7 +26,9 @@ const link = (rel: string, url: string, type = NAV, title?: string) =>
   `<link rel="${xml(rel)}" href="${xml(url)}" type="${xml(type)}"${title ? ` title="${xml(title)}"` : ''}/>`;
 const frame = (id: string, title: string, updated: string, body: string) =>
   `<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog"><id>${xml(id)}</id><title>${xml(title)}</title><updated>${xml(updated)}</updated><author><name>OPDS Proxy</name></author>${body}</feed>`;
+// Direct Atom template first: FBReader ignores failed (401) OpenSearch fetches (OPDS-001 0.8.3).
 const discovery = (base: string, name: string) =>
+  link("search", absolute(base, `/opds/${name}/search?q={searchTerms}&page=1`), ACQ) +
   link(
     "search",
     absolute(base, `/opds/${name}/opensearch.xml`),
