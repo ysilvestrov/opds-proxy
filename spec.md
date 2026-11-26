@@ -9,7 +9,11 @@ unretried root 401. Owner approved the in-chat approach, then the written
 amendment and plan after f357672 on 2026-11-26. Local implementation b6cc249:
 178 Node tests passed, 0 skips; 57 Python passed; typecheck/build passed.
 Independent review: no code defect; doc/evidence findings and a URLEncoder
-substitution test (179 Node passed) added. CI/deployment/phone gates pending.
+substitution test (179 Node passed) added. PR14 merged as ec176a2, main CI and
+package green; installed by timer 2026-11-26 08:45 UTC, health ready. Owner
+reports search works; access log shows the first `search` 401→200 at 09:21:39
+UTC. Next-page and post-restart search not yet seen in logs.
+Acceptance: docs/search-direct-link-acceptance.md.
 Evidence: docs/search-direct-link-diagnostics-20261126.md.
 
 **Approved amendment0.8.2 / READ-01 (2026-11-16):** FBReader search discovery
