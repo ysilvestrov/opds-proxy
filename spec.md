@@ -1,5 +1,14 @@
 # OPDS Proxy — OpenSpec
 
+**Proposed amendment 0.8.3 / READ-01 (2026-11-26):** direct Atom search link.
+Release 6b80216 (0.8.2) is installed: local/public health 2026-11-26 08:18 UTC
+report it ready=true. Sanitized access logs show FBReader never requested
+`/opds/searchfloor/search`; its only OpenSearch request (2026-11-16) got the
+AUTH-001 401 without an authenticated retry. FBReaderJ ignores OpenSearch
+description fetch errors and resolves search only on catalogue info reload.
+Owner approved the in-chat approach 2026-11-26; written amendment and plan
+review pending. Evidence: docs/search-direct-link-diagnostics-20261126.md.
+
 **Approved amendment0.8.2 / READ-01 (2026-11-16):** FBReader search discovery
 and fixed first-page OpenSearch template. Owner approved the in-chat approach;
 written OPDS-001 amendment approved by owner afterd45aa38 on2026-11-16.
@@ -362,11 +371,23 @@ self/start і next, коли він існує. Entry ID SHALL бути
 Global start — `/opds`; source root доступний через collection/up navigation.
 
 Для єдиного увімкненого у v1 джерела Searchfloor global root `/opds` SHALL
-містити один `rel="search"` link на `/opds/searchfloor/opensearch.xml` із type
-`application/opensearchdescription+xml`, як і source root. Цей link SHALL
+містити рівно два `rel="search"` links, як і source root, acquisition та related
+feeds, у такому порядку:
+1. direct Atom template: href
+   `{PUBLIC_BASE_URL}/opds/searchfloor/search?q={searchTerms}&page=1`, type
+   `application/atom+xml;profile=opds-catalog;kind=acquisition`;
+2. OpenSearch description: href `/opds/searchfloor/opensearch.xml`, type
+   `application/opensearchdescription+xml`.
+Direct link SHALL бути першим, щоб reader, який читає template прямо з feed,
+не залежав від окремого запиту description. Обидва links у root SHALL
 публікуватися лише коли Searchfloor присутній у configured enabled sources.
-Наявні search links у source/acquisition/related feeds SHALL зберігатися.
 Це пошук Searchfloor, не агрегований пошук усіх каталогів FBReader.
+
+Обґрунтування0.8.3 (evidence, 2026-11-26): FBReaderJ запитує OpenSearch
+description окремим batch-запитом, ігнорує його помилки і на 401 не повторює
+запит із Basic auth; production log містить лише один такий401 і жодного
+search-запиту. Direct template завантажується разом з уже authenticated feed.
+Anonymous OpenSearch відхилено: це розширило б виняток AUTH-001 без потреби.
 
 OpenSearch description SHALL оголошувати acquisition Atom URL із template
 `{PUBLIC_BASE_URL}/opds/searchfloor/search?q={searchTerms}&page=1` (у XML `&`
@@ -387,6 +408,21 @@ query, обхід challenge, інше джерело чи нові правил�
 - **THEN** root містить search discovery link на його OpenSearch description
 - **AND** опис підтримує початковий пошук лише через підстановку `{searchTerms}`,
   без порожнього `page=` та без додаткового source I/O для discovery.
+
+#### Scenario: Reader that ignores OpenSearch fetch failures still gets search
+- **WHEN** reader читає authenticated root або source root, але не може
+  отримати `opensearch.xml` (наприклад, запит без Basic auth дає401)
+- **THEN** перший `rel="search"` link уже є прямим Atom template з
+  `{searchTerms}` і `page=1`, абсолютним від PUBLIC_BASE_URL
+- **AND** підстановка лише `{searchTerms}` веде до authenticated
+  `/opds/searchfloor/search` acquisition feed без додаткового discovery I/O;
+  `opensearch.xml` і далі вимагає Basic auth.
+
+#### Scenario: Phone search after catalogue info reload
+- **WHEN** після встановлення релізу власник оновлює інформацію каталогу у
+  FBReader (редагування й збереження або повторне додавання) і шукає
+- **THEN** access log містить route `search`, а перевірена картка має
+  Catalogue: Searchfloor; без такого спостереження READ-01 лишається pending.
 
 #### Scenario: Search preserves a non-ASCII query through initial and next requests
 - **WHEN** client підставляє URL-encoded query з кирилицею, пробілами або `&`
