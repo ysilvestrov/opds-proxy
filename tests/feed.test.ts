@@ -1,13 +1,34 @@
 import { expect, it } from "vitest";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
-import { renderBookEntry, renderFeed, renderRoot, renderSourceRoot } from "../src/opds/feed.js";
+import { renderBookEntry, renderFeed, renderRelatedFeed, renderRoot, renderSourceRoot } from "../src/opds/feed.js";
 import { renderOpenSearch } from "../src/opds/search.js";
 const base = "https://opds.example/proxy";
+const searchLinks=[
+ {'@_rel':'search','@_href':base+'/opds/searchfloor/search?q={searchTerms}&page=1','@_type':'application/atom+xml;profile=opds-catalog;kind=acquisition'},
+ {'@_rel':'search','@_href':base+'/opds/searchfloor/opensearch.xml','@_type':'application/opensearchdescription+xml'},
+];
+it('publishes the direct Atom search template before OpenSearch in every discovery feed',()=>{
+ const parser=new XMLParser({ignoreAttributes:false});
+ const page={books:[],nextPage:2,observedAt:'2026-10-04T00:00:00Z'};
+ const feeds={
+  root:renderRoot(base,[{name:'searchfloor',title:'Searchfloor'}]),
+  source:renderSourceRoot(base,'searchfloor'),
+  completed:renderFeed(page,{baseUrl:base,query:null,sourceName:'searchfloor',page:1,updated:page.observedAt,stale:false}),
+  search:renderFeed(page,{baseUrl:base,query:'А & Б',sourceName:'searchfloor',page:1,updated:page.observedAt,stale:false}),
+  related:renderRelatedFeed({...page,stale:false},{kind:'author',slug:'A'},base,1),
+ };
+ for(const [name,xml] of Object.entries(feeds)){
+  expect(XMLValidator.validate(xml),name).toBe(true);
+  expect(xml,name).toContain('search?q={searchTerms}&amp;page=1');
+  expect(xml,name).not.toMatch(/%7B|%7D/i);
+  expect(parser.parse(xml).feed.link.filter((l:any)=>l['@_rel']==='search'),name).toEqual(searchLinks);
+ }
+});
 it('advertises search only when Searchfloor is enabled and fixes the initial page',()=>{
  const parser=new XMLParser({ignoreAttributes:false});
  const root=renderRoot(base,[{name:'searchfloor',title:'Searchfloor'}]);
  expect(XMLValidator.validate(root)).toBe(true);
- expect(parser.parse(root).feed.link.filter((l:any)=>l['@_rel']==='search')).toEqual([{'@_rel':'search','@_href':base+'/opds/searchfloor/opensearch.xml','@_type':'application/opensearchdescription+xml'}]);
+ expect(parser.parse(root).feed.link.filter((l:any)=>l['@_rel']==='search')).toEqual(searchLinks);
  for(const sources of [[],[{name:'unknown',title:'Other'}]])expect(renderRoot(base,sources)).not.toContain('rel="search"');
  const xml=renderOpenSearch(base,'searchfloor');expect(XMLValidator.validate(xml)).toBe(true);
  const url=parser.parse(xml).OpenSearchDescription.Url;
