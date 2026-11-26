@@ -57,3 +57,12 @@ direct link (renderer: root has only OpenSearch; API: first search link type was
 opensearchdescription). GREEN after one `discovery()` change: typecheck exit0;
 `npm test` (build + vitest) 34 files, 178 passed, 0 skipped; Python deployment
 regressions 57 OK; `git diff --check` exit0.
+
+## Task 2 review record (2026-11-26)
+
+Independent review of 6b80216..b6cc249: no code defect. Addressed: spec status
+now records owner approval; rationale marked as inference with the 22:36:24 root
+401 + opensearch 401 pair; FBReaderJ 12 h quiet background refresh recorded and a
+post-restart phone recheck added; absolute OpenSearch href and wording fixed;
+backlog READ-01 updated; regression test for URLEncoder `+` substitution and
+unauthenticated template URL (passes without code change). Node 179 passed, 0 skips.

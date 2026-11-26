@@ -30,8 +30,12 @@ after the 0.8.2 discovery release.
 Upstream FBReaderJ (`geometer/FBReaderJ`, master):
 
 - `OPDSCustomNetworkLink.reloadInfo` resolves a custom catalogue's search URL
-  only when catalogue info is (re)loaded — adding/editing the catalogue — and
-  stores it as `UrlInfo.Type.Search`. Normal browsing does not re-resolve it.
+  when catalogue info is (re)loaded and stores it as `UrlInfo.Type.Search`.
+  Triggers: adding/editing the catalogue (interactive, can prompt for auth) and
+  `NetworkLibrary` background refresh every 12 hours with
+  `reloadInfo(quietContext, true, true)`. Quiet requests use only credentials
+  already cached in the running process; without them the root fetch gets 401
+  and `Search` is set to null before the error is rethrown.
 - `OPDSCatalogInfoHandler.processFeedMetadata` accepts two forms of root
   `rel="search"`: an `application/opensearchdescription+xml` URL (queued for a
   second fetch) or a direct `application/atom+xml`/`text/html` template, turned
@@ -43,10 +47,20 @@ Upstream FBReaderJ (`geometer/FBReaderJ`, master):
 - The direct description is added before fetched descriptions; `descriptions.get(0)`
   is used, so a direct link wins when both are present.
 
-Inference (not proven for the closed Android 3.8.31 binary): the reader fetched
-the OpenSearch description anonymously, received 401 required by AUTH-001,
-ignored the error and stored "no search". The single unretried 401 and the
-absence of any `search` request are consistent with this.
+Access log around the OpenSearch request (2026-11-16, route/status only):
+22:35:47 root 401→200, 22:35:48 source_root 401→200, 22:35:49 completed
+401→200, then 22:36:24.785 root 401 and 22:36:24.880 opensearch 401, neither
+retried. In FBReaderJ master the OpenSearch fetch only follows a successfully
+parsed root, so the closed Android 3.8.31 build evidently differs (it may
+remember the description URL). The pair looks like a quiet, credential-less
+path.
+
+Inference (not proven for 3.8.31): search resolution ran without credentials,
+received the AUTH-001 401, ignored the error and kept "no search". A direct
+link fixes this when catalogue info is reloaded with credentials (catalogue
+edit/re-add). It cannot help if the reader's search resolution never sends
+credentials even for the root; then anonymous OpenSearch (AUTH-001 change)
+would be the next candidate, and only with new owner approval.
 
 ## Chosen approach and alternatives
 
@@ -56,14 +70,14 @@ existing OpenSearch discovery link wherever discovery is published. The reader
 gets the template from the feed it already loads with Basic auth; no extra
 request, no auth change, no source I/O. Flibusta's OPDS root publishes both forms.
 
-Rejected: anonymous `opensearch.xml` — would widen the AUTH-001 public exception
-for no benefit over the direct link. Rejected: replacing the OpenSearch link —
+Deferred: anonymous `opensearch.xml` — would widen the AUTH-001 public exception;
+reconsider only if 0.8.3 phone acceptance fails and the owner approves. Rejected: replacing the OpenSearch link —
 other readers may rely on it; OPDS-001 keeps it.
 
 After deployment the owner must make FBReader reload catalogue info (edit and
-save, or remove and re-add the catalogue); a previously stored null search URL
-is not refreshed by browsing. This is derived from FBReaderJ code; phone
-evidence is still required.
+save, or remove and re-add the catalogue), then search, and repeat after an app
+restart (a quiet background refresh without credentials may clear it again).
+This is derived from FBReaderJ code and the logs; phone evidence is required.
 
 ## Limits
 

@@ -95,3 +95,15 @@ for(const query of ['стоев','за последним порогом','  А 
   expect(calls[1].searchParams.get('q')).toBe(query.trim().normalize('NFC'));expect(calls[1].searchParams.get('page')).toBe('2');
  }finally{client.close();cache.close();}
 });
+
+it('accepts FBReader URLEncoder-style substitution (spaces as +) in the direct template',async()=>{
+ const page=vi.fn(async()=>({books:[],nextPage:null,observedAt:new Date(0).toISOString(),stale:false}));
+ const app=createApp({config,catalog:{page,book:async()=>null},log:pino({enabled:false})});
+ const root=parser.parse(await (await app.request('/opds',{headers})).text()).feed;
+ const template=links(root).find(l=>l['@_rel']==='search')!['@_href'];
+ const javaEncoded=encodeURIComponent('за последним & порогом').replace(/%20/g,'+');
+ const url=template.replace('{searchTerms}',javaEncoded);
+ expect((await app.request(internal(url))).status).toBe(401);expect(page).not.toHaveBeenCalled();
+ expect((await app.request(internal(url),{headers})).status).toBe(200);
+ expect(page).toHaveBeenCalledWith('за последним & порогом',1,expect.any(AbortSignal));
+});
